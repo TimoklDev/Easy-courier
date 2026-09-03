@@ -57,33 +57,9 @@ Several tasks for the same dock are counted together before the message is sent.
 
 ## Requirements
 
-- Java 11 compatible source
-- A current RuneLite client
 - Sailing route and quest requirements still apply in game
 
 The route card shows important unlock notes such as Song of the Elves for Prifddinas, Troubled Tortugans for The Summer Shore, and the level 65 Etceteria option.
-
-## Local testing
-
-On Windows:
-
-```powershell
-.\gradlew.bat clean test
-.\gradlew.bat run
-```
-
-On macOS or Linux:
-
-```bash
-./gradlew clean test
-./gradlew run
-```
-
-The first command verifies route order, pickup and delivery precedence, shared-dock merging, level checks, backward-task rejection, and reserved-slot behavior. The second starts RuneLite in developer mode with Easy Courier loaded.
-
-## Plugin Hub submission
-
-The repository already contains the standard `runelite-plugin.properties` metadata and uses `latest.release` for local validation. A Plugin Hub submission still needs a small entry in the RuneLite Plugin Hub repository that points to a tagged commit from this repository.
 
 ## Credits
 
