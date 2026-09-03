@@ -123,6 +123,10 @@ public final class SeaNetwork
 			}
 			for (SeaLeg leg : lanes.getOrDefault(node.port, Collections.emptyList()))
 			{
+				if (usesAldarinAsSunsetTransit(start, finish, leg.finish))
+				{
+					continue;
+				}
 				double nextDistance = node.distance + leg.distance;
 				if (nextDistance < distances.getOrDefault(leg.finish, Double.POSITIVE_INFINITY))
 				{
@@ -159,6 +163,13 @@ public final class SeaNetwork
 			points.addAll(leg.points.subList(first, leg.points.size()));
 		}
 		return new PathResult(Collections.unmodifiableList(points), distances.get(finish));
+	}
+
+	private boolean usesAldarinAsSunsetTransit(Port start, Port finish, Port next)
+	{
+		boolean includesSunset = start == Port.SUNSET_COAST || finish == Port.SUNSET_COAST;
+		boolean endsAtAldarin = start == Port.ALDARIN || finish == Port.ALDARIN;
+		return includesSunset && !endsAtAldarin && next == Port.ALDARIN;
 	}
 
 	private List<WorldPoint> interpolate(List<WorldPoint> points)

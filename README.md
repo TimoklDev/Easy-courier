@@ -28,7 +28,7 @@ Easy Courier splits each lap into two clear phases.
 
 The Rellekka to Etceteria sailing step uses the same game-view and world-map route overlays as delivery travel. The Rellekka and Prifddinas checklists also remind you to recover your boat to Aldarin before starting delivery.
 
-The Prifddinas route keeps one slot reserved for Aldarin to Prifddinas until that task is accepted. When only that slot remains, the collection checklist skips directly to Aldarin. The Rellekka route retains its normal starting-board reserve behavior.
+Only the Prifddinas route keeps one slot reserved for Aldarin to Prifddinas until that task is accepted. When only that slot remains, the collection checklist skips directly to Aldarin.
 
 ### 2. Delivery phase
 

@@ -6,6 +6,7 @@ import net.runelite.api.coords.WorldPoint;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class SeaNetworkTest
@@ -31,5 +32,16 @@ public class SeaNetworkTest
 		assertEquals(forward.get(0), reverse.get(reverse.size() - 1));
 		assertEquals(forward.get(forward.size() - 1), reverse.get(0));
 		assertEquals(forward.size(), reverse.size());
+	}
+
+	@Test
+	public void avoidsTheAldarinHairpinAtSunsetCoast()
+	{
+		List<WorldPoint> forward = network.path(Port.SUNSET_COAST, Port.PORT_ROBERTS);
+		List<WorldPoint> reverse = network.path(Port.PORT_ROBERTS, Port.SUNSET_COAST);
+		assertFalse(forward.contains(Port.ALDARIN.getMapPoint()));
+		assertFalse(reverse.contains(Port.ALDARIN.getMapPoint()));
+		assertTrue(forward.contains(Port.CIVITAS_ILLA_FORTIS.getMapPoint()));
+		assertTrue(reverse.contains(Port.CIVITAS_ILLA_FORTIS.getMapPoint()));
 	}
 }

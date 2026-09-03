@@ -102,12 +102,12 @@ public class RouteAdvisorTest
 	}
 
 	@Test
-	public void preferredRellekkaTaskFulfilsTheReserveRule()
+	public void rellekkaDoesNotReserveTheLastSlot()
 	{
 		List<ActiveTask> active = new ArrayList<>();
-		active.add(active(20, Port.SUNSET_COAST, Port.RELLEKKA));
-		active.add(active(21, Port.PORT_ROBERTS, Port.RELLEKKA));
-		active.add(active(22, Port.PORT_PISCARILIUS, Port.RELLEKKA));
+		active.add(active(20, Port.ALDARIN, Port.PORT_ROBERTS));
+		active.add(active(21, Port.PORT_ROBERTS, Port.HOSIDIUS));
+		active.add(active(22, Port.HOSIDIUS, Port.PORT_PISCARILIUS));
 		TaskDefinition useful = task(6, 62, Port.PORT_ROBERTS, Port.RELLEKKA, 3000);
 		List<BoardOffer> offers = advisor.advise(RoutePreset.RELLEKKA, RoutePhase.COLLECTION, Port.RELLEKKA, 0, 62, 3,
 			active, Collections.singletonList(widget(useful)));

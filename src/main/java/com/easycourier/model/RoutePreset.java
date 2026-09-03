@@ -36,7 +36,7 @@ public enum RoutePreset
 		Port.RELLEKKA,
 		Arrays.asList(
 			stop(Port.RELLEKKA, "Go to Rellekka and open its notice board.", 62,
-				edge(Port.ALDARIN, Port.RELLEKKA),
+				null,
 				edges(
 					edge(Port.ALDARIN, Port.RELLEKKA),
 					edge(Port.SUNSET_COAST, Port.RELLEKKA),
