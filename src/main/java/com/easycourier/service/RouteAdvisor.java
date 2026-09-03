@@ -44,6 +44,13 @@ public final class RouteAdvisor
 					"Requires level " + task.getLevelRequired()));
 				continue;
 			}
+			boolean alreadyAccepted = activeTasks.stream()
+				.anyMatch(activeTask -> activeTask.getDefinition().getTaskId() == task.getTaskId());
+			if (alreadyAccepted)
+			{
+				decisions.add(new BoardOffer(widgetTask.getWidget(), task, OfferStatus.ACCEPTED, 0, "Already accepted"));
+				continue;
+			}
 			boolean startsHere = task.getPickup() == boardPort;
 			boolean accepted = phase == RoutePhase.DELIVERY
 				? startsHere && preset.movesForward(task)
@@ -57,6 +64,12 @@ public final class RouteAdvisor
 			}
 			boolean preferred = stop != null && stop.isPreferred(task);
 			int score = task.getExperience() + (preferred ? 1_000_000 : 0);
+			if (shouldDefer(preset, phase, stop, collectionIndex, task))
+			{
+				decisions.add(new BoardOffer(widgetTask.getWidget(), task, OfferStatus.DEFERRED, score,
+					"Useful later during delivery"));
+				continue;
+			}
 			decisions.add(new BoardOffer(widgetTask.getWidget(), task,
 				preferred ? OfferStatus.PRIORITY : OfferStatus.USEFUL, score,
 				preferred ? "Priority task" : "Useful forward task"));
@@ -64,6 +77,21 @@ public final class RouteAdvisor
 		limitHighlights(decisions, stop, sailingLevel, occupiedSlots, activeTasks);
 		decisions.sort(Comparator.comparingInt(BoardOffer::getScore).reversed());
 		return decisions;
+	}
+
+	private boolean shouldDefer(RoutePreset preset, RoutePhase phase, CollectionStop stop, int collectionIndex,
+		TaskDefinition task)
+	{
+		if (phase != RoutePhase.COLLECTION || stop == null
+			|| collectionIndex >= preset.getCollectionStops().size() - 1
+			|| task.getPickup() != stop.getPort())
+		{
+			return false;
+		}
+		int pickupRank = preset.routeRank(task.getPickup());
+		int deliveryRank = preset.routeRank(task.getDelivery());
+		int finishRank = preset.routeRank(preset.getFinish());
+		return pickupRank > 0 && pickupRank < finishRank && deliveryRank == pickupRank + 1;
 	}
 
 	private void limitHighlights(List<BoardOffer> decisions, CollectionStop stop, int sailingLevel, int occupiedSlots,
@@ -91,6 +119,12 @@ public final class RouteAdvisor
 		for (int index = 0; index < decisions.size(); index++)
 		{
 			BoardOffer offer = decisions.get(index);
+			if (offer.getStatus() == OfferStatus.DEFERRED && freeSlots == 0)
+			{
+				decisions.set(index, new BoardOffer(offer.getWidget(), offer.getTask(), OfferStatus.OFF_ROUTE, 0,
+					"No free task slots"));
+				continue;
+			}
 			if ((offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL) && !keep.contains(offer))
 			{
 				decisions.set(index, new BoardOffer(offer.getWidget(), offer.getTask(), OfferStatus.OFF_ROUTE, 0,

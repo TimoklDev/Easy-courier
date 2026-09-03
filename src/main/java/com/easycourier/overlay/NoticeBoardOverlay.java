@@ -75,7 +75,8 @@ public final class NoticeBoardOverlay extends Overlay
 	private boolean isHovered(BoardOffer offer)
 	{
 		if (offer.getTask() == null || offer.getTask().getExperience() <= 0
-			|| (offer.getStatus() != OfferStatus.PRIORITY && offer.getStatus() != OfferStatus.USEFUL))
+			|| (offer.getStatus() != OfferStatus.PRIORITY && offer.getStatus() != OfferStatus.USEFUL
+				&& offer.getStatus() != OfferStatus.DEFERRED))
 		{
 			return false;
 		}
@@ -99,10 +100,10 @@ public final class NoticeBoardOverlay extends Overlay
 		}
 		Graphics2D copy = (Graphics2D) graphics.create();
 		copy.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		if (offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL)
+		if (offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL
+			|| offer.getStatus() == OfferStatus.DEFERRED)
 		{
-			Color color = offer.getStatus() == OfferStatus.PRIORITY
-				? plugin.getConfig().priorityColor() : plugin.getConfig().usefulColor();
+			Color color = colorFor(offer.getStatus());
 			Stroke stroke = new BasicStroke(3f);
 			copy.setStroke(stroke);
 			copy.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 42));
@@ -111,7 +112,7 @@ public final class NoticeBoardOverlay extends Overlay
 			copy.drawRoundRect(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2, 8, 8);
 			drawBadge(copy, bounds, offer);
 		}
-		else if (plugin.getConfig().dimUnusableTasks())
+		else if (offer.getStatus() != OfferStatus.ACCEPTED && plugin.getConfig().dimUnusableTasks())
 		{
 			copy.setColor(new Color(4, 8, 11, 168));
 			copy.fillRoundRect(bounds.x, bounds.y, bounds.width, bounds.height, 7, 7);
@@ -119,9 +120,20 @@ public final class NoticeBoardOverlay extends Overlay
 		copy.dispose();
 	}
 
+	private Color colorFor(OfferStatus status)
+	{
+		if (status == OfferStatus.PRIORITY)
+		{
+			return plugin.getConfig().priorityColor();
+		}
+		return status == OfferStatus.DEFERRED
+			? plugin.getConfig().deferredColor() : plugin.getConfig().usefulColor();
+	}
+
 	private void drawBadge(Graphics2D graphics, Rectangle bounds, BoardOffer offer)
 	{
-		String label = offer.getStatus() == OfferStatus.PRIORITY ? "BEST" : "ROUTE";
+		String label = offer.getStatus() == OfferStatus.PRIORITY ? "BEST"
+			: offer.getStatus() == OfferStatus.DEFERRED ? "LATER" : "ROUTE";
 		graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		int width = graphics.getFontMetrics().stringWidth(label) + 12;
 		int x = Math.max(bounds.x + 4, bounds.x + bounds.width - width - 4);

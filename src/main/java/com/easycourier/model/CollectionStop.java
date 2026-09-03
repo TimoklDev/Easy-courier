@@ -10,16 +10,18 @@ public final class CollectionStop
 	private final Port port;
 	private final String travelInstruction;
 	private final int minimumLevel;
+	private final boolean charterRequired;
 	private final Set<TaskEdge> accepted;
 	private final Set<TaskEdge> preferred;
 	private final TaskEdge reservedTask;
 
-	public CollectionStop(Port port, String travelInstruction, int minimumLevel, TaskEdge reservedTask,
+	public CollectionStop(Port port, String travelInstruction, int minimumLevel, boolean charterRequired, TaskEdge reservedTask,
 		TaskEdge[] accepted, TaskEdge[] preferred)
 	{
 		this.port = port;
 		this.travelInstruction = travelInstruction;
 		this.minimumLevel = minimumLevel;
+		this.charterRequired = charterRequired;
 		this.reservedTask = reservedTask;
 		this.accepted = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(accepted)));
 		this.preferred = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(preferred)));
@@ -38,6 +40,11 @@ public final class CollectionStop
 	public int getMinimumLevel()
 	{
 		return minimumLevel;
+	}
+
+	public boolean isCharterRequired()
+	{
+		return charterRequired;
 	}
 
 	public Set<TaskEdge> getAccepted()
@@ -60,4 +67,3 @@ public final class CollectionStop
 		return reservedTask;
 	}
 }
-

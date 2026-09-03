@@ -90,7 +90,7 @@ public enum RoutePreset
 					edge(Port.PORT_TYRAS, Port.PRIFDDINAS),
 					edge(Port.DEEPFIN_POINT, Port.PRIFDDINAS)),
 				edges(edge(Port.ALDARIN, Port.PRIFDDINAS))),
-			stop(Port.PORT_TYRAS, "Take a charter ship to Port Tyras and open its notice board.", 70, null,
+			charterStop(Port.PORT_TYRAS, "Take a charter ship to Port Tyras and open its notice board.", 70, null,
 				edges(
 					edge(Port.ALDARIN, Port.PORT_TYRAS),
 					edge(Port.DEEPFIN_POINT, Port.PORT_TYRAS),
@@ -233,7 +233,13 @@ public enum RoutePreset
 	private static CollectionStop stop(Port port, String instruction, int level, TaskEdge reserved,
 		TaskEdge[] accepted, TaskEdge[] preferred)
 	{
-		return new CollectionStop(port, instruction, level, reserved, accepted, preferred);
+		return new CollectionStop(port, instruction, level, false, reserved, accepted, preferred);
+	}
+
+	private static CollectionStop charterStop(Port port, String instruction, int level, TaskEdge reserved,
+		TaskEdge[] accepted, TaskEdge[] preferred)
+	{
+		return new CollectionStop(port, instruction, level, true, reserved, accepted, preferred);
 	}
 
 	private static Map<Port, Integer> order(Object... values)

@@ -326,7 +326,15 @@ public final class EasyCourierPanel extends PluginPanel
 			{
 				if (plugin.getHighlightedOfferCount() == 0)
 				{
+					if (plugin.getDeferredOfferCount() > 0)
+					{
+						return "Only blue LATER tasks remain. Leave them for delivery and close the board.";
+					}
 					return "There are no more route tasks to take here. Close the board to continue.";
+				}
+				if (plugin.getDeferredOfferCount() > 0)
+				{
+					return "Pick BEST and ROUTE tasks now. Leave blue LATER tasks for delivery, then close the board.";
 				}
 				return "Pick the highlighted tasks, keep any requested reserve slot open, then close the board.";
 			}

@@ -20,9 +20,11 @@ Easy Courier splits each lap into two clear phases.
 3. Follow the current instruction to the next port.
 4. Open the notice board.
 5. Green tasks are the best choices. Amber tasks are useful alternatives.
-6. Tasks above your Sailing level, bounty tasks, backward tasks, and tasks that would consume a reserved slot are dimmed.
-7. Pick the tasks you want and close the board.
-8. The assistant moves to the next collection stop.
+6. Blue LATER tasks are valid short hops that are better left until the delivery phase.
+7. Accepted tasks use only the game's ACCEPTED stamp and no longer receive another plugin highlight.
+8. Tasks above your Sailing level, bounty tasks, backward tasks, and tasks that would consume a reserved slot are dimmed.
+9. Pick the tasks you want and close the board.
+10. The assistant moves to the next collection stop.
 
 The Prifddinas and Rellekka routes can reserve one open slot for a preferred Aldarin task when it has not appeared yet.
 
@@ -45,10 +47,12 @@ If the plugin starts while courier tasks are already active, it detects the best
 
 - Green border: best task available
 - Amber border: useful task that fits the route
+- Blue border with LATER: valid one-port-forward task that is better taken during delivery
 - Darkened card: unavailable, bounty, backward, off-route, or intentionally left for a reserved slot
 - Teal dock highlight: collect or deliver cargo here
 - Teal cargo outline: an inventory or cargo-hold item used by an active courier task
 - Gold notice-board highlight: check this board while a task slot is free
+- Teal Trader Crewmember highlight: use the charter required by the current collection step
 
 ## Cargo messages
 

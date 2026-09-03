@@ -15,6 +15,7 @@ import com.easycourier.model.StepKind;
 import com.easycourier.model.TaskDefinition;
 import com.easycourier.overlay.DockOverlay;
 import com.easycourier.overlay.CargoItemOverlay;
+import com.easycourier.overlay.CharterCrewmemberOverlay;
 import com.easycourier.overlay.NoticeBoardOverlay;
 import com.easycourier.overlay.NoticeBoardWorldOverlay;
 import com.easycourier.overlay.RouteMapOverlay;
@@ -119,6 +120,8 @@ public class EasyCourierPlugin extends Plugin
 	@Inject
 	private CargoItemOverlay cargoItemOverlay;
 	@Inject
+	private CharterCrewmemberOverlay charterCrewmemberOverlay;
+	@Inject
 	private RouteMapOverlay routeMapOverlay;
 	@Inject
 	private RouteWorldOverlay routeWorldOverlay;
@@ -166,6 +169,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.add(noticeBoardWorldOverlay);
 		overlayManager.add(dockOverlay);
 		overlayManager.add(cargoItemOverlay);
+		overlayManager.add(charterCrewmemberOverlay);
 		overlayManager.add(routeMapOverlay);
 		overlayManager.add(routeWorldOverlay);
 		clientThread.invokeLater(this::loadGameData);
@@ -180,6 +184,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.remove(noticeBoardWorldOverlay);
 		overlayManager.remove(dockOverlay);
 		overlayManager.remove(cargoItemOverlay);
+		overlayManager.remove(charterCrewmemberOverlay);
 		overlayManager.remove(routeMapOverlay);
 		overlayManager.remove(routeWorldOverlay);
 		activeTasks.clear();
@@ -786,6 +791,16 @@ public class EasyCourierPlugin extends Plugin
 		return step != null && step.getKind() == StepKind.NOTICE_BOARD ? step.getPort() : Port.UNKNOWN;
 	}
 
+	public Port getCharterTarget()
+	{
+		if (phase != RoutePhase.COLLECTION || collectionIndex >= selectedRoute.getCollectionStops().size())
+		{
+			return Port.UNKNOWN;
+		}
+		CollectionStop stop = selectedRoute.getCollectionStops().get(collectionIndex);
+		return stop.isCharterRequired() && currentPort != stop.getPort() ? stop.getPort() : Port.UNKNOWN;
+	}
+
 	public List<ActiveTask> tasksAtPickup(Port port)
 	{
 		List<ActiveTask> result = new ArrayList<>();
@@ -862,6 +877,13 @@ public class EasyCourierPlugin extends Plugin
 	{
 		return (int) boardOffers.stream()
 			.filter(offer -> offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL)
+			.count();
+	}
+
+	public int getDeferredOfferCount()
+	{
+		return (int) boardOffers.stream()
+			.filter(offer -> offer.getStatus() == OfferStatus.DEFERRED)
 			.count();
 	}
 

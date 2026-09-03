@@ -93,10 +93,22 @@ public interface EasyCourierConfig extends Config
 
 	@Alpha
 	@ConfigItem(
+		keyName = "deferredColor",
+		name = "Later task color",
+		description = "Border color for useful tasks that are better taken later",
+		position = 7
+	)
+	default Color deferredColor()
+	{
+		return new Color(93, 156, 236, 255);
+	}
+
+	@Alpha
+	@ConfigItem(
 		keyName = "routeColor",
 		name = "Sea route color",
 		description = "Color used for the route and dock highlights",
-		position = 7
+		position = 8
 	)
 	default Color routeColor()
 	{

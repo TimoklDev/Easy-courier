@@ -14,10 +14,20 @@ import java.util.List;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class RouteAdvisorTest
 {
 	private final RouteAdvisor advisor = new RouteAdvisor();
+
+	@Test
+	public void marksOnlyTheExplicitPrifTravelStopAsACharter()
+	{
+		assertFalse(RoutePreset.PRIFDDINAS.getCollectionStops().get(0).isCharterRequired());
+		assertTrue(RoutePreset.PRIFDDINAS.getCollectionStops().get(1).isCharterRequired());
+		assertFalse(RoutePreset.PRIFDDINAS.getCollectionStops().get(2).isCharterRequired());
+	}
 
 	@Test
 	public void rejectsBackwardTaskDuringDelivery()
@@ -90,6 +100,61 @@ public class RouteAdvisorTest
 		TaskDefinition forward = task(8, 70, Port.DEEPFIN_POINT, Port.PORT_TYRAS, 3000);
 		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.DELIVERY,
 			Port.DEEPFIN_POINT, 0, 99, 0, Collections.emptyList(), Collections.singletonList(widget(forward)));
+		assertEquals(OfferStatus.USEFUL, offers.get(0).getStatus());
+	}
+
+	@Test
+	public void leavesAcceptedTaskToTheGameStamp()
+	{
+		TaskDefinition task = task(9, 70, Port.ALDARIN, Port.PRIFDDINAS, 7082);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION,
+			Port.PRIFDDINAS, 0, 99, 1, Collections.singletonList(active(9, Port.ALDARIN, Port.PRIFDDINAS)),
+			Collections.singletonList(widget(task)));
+		assertEquals(OfferStatus.ACCEPTED, offers.get(0).getStatus());
+	}
+
+	@Test
+	public void defersShortHopFromIntermediateCollectionStop()
+	{
+		TaskDefinition task = task(10, 70, Port.PORT_TYRAS, Port.PRIFDDINAS, 1221);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION,
+			Port.PORT_TYRAS, 1, 99, 0, Collections.emptyList(), Collections.singletonList(widget(task)));
+		assertEquals(OfferStatus.DEFERRED, offers.get(0).getStatus());
+	}
+
+	@Test
+	public void defersDeepfinShortHopUntilDelivery()
+	{
+		TaskDefinition task = task(13, 70, Port.DEEPFIN_POINT, Port.PORT_TYRAS, 2000);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION,
+			Port.DEEPFIN_POINT, 2, 99, 0, Collections.emptyList(), Collections.singletonList(widget(task)));
+		assertEquals(OfferStatus.DEFERRED, offers.get(0).getStatus());
+	}
+
+	@Test
+	public void appliesDeferredRuleToOtherRoutes()
+	{
+		TaskDefinition task = task(14, 65, Port.ETCETERIA, Port.RELLEKKA, 2000);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.RELLEKKA, RoutePhase.COLLECTION,
+			Port.ETCETERIA, 1, 99, 0, Collections.emptyList(), Collections.singletonList(widget(task)));
+		assertEquals(OfferStatus.DEFERRED, offers.get(0).getStatus());
+	}
+
+	@Test
+	public void keepsInboundTaskUsefulAtIntermediateCollectionStop()
+	{
+		TaskDefinition task = task(11, 70, Port.ALDARIN, Port.PORT_TYRAS, 3793);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION,
+			Port.PORT_TYRAS, 1, 99, 0, Collections.emptyList(), Collections.singletonList(widget(task)));
+		assertEquals(OfferStatus.USEFUL, offers.get(0).getStatus());
+	}
+
+	@Test
+	public void keepsShortHopUsefulAtFinalCollectionStop()
+	{
+		TaskDefinition task = task(12, 70, Port.ALDARIN, Port.DEEPFIN_POINT, 3793);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION,
+			Port.ALDARIN, 3, 99, 0, Collections.emptyList(), Collections.singletonList(widget(task)));
 		assertEquals(OfferStatus.USEFUL, offers.get(0).getStatus());
 	}
 
