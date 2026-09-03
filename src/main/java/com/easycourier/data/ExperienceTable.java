@@ -220,7 +220,7 @@ public final class ExperienceTable
 		{9097, 6571},
 		{9098, 13142},
 		{9099, 4374},
-		{9100, 12670},
+		{9100, 12671},
 		};
 		for (int[] value : values)
 		{
@@ -237,4 +237,3 @@ public final class ExperienceTable
 		return EXPERIENCE.getOrDefault(databaseRow, 0);
 	}
 }
-
