@@ -251,6 +251,15 @@ public final class EasyCourierPanel extends PluginPanel
 			list.add(stepCard(index + 1, step, complete, active));
 			list.add(Box.createRigidArea(new Dimension(0, 5)));
 		}
+		if (plugin.getSelectedRoute() == RoutePreset.PRIFDDINAS)
+		{
+			boolean active = plugin.getPhase() == RoutePhase.COLLECTION
+				&& plugin.getCollectionIndex() >= stops.size();
+			RouteStep step = new RouteStep(StepKind.TRAVEL, Port.ALDARIN,
+				"Recover your boat to Aldarin", "Then move on to the delivery phase.", 0);
+			list.add(stepCard(stops.size() + 1, step, plugin.getPhase() == RoutePhase.COMPLETE, active));
+			list.add(Box.createRigidArea(new Dimension(0, 5)));
+		}
 		return list;
 	}
 
@@ -306,6 +315,10 @@ public final class EasyCourierPanel extends PluginPanel
 		{
 			if (plugin.getCollectionIndex() >= plugin.getSelectedRoute().getCollectionStops().size())
 			{
+				if (plugin.getSelectedRoute() == RoutePreset.PRIFDDINAS)
+				{
+					return "Recover your boat to Aldarin, then move on to the delivery phase.";
+				}
 				return "Every collection board has been checked. Move to the delivery phase when your task list is ready.";
 			}
 			CollectionStop stop = plugin.getSelectedRoute().getCollectionStops().get(plugin.getCollectionIndex());
