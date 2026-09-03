@@ -35,13 +35,26 @@ public class SeaNetworkTest
 	}
 
 	@Test
-	public void avoidsTheAldarinHairpinAtSunsetCoast()
+	public void usesDirectSunsetCoastRouteToPortRoberts()
 	{
 		List<WorldPoint> forward = network.path(Port.SUNSET_COAST, Port.PORT_ROBERTS);
 		List<WorldPoint> reverse = network.path(Port.PORT_ROBERTS, Port.SUNSET_COAST);
 		assertFalse(forward.contains(Port.ALDARIN.getMapPoint()));
 		assertFalse(reverse.contains(Port.ALDARIN.getMapPoint()));
-		assertTrue(forward.contains(Port.CIVITAS_ILLA_FORTIS.getMapPoint()));
-		assertTrue(reverse.contains(Port.CIVITAS_ILLA_FORTIS.getMapPoint()));
+		assertFalse(forward.contains(Port.CIVITAS_ILLA_FORTIS.getMapPoint()));
+		assertFalse(reverse.contains(Port.CIVITAS_ILLA_FORTIS.getMapPoint()));
+		assertEquals(Port.SUNSET_COAST.getMapPoint(), forward.get(0));
+		assertEquals(Port.PORT_ROBERTS.getMapPoint(), forward.get(forward.size() - 1));
+	}
+
+	@Test
+	public void usesDirectPortRobertsRouteToHosidius()
+	{
+		List<WorldPoint> forward = network.path(Port.PORT_ROBERTS, Port.HOSIDIUS);
+		List<WorldPoint> reverse = network.path(Port.HOSIDIUS, Port.PORT_ROBERTS);
+		assertFalse(forward.contains(Port.PORT_PISCARILIUS.getMapPoint()));
+		assertFalse(reverse.contains(Port.PORT_PISCARILIUS.getMapPoint()));
+		assertEquals(Port.PORT_ROBERTS.getMapPoint(), forward.get(0));
+		assertEquals(Port.HOSIDIUS.getMapPoint(), forward.get(forward.size() - 1));
 	}
 }
