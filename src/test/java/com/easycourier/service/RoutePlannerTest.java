@@ -86,6 +86,28 @@ public class RoutePlannerTest
 	}
 
 	@Test
+	public void neverAddsNoticeBoardAtDeliveryStart()
+	{
+		ActiveTask task = active(4, Port.ALDARIN, Port.PRIFDDINAS, 7, 7082);
+		RoutePlan plan = planner.plan(RoutePreset.PRIFDDINAS, Port.ALDARIN,
+			Collections.singletonList(task), 4, Collections.emptySet());
+		assertTrue(plan.getSteps().stream()
+			.noneMatch(step -> step.getKind() == StepKind.NOTICE_BOARD && step.getPort() == Port.ALDARIN));
+	}
+
+	@Test
+	public void stillAddsNoticeBoardAtLaterDeliveryPort()
+	{
+		List<ActiveTask> tasks = Arrays.asList(
+			active(5, Port.ALDARIN, Port.DEEPFIN_POINT, 7, 3793),
+			active(6, Port.DEEPFIN_POINT, Port.PRIFDDINAS, 7, 4721));
+		RoutePlan plan = planner.plan(RoutePreset.PRIFDDINAS, Port.ALDARIN,
+			tasks, 4, Collections.emptySet());
+		assertTrue(plan.getSteps().stream()
+			.anyMatch(step -> step.getKind() == StepKind.NOTICE_BOARD && step.getPort() == Port.DEEPFIN_POINT));
+	}
+
+	@Test
 	public void emptyManifestStillReturnsToFinish()
 	{
 		RoutePlan plan = planner.plan(RoutePreset.LUNAR_ISLE, Port.PRIFDDINAS, Collections.emptyList());

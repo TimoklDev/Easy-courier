@@ -37,7 +37,7 @@ The Prifddinas route keeps one slot reserved for Aldarin to Prifddinas until tha
 5. The route always finishes at the selected route point.
 6. The actual sea lane is visible only while the current step is to sail, both in the game view and on the world map.
 7. Reaching the active destination automatically advances from sailing to that port's next action.
-8. At a delivery stop, an open notice board only highlights tasks that start at the current port and continue forward.
+8. Later delivery stops can include a notice-board check, but the route's starting port never repeats that task.
 9. Closing that board completes its checklist step, even when no suitable task was available.
 
 The side panel shows the current instruction, task progress, XP per task, total route XP, and the complete ordered checklist. Every phase also has a **Skip current step** button.

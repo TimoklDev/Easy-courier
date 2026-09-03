@@ -203,6 +203,11 @@ public enum RoutePreset
 		return collectionStops;
 	}
 
+	public Port getDeliveryStart()
+	{
+		return collectionStops.get(collectionStops.size() - 1).getPort();
+	}
+
 	public boolean movesForward(TaskDefinition task)
 	{
 		Integer from = forwardOrder.get(task.getPickup());

@@ -209,7 +209,8 @@ public final class RoutePlanner
 					delivered.add(task.getSlot());
 				}
 			}
-			if (port.hasNoticeBoard() && port != preset.getFinish() && occupiedSlots < taskCapacity
+			if (port.hasNoticeBoard() && port != preset.getDeliveryStart() && port != preset.getFinish()
+				&& occupiedSlots < taskCapacity
 				&& !checkedBoards.contains(port))
 			{
 				steps.add(new RouteStep(StepKind.NOTICE_BOARD, port, "Check the notice board",
