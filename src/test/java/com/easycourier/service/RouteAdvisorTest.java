@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class RouteAdvisorTest
@@ -27,6 +28,16 @@ public class RouteAdvisorTest
 		assertFalse(RoutePreset.PRIFDDINAS.getCollectionStops().get(0).isCharterRequired());
 		assertTrue(RoutePreset.PRIFDDINAS.getCollectionStops().get(1).isCharterRequired());
 		assertFalse(RoutePreset.PRIFDDINAS.getCollectionStops().get(2).isCharterRequired());
+	}
+
+	@Test
+	public void persistentReservationIsLimitedToPrifddinas()
+	{
+		assertTrue(RoutePreset.PRIFDDINAS.getPersistentReservedTask()
+			.matches(task(50, 70, Port.ALDARIN, Port.PRIFDDINAS, 7082)));
+		assertNull(RoutePreset.SUMMER_SHORE.getPersistentReservedTask());
+		assertNull(RoutePreset.RELLEKKA.getPersistentReservedTask());
+		assertNull(RoutePreset.LUNAR_ISLE.getPersistentReservedTask());
 	}
 
 	@Test
@@ -156,6 +167,48 @@ public class RouteAdvisorTest
 		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION,
 			Port.ALDARIN, 3, 99, 0, Collections.emptyList(), Collections.singletonList(widget(task)));
 		assertEquals(OfferStatus.USEFUL, offers.get(0).getStatus());
+	}
+
+	@Test
+	public void reservesTheGuaranteedPrifTaskAtIntermediateBoards()
+	{
+		List<ActiveTask> active = Arrays.asList(
+			active(30, Port.DEEPFIN_POINT, Port.PRIFDDINAS),
+			active(31, Port.PORT_TYRAS, Port.PRIFDDINAS),
+			active(32, Port.DEEPFIN_POINT, Port.PORT_TYRAS));
+		TaskDefinition candidate = task(15, 70, Port.ALDARIN, Port.PORT_TYRAS, 3793);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION,
+			Port.PORT_TYRAS, 1, 70, 3, active, Collections.singletonList(widget(candidate)));
+		assertEquals(OfferStatus.OFF_ROUTE, offers.get(0).getStatus());
+		assertEquals("Keep a slot for a better task", offers.get(0).getReason());
+	}
+
+	@Test
+	public void releasesThePrifReservationOnceTheTaskIsOwned()
+	{
+		List<ActiveTask> active = Arrays.asList(
+			active(33, Port.ALDARIN, Port.PRIFDDINAS),
+			active(34, Port.PORT_TYRAS, Port.PRIFDDINAS),
+			active(35, Port.DEEPFIN_POINT, Port.PORT_TYRAS));
+		TaskDefinition candidate = task(16, 70, Port.ALDARIN, Port.PORT_TYRAS, 3793);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION,
+			Port.PORT_TYRAS, 1, 70, 3, active, Collections.singletonList(widget(candidate)));
+		assertEquals(OfferStatus.USEFUL, offers.get(0).getStatus());
+	}
+
+	@Test
+	public void guaranteedPrifTaskWinsTheLastSlotAtAldarin()
+	{
+		List<ActiveTask> active = Arrays.asList(
+			active(36, Port.DEEPFIN_POINT, Port.PRIFDDINAS),
+			active(37, Port.PORT_TYRAS, Port.PRIFDDINAS),
+			active(38, Port.DEEPFIN_POINT, Port.PORT_TYRAS));
+		TaskDefinition other = task(17, 70, Port.ALDARIN, Port.PORT_TYRAS, 3793);
+		TaskDefinition guaranteed = task(18, 70, Port.ALDARIN, Port.PRIFDDINAS, 7082);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION,
+			Port.ALDARIN, 3, 70, 3, active, Arrays.asList(widget(other), widget(guaranteed)));
+		assertEquals(OfferStatus.PRIORITY, offers.get(0).getStatus());
+		assertEquals(OfferStatus.OFF_ROUTE, offers.get(1).getStatus());
 	}
 
 	private RouteAdvisor.WidgetTask widget(TaskDefinition task)

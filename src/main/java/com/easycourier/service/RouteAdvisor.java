@@ -74,7 +74,8 @@ public final class RouteAdvisor
 				preferred ? OfferStatus.PRIORITY : OfferStatus.USEFUL, score,
 				preferred ? "Priority task" : "Useful forward task"));
 		}
-		limitHighlights(decisions, stop, sailingLevel, occupiedSlots, activeTasks);
+		TaskEdge persistentReservation = phase == RoutePhase.COLLECTION ? preset.getPersistentReservedTask() : null;
+		limitHighlights(decisions, stop, persistentReservation, sailingLevel, occupiedSlots, activeTasks);
 		decisions.sort(Comparator.comparingInt(BoardOffer::getScore).reversed());
 		return decisions;
 	}
@@ -94,19 +95,23 @@ public final class RouteAdvisor
 		return pickupRank > 0 && pickupRank < finishRank && deliveryRank == pickupRank + 1;
 	}
 
-	private void limitHighlights(List<BoardOffer> decisions, CollectionStop stop, int sailingLevel, int occupiedSlots,
-		List<ActiveTask> activeTasks)
+	private void limitHighlights(List<BoardOffer> decisions, CollectionStop stop, TaskEdge persistentReservation,
+		int sailingLevel, int occupiedSlots, List<ActiveTask> activeTasks)
 	{
 		int capacity = TaskStateReader.taskCapacity(sailingLevel);
 		int freeSlots = Math.max(0, capacity - occupiedSlots);
-		TaskEdge reserved = stop == null ? null : stop.getReservedTask();
-		boolean alreadyHasPreferred = reserved != null && activeTasks.stream()
-			.anyMatch(task -> stop.isPreferred(task.getDefinition()));
-		boolean boardHasPreferred = reserved != null && decisions.stream()
-			.anyMatch(offer -> offer.getTask() != null && stop.isPreferred(offer.getTask())
-				&& (offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL));
+		TaskEdge localReservation = stop == null ? null : stop.getReservedTask();
+		boolean reservationRequired = persistentReservation != null || localReservation != null;
+		boolean alreadyHasPreferred = persistentReservation != null
+			? activeTasks.stream().anyMatch(task -> persistentReservation.matches(task.getDefinition()))
+			: localReservation != null && activeTasks.stream().anyMatch(task -> stop.isPreferred(task.getDefinition()));
+		boolean boardHasPreferred = persistentReservation != null
+			? decisions.stream().anyMatch(offer -> isActionable(offer) && offer.getTask() != null
+				&& persistentReservation.matches(offer.getTask()))
+			: localReservation != null && decisions.stream().anyMatch(offer -> isActionable(offer)
+				&& offer.getTask() != null && stop.isPreferred(offer.getTask()));
 		int usableSlots = freeSlots;
-		if (reserved != null && !alreadyHasPreferred && !boardHasPreferred)
+		if (reservationRequired && !alreadyHasPreferred && !boardHasPreferred)
 		{
 			usableSlots = Math.max(0, freeSlots - 1);
 		}
@@ -119,10 +124,10 @@ public final class RouteAdvisor
 		for (int index = 0; index < decisions.size(); index++)
 		{
 			BoardOffer offer = decisions.get(index);
-			if (offer.getStatus() == OfferStatus.DEFERRED && freeSlots == 0)
+			if (offer.getStatus() == OfferStatus.DEFERRED && usableSlots == 0)
 			{
 				decisions.set(index, new BoardOffer(offer.getWidget(), offer.getTask(), OfferStatus.OFF_ROUTE, 0,
-					"No free task slots"));
+					freeSlots == 0 ? "No free task slots" : "Keep a slot for a better task"));
 				continue;
 			}
 			if ((offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL) && !keep.contains(offer))
@@ -131,6 +136,11 @@ public final class RouteAdvisor
 					freeSlots == 0 ? "No free task slots" : "Keep a slot for a better task"));
 			}
 		}
+	}
+
+	private boolean isActionable(BoardOffer offer)
+	{
+		return offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL;
 	}
 
 	public static final class WidgetTask

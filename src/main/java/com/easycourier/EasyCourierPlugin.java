@@ -13,11 +13,13 @@ import com.easycourier.model.RoutePreset;
 import com.easycourier.model.RouteStep;
 import com.easycourier.model.StepKind;
 import com.easycourier.model.TaskDefinition;
+import com.easycourier.model.TaskEdge;
 import com.easycourier.overlay.DockOverlay;
 import com.easycourier.overlay.CargoItemOverlay;
 import com.easycourier.overlay.CharterCrewmemberOverlay;
 import com.easycourier.overlay.NoticeBoardOverlay;
 import com.easycourier.overlay.NoticeBoardWorldOverlay;
+import com.easycourier.overlay.PortalRangeOverlay;
 import com.easycourier.overlay.RouteMapOverlay;
 import com.easycourier.overlay.RouteWorldOverlay;
 import com.easycourier.service.RouteAdvisor;
@@ -42,8 +44,10 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
+import net.runelite.api.ObjectComposition;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
+import net.runelite.api.Tile;
 import net.runelite.api.WorldEntity;
 import net.runelite.api.WorldView;
 import net.runelite.api.coords.WorldPoint;
@@ -130,6 +134,8 @@ public class EasyCourierPlugin extends Plugin
 	private RouteMapOverlay routeMapOverlay;
 	@Inject
 	private RouteWorldOverlay routeWorldOverlay;
+	@Inject
+	private PortalRangeOverlay portalRangeOverlay;
 
 	private final TaskCatalog catalog = new TaskCatalog();
 	private final TaskStateReader stateReader = new TaskStateReader();
@@ -139,6 +145,7 @@ public class EasyCourierPlugin extends Plugin
 	private final List<BoardOffer> boardOffers = new ArrayList<>();
 	private final Set<GameObject> ledgers = new HashSet<>();
 	private final Set<GameObject> noticeBoards = new HashSet<>();
+	private final Set<GameObject> dodgePortals = new HashSet<>();
 	private final Set<Port> pickupAnnouncements = EnumSet.noneOf(Port.class);
 	private final Set<Port> deliveryAnnouncements = EnumSet.noneOf(Port.class);
 	private final Set<Port> deliveryBoardsChecked = EnumSet.noneOf(Port.class);
@@ -177,6 +184,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.add(charterCrewmemberOverlay);
 		overlayManager.add(routeMapOverlay);
 		overlayManager.add(routeWorldOverlay);
+		overlayManager.add(portalRangeOverlay);
 		clientThread.invokeLater(this::loadGameData);
 		refreshPanel();
 	}
@@ -192,10 +200,12 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.remove(charterCrewmemberOverlay);
 		overlayManager.remove(routeMapOverlay);
 		overlayManager.remove(routeWorldOverlay);
+		overlayManager.remove(portalRangeOverlay);
 		activeTasks.clear();
 		boardOffers.clear();
 		ledgers.clear();
 		noticeBoards.clear();
+		dodgePortals.clear();
 		pickupAnnouncements.clear();
 		deliveryAnnouncements.clear();
 		deliveryBoardsChecked.clear();
@@ -220,6 +230,7 @@ public class EasyCourierPlugin extends Plugin
 		{
 			ledgers.clear();
 			noticeBoards.clear();
+			dodgePortals.clear();
 		}
 	}
 
@@ -282,6 +293,10 @@ public class EasyCourierPlugin extends Plugin
 		{
 			noticeBoards.add(event.getGameObject());
 		}
+		if (isDodgePortal(event.getGameObject()))
+		{
+			dodgePortals.add(event.getGameObject());
+		}
 	}
 
 	@Subscribe
@@ -289,6 +304,7 @@ public class EasyCourierPlugin extends Plugin
 	{
 		ledgers.remove(event.getGameObject());
 		noticeBoards.remove(event.getGameObject());
+		dodgePortals.remove(event.getGameObject());
 	}
 
 	@Subscribe
@@ -387,6 +403,7 @@ public class EasyCourierPlugin extends Plugin
 			return;
 		}
 		catalog.load(client);
+		scanDodgePortals();
 		sailingLevel = client.getRealSkillLevel(Skill.SAILING);
 		updateCurrentPort();
 		refreshTasks();
@@ -552,6 +569,52 @@ public class EasyCourierPlugin extends Plugin
 		}
 	}
 
+	private void scanDodgePortals()
+	{
+		dodgePortals.clear();
+		WorldView topLevel = client.getTopLevelWorldView();
+		if (topLevel == null || topLevel.getScene() == null)
+		{
+			return;
+		}
+		Tile[][][] tiles = topLevel.getScene().getTiles();
+		for (Tile[][] plane : tiles)
+		{
+			for (Tile[] column : plane)
+			{
+				for (Tile tile : column)
+				{
+					if (tile == null)
+					{
+						continue;
+					}
+					for (GameObject object : tile.getGameObjects())
+					{
+						if (object != null && isDodgePortal(object))
+						{
+							dodgePortals.add(object);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private boolean isDodgePortal(GameObject object)
+	{
+		ObjectComposition composition = client.getObjectDefinition(object.getId());
+		if (composition == null)
+		{
+			return false;
+		}
+		if (composition.getImpostorIds() != null)
+		{
+			composition = composition.getImpostor();
+		}
+		String name = composition == null ? null : composition.getName();
+		return name != null && name.regionMatches(true, 0, "Portal of ", 0, 10);
+	}
+
 	private void advanceDeliveryAfterBoard(Port port)
 	{
 		if (phase == RoutePhase.DELIVERY && port != Port.UNKNOWN)
@@ -568,6 +631,35 @@ public class EasyCourierPlugin extends Plugin
 			&& sailingLevel < selectedRoute.getCollectionStops().get(collectionIndex).getMinimumLevel())
 		{
 			collectionIndex++;
+		}
+		skipToPersistentReservationStop();
+	}
+
+	private void skipToPersistentReservationStop()
+	{
+		TaskEdge reserved = selectedRoute.getPersistentReservedTask();
+		if (reserved == null || collectionIndex == 0)
+		{
+			return;
+		}
+		List<ActiveTask> liveTasks = stateReader.read(client, catalog);
+		if (liveTasks.stream().anyMatch(task -> reserved.matches(task.getDefinition())))
+		{
+			return;
+		}
+		int freeSlots = TaskStateReader.taskCapacity(sailingLevel) - stateReader.countOccupied(client);
+		if (freeSlots > 1)
+		{
+			return;
+		}
+		Port target = selectedRoute.getPersistentReservationStop();
+		for (int index = collectionIndex; index < selectedRoute.getCollectionStops().size(); index++)
+		{
+			if (selectedRoute.getCollectionStops().get(index).getPort() == target)
+			{
+				collectionIndex = index;
+				return;
+			}
 		}
 	}
 
@@ -799,6 +891,11 @@ public class EasyCourierPlugin extends Plugin
 	public Set<GameObject> getNoticeBoards()
 	{
 		return Collections.unmodifiableSet(noticeBoards);
+	}
+
+	public Set<GameObject> getDodgePortals()
+	{
+		return Collections.unmodifiableSet(dodgePortals);
 	}
 
 	public RouteStep getCurrentDeliveryStep()

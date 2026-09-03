@@ -26,7 +26,7 @@ Easy Courier splits each lap into two clear phases.
 9. Pick the tasks you want and close the board.
 10. The assistant moves to the next collection stop.
 
-The Prifddinas and Rellekka routes can reserve one open slot for a preferred Aldarin task when it has not appeared yet.
+The Prifddinas route keeps one slot reserved for Aldarin to Prifddinas until that task is accepted. When only that slot remains, the collection checklist skips directly to Aldarin. The Rellekka route retains its normal starting-board reserve behavior.
 
 ### 2. Delivery phase
 
@@ -54,6 +54,9 @@ If the plugin starts while courier tasks are already active, it detects the best
 - Teal cargo outline: an inventory or cargo-hold item used by an active courier task
 - Gold notice-board highlight: check this board while a task slot is free
 - Teal Trader Crewmember highlight: use the charter required by the current collection step
+- Red 17 by 17 DODGE square: keep clear of a Sailing portal's danger range
+
+The portal warning can be disabled with **Paint portal range for dodging**. It is enabled by default.
 
 ## Cargo messages
 

@@ -57,10 +57,21 @@ public interface EasyCourierConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "paintPortalRange",
+		name = "Paint portal range for dodging",
+		description = "Draw a red 17 by 17 tile warning area around Sailing portals",
+		position = 4
+	)
+	default boolean paintPortalRange()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "chatUpdates",
 		name = "Cargo chat updates",
 		description = "Send a message when all cargo at a dock has been collected or delivered",
-		position = 4
+		position = 5
 	)
 	default boolean chatUpdates()
 	{
@@ -72,7 +83,7 @@ public interface EasyCourierConfig extends Config
 		keyName = "priorityColor",
 		name = "Priority task color",
 		description = "Border color for the best task choices",
-		position = 5
+		position = 6
 	)
 	default Color priorityColor()
 	{
@@ -84,7 +95,7 @@ public interface EasyCourierConfig extends Config
 		keyName = "usefulColor",
 		name = "Useful task color",
 		description = "Border color for other tasks that fit the route",
-		position = 6
+		position = 7
 	)
 	default Color usefulColor()
 	{
@@ -96,7 +107,7 @@ public interface EasyCourierConfig extends Config
 		keyName = "deferredColor",
 		name = "Later task color",
 		description = "Border color for useful tasks that are better taken later",
-		position = 7
+		position = 8
 	)
 	default Color deferredColor()
 	{
@@ -108,7 +119,7 @@ public interface EasyCourierConfig extends Config
 		keyName = "routeColor",
 		name = "Sea route color",
 		description = "Color used for the route and dock highlights",
-		position = 8
+		position = 9
 	)
 	default Color routeColor()
 	{

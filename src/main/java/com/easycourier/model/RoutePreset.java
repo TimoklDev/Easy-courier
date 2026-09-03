@@ -159,6 +159,7 @@ public enum RoutePreset
 	private final Port finish;
 	private final List<CollectionStop> collectionStops;
 	private final Map<Port, Integer> forwardOrder;
+	private static final TaskEdge PRIFDDINAS_GUARANTEED_TASK = edge(Port.ALDARIN, Port.PRIFDDINAS);
 
 	RoutePreset(String displayName, int minimumLevel, String requirementNote, String expectedRate, Port finish,
 		List<CollectionStop> collectionStops, Map<Port, Integer> forwardOrder)
@@ -212,6 +213,16 @@ public enum RoutePreset
 	public int routeRank(Port port)
 	{
 		return forwardOrder.getOrDefault(port, -1);
+	}
+
+	public TaskEdge getPersistentReservedTask()
+	{
+		return this == PRIFDDINAS ? PRIFDDINAS_GUARANTEED_TASK : null;
+	}
+
+	public Port getPersistentReservationStop()
+	{
+		return this == PRIFDDINAS ? Port.ALDARIN : Port.UNKNOWN;
 	}
 
 	@Override
