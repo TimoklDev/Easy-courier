@@ -42,7 +42,7 @@ public final class RouteMapOverlay extends Overlay
 	public Dimension render(Graphics2D graphics)
 	{
 		RoutePlan plan = plugin.getRoutePlan();
-		if (!plugin.getConfig().showMapRoute() || plan == null)
+		if (!plugin.getConfig().showMapRoute() || !plugin.isTravelStepActive() || plan == null)
 		{
 			return null;
 		}

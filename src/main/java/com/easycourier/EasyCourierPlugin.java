@@ -10,11 +10,13 @@ import com.easycourier.model.Port;
 import com.easycourier.model.RoutePhase;
 import com.easycourier.model.RoutePlan;
 import com.easycourier.model.RoutePreset;
+import com.easycourier.model.RouteStep;
 import com.easycourier.model.StepKind;
 import com.easycourier.model.TaskDefinition;
 import com.easycourier.overlay.DockOverlay;
 import com.easycourier.overlay.CargoItemOverlay;
 import com.easycourier.overlay.NoticeBoardOverlay;
+import com.easycourier.overlay.NoticeBoardWorldOverlay;
 import com.easycourier.overlay.RouteMapOverlay;
 import com.easycourier.overlay.RouteWorldOverlay;
 import com.easycourier.service.RouteAdvisor;
@@ -111,6 +113,8 @@ public class EasyCourierPlugin extends Plugin
 	@Inject
 	private NoticeBoardOverlay noticeBoardOverlay;
 	@Inject
+	private NoticeBoardWorldOverlay noticeBoardWorldOverlay;
+	@Inject
 	private DockOverlay dockOverlay;
 	@Inject
 	private CargoItemOverlay cargoItemOverlay;
@@ -126,6 +130,7 @@ public class EasyCourierPlugin extends Plugin
 	private final List<ActiveTask> activeTasks = new ArrayList<>();
 	private final List<BoardOffer> boardOffers = new ArrayList<>();
 	private final Set<GameObject> ledgers = new HashSet<>();
+	private final Set<GameObject> noticeBoards = new HashSet<>();
 	private final Set<Port> pickupAnnouncements = EnumSet.noneOf(Port.class);
 	private final Set<Port> deliveryAnnouncements = EnumSet.noneOf(Port.class);
 	private final Set<Port> deliveryBoardsChecked = EnumSet.noneOf(Port.class);
@@ -158,6 +163,7 @@ public class EasyCourierPlugin extends Plugin
 			.build();
 		clientToolbar.addNavigation(navigationButton);
 		overlayManager.add(noticeBoardOverlay);
+		overlayManager.add(noticeBoardWorldOverlay);
 		overlayManager.add(dockOverlay);
 		overlayManager.add(cargoItemOverlay);
 		overlayManager.add(routeMapOverlay);
@@ -171,6 +177,7 @@ public class EasyCourierPlugin extends Plugin
 	{
 		clientToolbar.removeNavigation(navigationButton);
 		overlayManager.remove(noticeBoardOverlay);
+		overlayManager.remove(noticeBoardWorldOverlay);
 		overlayManager.remove(dockOverlay);
 		overlayManager.remove(cargoItemOverlay);
 		overlayManager.remove(routeMapOverlay);
@@ -178,6 +185,7 @@ public class EasyCourierPlugin extends Plugin
 		activeTasks.clear();
 		boardOffers.clear();
 		ledgers.clear();
+		noticeBoards.clear();
 		pickupAnnouncements.clear();
 		deliveryAnnouncements.clear();
 		deliveryBoardsChecked.clear();
@@ -201,6 +209,7 @@ public class EasyCourierPlugin extends Plugin
 		if (event.getGameState() == GameState.LOADING || event.getGameState() == GameState.HOPPING)
 		{
 			ledgers.clear();
+			noticeBoards.clear();
 		}
 	}
 
@@ -259,12 +268,17 @@ public class EasyCourierPlugin extends Plugin
 		{
 			ledgers.add(event.getGameObject());
 		}
+		if (Port.fromNoticeBoardObjectId(event.getGameObject().getId()) != Port.UNKNOWN)
+		{
+			noticeBoards.add(event.getGameObject());
+		}
 	}
 
 	@Subscribe
 	public void onGameObjectDespawned(GameObjectDespawned event)
 	{
 		ledgers.remove(event.getGameObject());
+		noticeBoards.remove(event.getGameObject());
 	}
 
 	@Subscribe
@@ -735,6 +749,41 @@ public class EasyCourierPlugin extends Plugin
 	public Set<GameObject> getLedgers()
 	{
 		return Collections.unmodifiableSet(ledgers);
+	}
+
+	public Set<GameObject> getNoticeBoards()
+	{
+		return Collections.unmodifiableSet(noticeBoards);
+	}
+
+	public RouteStep getCurrentDeliveryStep()
+	{
+		if (phase != RoutePhase.DELIVERY || routePlan == null || routePlan.getSteps().isEmpty())
+		{
+			return null;
+		}
+		int index = Math.min(deliverySkipCount, routePlan.getSteps().size() - 1);
+		return routePlan.getSteps().get(index);
+	}
+
+	public boolean isTravelStepActive()
+	{
+		RouteStep step = getCurrentDeliveryStep();
+		return step != null && step.getKind() == StepKind.TRAVEL;
+	}
+
+	public Port getNoticeBoardTarget()
+	{
+		if (occupiedTaskSlots >= TaskStateReader.taskCapacity(sailingLevel))
+		{
+			return Port.UNKNOWN;
+		}
+		if (phase == RoutePhase.COLLECTION && collectionIndex < selectedRoute.getCollectionStops().size())
+		{
+			return selectedRoute.getCollectionStops().get(collectionIndex).getPort();
+		}
+		RouteStep step = getCurrentDeliveryStep();
+		return step != null && step.getKind() == StepKind.NOTICE_BOARD ? step.getPort() : Port.UNKNOWN;
 	}
 
 	public List<ActiveTask> tasksAtPickup(Port port)

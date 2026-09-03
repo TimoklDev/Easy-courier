@@ -47,6 +47,7 @@ public final class RouteWorldOverlay extends Overlay
 	{
 		RoutePlan plan = plugin.getRoutePlan();
 		if (!plugin.getConfig().showWorldRoute() || plugin.getPhase() != RoutePhase.DELIVERY
+			|| !plugin.isTravelStepActive()
 			|| plan == null || plan.getSeaPath().size() < 2)
 		{
 			return null;
@@ -112,7 +113,12 @@ public final class RouteWorldOverlay extends Overlay
 		{
 			world = player.getWorldLocation();
 		}
-		return world == null ? null : new Anchor(world, player.getLocalLocation());
+		if (world == null)
+		{
+			return null;
+		}
+		LocalPoint stableLocal = LocalPoint.fromWorld(client.getTopLevelWorldView(), world);
+		return new Anchor(world, stableLocal == null ? player.getLocalLocation() : stableLocal);
 	}
 
 	private void drawSegment(Graphics2D graphics, ProjectionFrame frame, Anchor anchor,

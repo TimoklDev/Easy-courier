@@ -33,7 +33,7 @@ The Prifddinas and Rellekka routes can reserve one open slot for a preferred Ald
 3. Cargo pickups always happen before their matching deliveries.
 4. Each collect and deliver action remains visible, even when tasks share a dock.
 5. The route always finishes at the selected route point.
-6. The actual sea lane is visible while sailing and on the world map.
+6. The actual sea lane is visible only while the current step is to sail, both in the game view and on the world map.
 7. At a delivery stop, an open notice board only highlights tasks that start at the current port and continue forward.
 8. Closing that board completes its checklist step, even when no suitable task was available.
 
@@ -48,6 +48,7 @@ If the plugin starts while courier tasks are already active, it detects the best
 - Darkened card: unavailable, bounty, backward, off-route, or intentionally left for a reserved slot
 - Teal dock highlight: collect or deliver cargo here
 - Teal cargo outline: an inventory or cargo-hold item used by an active courier task
+- Gold notice-board highlight: check this board while a task slot is free
 
 ## Cargo messages
 
