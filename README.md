@@ -42,6 +42,8 @@ The Prifddinas route keeps one slot reserved for Aldarin to Prifddinas until tha
 
 The side panel shows the current instruction, task progress, XP per task, total route XP, and the complete ordered checklist. Every phase also has a **Skip current step** button.
 
+The optional **Show info panel** setting adds a compact top-left display with the current step, route XP, Sailing XP gained this plugin session, and XP per hour. The session statistics reset whenever the plugin is disabled and enabled again.
+
 If the plugin starts while courier tasks are already active, it detects the best matching training route and resumes the delivery phase from the live cargo and location state. While sailing, it remembers the last dock so a temporary unknown location cannot restart the route from an earlier port.
 
 ## Highlight guide

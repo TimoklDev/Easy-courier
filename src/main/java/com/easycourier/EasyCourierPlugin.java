@@ -17,6 +17,7 @@ import com.easycourier.model.TaskEdge;
 import com.easycourier.overlay.DockOverlay;
 import com.easycourier.overlay.CargoItemOverlay;
 import com.easycourier.overlay.CharterCrewmemberOverlay;
+import com.easycourier.overlay.InfoPanelOverlay;
 import com.easycourier.overlay.NoticeBoardOverlay;
 import com.easycourier.overlay.NoticeBoardWorldOverlay;
 import com.easycourier.overlay.PortalRangeOverlay;
@@ -26,6 +27,7 @@ import com.easycourier.service.RouteAdvisor;
 import com.easycourier.service.RoutePlanner;
 import com.easycourier.service.SeaNetwork;
 import com.easycourier.service.PortDetector;
+import com.easycourier.service.ExperienceSession;
 import com.easycourier.ui.EasyCourierPanel;
 import com.google.inject.Provides;
 import java.awt.BasicStroke;
@@ -136,11 +138,14 @@ public class EasyCourierPlugin extends Plugin
 	private RouteWorldOverlay routeWorldOverlay;
 	@Inject
 	private PortalRangeOverlay portalRangeOverlay;
+	@Inject
+	private InfoPanelOverlay infoPanelOverlay;
 
 	private final TaskCatalog catalog = new TaskCatalog();
 	private final TaskStateReader stateReader = new TaskStateReader();
 	private final RouteAdvisor advisor = new RouteAdvisor();
 	private final PortDetector portDetector = new PortDetector();
+	private final ExperienceSession experienceSession = new ExperienceSession();
 	private final RoutePlanner planner = new RoutePlanner(new SeaNetwork());
 	private final List<ActiveTask> activeTasks = new ArrayList<>();
 	private final List<BoardOffer> boardOffers = new ArrayList<>();
@@ -168,6 +173,7 @@ public class EasyCourierPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		resetExperienceSession();
 		selectedRoute = config.defaultRoute();
 		restoreLastKnownPort();
 		panel = new EasyCourierPanel(this);
@@ -186,6 +192,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.add(routeMapOverlay);
 		overlayManager.add(routeWorldOverlay);
 		overlayManager.add(portalRangeOverlay);
+		overlayManager.add(infoPanelOverlay);
 		clientThread.invokeLater(this::loadGameData);
 		refreshPanel();
 	}
@@ -202,6 +209,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.remove(routeMapOverlay);
 		overlayManager.remove(routeWorldOverlay);
 		overlayManager.remove(portalRangeOverlay);
+		overlayManager.remove(infoPanelOverlay);
 		activeTasks.clear();
 		boardOffers.clear();
 		ledgers.clear();
@@ -210,6 +218,7 @@ public class EasyCourierPlugin extends Plugin
 		pickupAnnouncements.clear();
 		deliveryAnnouncements.clear();
 		deliveryBoardsChecked.clear();
+		resetExperienceSession();
 		panel = null;
 		navigationButton = null;
 	}
@@ -240,6 +249,7 @@ public class EasyCourierPlugin extends Plugin
 	{
 		if (event.getSkill() == Skill.SAILING)
 		{
+			recordSessionExperience(event.getXp());
 			sailingLevel = client.getRealSkillLevel(Skill.SAILING);
 			refreshBoardAdvice();
 			refreshPanel();
@@ -405,6 +415,7 @@ public class EasyCourierPlugin extends Plugin
 		}
 		catalog.load(client);
 		scanDodgePortals();
+		recordSessionExperience(client.getSkillExperience(Skill.SAILING));
 		sailingLevel = client.getRealSkillLevel(Skill.SAILING);
 		updateCurrentPort();
 		refreshTasks();
@@ -573,6 +584,16 @@ public class EasyCourierPlugin extends Plugin
 			collectionIndex++;
 			skipUnavailableCollectionStops();
 		}
+	}
+
+	private void resetExperienceSession()
+	{
+		experienceSession.reset();
+	}
+
+	private void recordSessionExperience(int experience)
+	{
+		experienceSession.record(experience);
 	}
 
 	private void scanDodgePortals()
@@ -1016,6 +1037,55 @@ public class EasyCourierPlugin extends Plugin
 		return (int) boardOffers.stream()
 			.filter(offer -> offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL)
 			.count();
+	}
+
+	public int getRouteExperience()
+	{
+		return routePlan == null
+			? activeTasks.stream().mapToInt(task -> task.getDefinition().getExperience()).sum()
+			: routePlan.getTotalExperience();
+	}
+
+	public int getSessionExperienceGained()
+	{
+		return experienceSession.getGained();
+	}
+
+	public long getSessionExperiencePerHour()
+	{
+		return experienceSession.getPerHour();
+	}
+
+	public String getInfoStep()
+	{
+		if (phase == RoutePhase.IDLE)
+		{
+			return "Start collection";
+		}
+		if (phase == RoutePhase.COMPLETE)
+		{
+			return "Route complete";
+		}
+		if (phase == RoutePhase.COLLECTION)
+		{
+			if (collectionIndex >= selectedRoute.getCollectionStops().size())
+			{
+				return selectedRoute == RoutePreset.PRIFDDINAS
+					? "Recover boat to Aldarin" : "Move to delivery phase";
+			}
+			CollectionStop stop = selectedRoute.getCollectionStops().get(collectionIndex);
+			if (isBoardOpenAt(stop.getPort()))
+			{
+				return "Choose tasks at " + stop.getPort();
+			}
+			if (currentPort == stop.getPort())
+			{
+				return "Open " + stop.getPort() + " board";
+			}
+			return stop.isCharterRequired() ? "Charter to " + stop.getPort() : "Travel to " + stop.getPort();
+		}
+		RouteStep step = getCurrentDeliveryStep();
+		return step == null ? "Accept a courier task" : step.getTitle();
 	}
 
 	public int getDeferredOfferCount()
