@@ -34,11 +34,12 @@ The Prifddinas and Rellekka routes can reserve one open slot for a preferred Ald
 4. Each collect and deliver action remains visible, even when tasks share a dock.
 5. The route always finishes at the selected route point.
 6. The actual sea lane is visible while sailing and on the world map.
-7. At a delivery stop, an open notice board only highlights tasks that continue forward.
+7. At a delivery stop, an open notice board only highlights tasks that start at the current port and continue forward.
+8. Closing that board completes its checklist step, even when no suitable task was available.
 
 The side panel shows the current instruction, task progress, XP per task, total route XP, and the complete ordered checklist. Every phase also has a **Skip current step** button.
 
-If the plugin starts while courier tasks are already active, it detects the best matching training route and resumes the delivery phase from the live cargo and location state.
+If the plugin starts while courier tasks are already active, it detects the best matching training route and resumes the delivery phase from the live cargo and location state. While sailing, it remembers the last dock so a temporary unknown location cannot restart the route from an earlier port.
 
 ## Highlight guide
 

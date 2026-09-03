@@ -9,6 +9,7 @@ import com.easycourier.model.StepKind;
 import com.easycourier.model.TaskDefinition;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import org.junit.Test;
 
@@ -72,6 +73,16 @@ public class RoutePlannerTest
 		RoutePlan plan = planner.plan(RoutePreset.PRIFDDINAS, Port.ALDARIN,
 			Collections.singletonList(task));
 		assertEquals("Collect 4 for Prifddinas", plan.getSteps().get(0).getTitle());
+	}
+
+	@Test
+	public void omitsDeliveryBoardAfterItWasChecked()
+	{
+		ActiveTask task = active(3, Port.PORT_TYRAS, Port.PRIFDDINAS, 7, 1221);
+		RoutePlan plan = planner.plan(RoutePreset.PRIFDDINAS, Port.DEEPFIN_POINT,
+			Collections.singletonList(task), 4, EnumSet.of(Port.DEEPFIN_POINT));
+		assertEquals(StepKind.TRAVEL, plan.getSteps().get(0).getKind());
+		assertEquals(Port.PORT_TYRAS, plan.getSteps().get(0).getPort());
 	}
 
 	@Test

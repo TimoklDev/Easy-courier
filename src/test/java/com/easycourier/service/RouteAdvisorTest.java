@@ -23,7 +23,7 @@ public class RouteAdvisorTest
 	public void rejectsBackwardTaskDuringDelivery()
 	{
 		TaskDefinition backward = task(1, 70, Port.DEEPFIN_POINT, Port.ALDARIN, 5000);
-		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.DELIVERY, 0, 99, 0,
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.DELIVERY, Port.DEEPFIN_POINT, 0, 99, 0,
 			Collections.emptyList(), Collections.singletonList(widget(backward)));
 		assertEquals(OfferStatus.OFF_ROUTE, offers.get(0).getStatus());
 	}
@@ -32,7 +32,7 @@ public class RouteAdvisorTest
 	public void marksUnavailableTaskAsIneligible()
 	{
 		TaskDefinition highLevel = task(2, 76, Port.ALDARIN, Port.LUNAR_ISLE, 12670);
-		List<BoardOffer> offers = advisor.advise(RoutePreset.LUNAR_ISLE, RoutePhase.COLLECTION, 0, 75, 0,
+		List<BoardOffer> offers = advisor.advise(RoutePreset.LUNAR_ISLE, RoutePhase.COLLECTION, Port.LUNAR_ISLE, 0, 75, 0,
 			Collections.emptyList(), Collections.singletonList(widget(highLevel)));
 		assertEquals(OfferStatus.INELIGIBLE, offers.get(0).getStatus());
 	}
@@ -45,7 +45,7 @@ public class RouteAdvisorTest
 		active.add(active(11, Port.PORT_TYRAS, Port.PRIFDDINAS));
 		active.add(active(12, Port.DEEPFIN_POINT, Port.PORT_TYRAS));
 		TaskDefinition useful = task(3, 70, Port.DEEPFIN_POINT, Port.PRIFDDINAS, 4721);
-		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION, 0, 70, 3,
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION, Port.PRIFDDINAS, 0, 70, 3,
 			active, Collections.singletonList(widget(useful)));
 		assertEquals(OfferStatus.OFF_ROUTE, offers.get(0).getStatus());
 		assertEquals("Keep a slot for a better task", offers.get(0).getReason());
@@ -56,7 +56,7 @@ public class RouteAdvisorTest
 	{
 		TaskDefinition reserved = task(4, 70, Port.ALDARIN, Port.PRIFDDINAS, 7082);
 		TaskDefinition useful = task(5, 70, Port.DEEPFIN_POINT, Port.PRIFDDINAS, 4721);
-		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION, 0, 70, 0,
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION, Port.PRIFDDINAS, 0, 70, 0,
 			Collections.emptyList(), Arrays.asList(widget(useful), widget(reserved)));
 		assertEquals(OfferStatus.PRIORITY, offers.get(0).getStatus());
 	}
@@ -69,8 +69,27 @@ public class RouteAdvisorTest
 		active.add(active(21, Port.PORT_ROBERTS, Port.RELLEKKA));
 		active.add(active(22, Port.PORT_PISCARILIUS, Port.RELLEKKA));
 		TaskDefinition useful = task(6, 62, Port.PORT_ROBERTS, Port.RELLEKKA, 3000);
-		List<BoardOffer> offers = advisor.advise(RoutePreset.RELLEKKA, RoutePhase.COLLECTION, 0, 62, 3,
+		List<BoardOffer> offers = advisor.advise(RoutePreset.RELLEKKA, RoutePhase.COLLECTION, Port.RELLEKKA, 0, 62, 3,
 			active, Collections.singletonList(widget(useful)));
+		assertEquals(OfferStatus.USEFUL, offers.get(0).getStatus());
+	}
+
+	@Test
+	public void rejectsTaskThatStartsAtAnotherPortDuringDelivery()
+	{
+		TaskDefinition inbound = task(7, 70, Port.ALDARIN, Port.PRIFDDINAS, 7082);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.DELIVERY,
+			Port.DEEPFIN_POINT, 0, 99, 0, Collections.emptyList(), Collections.singletonList(widget(inbound)));
+		assertEquals(OfferStatus.OFF_ROUTE, offers.get(0).getStatus());
+		assertEquals("Task starts at another port", offers.get(0).getReason());
+	}
+
+	@Test
+	public void acceptsForwardTaskThatStartsAtCurrentDeliveryPort()
+	{
+		TaskDefinition forward = task(8, 70, Port.DEEPFIN_POINT, Port.PORT_TYRAS, 3000);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.DELIVERY,
+			Port.DEEPFIN_POINT, 0, 99, 0, Collections.emptyList(), Collections.singletonList(widget(forward)));
 		assertEquals(OfferStatus.USEFUL, offers.get(0).getStatus());
 	}
 

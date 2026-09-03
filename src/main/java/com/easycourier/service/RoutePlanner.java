@@ -32,6 +32,12 @@ public final class RoutePlanner
 
 	public RoutePlan plan(RoutePreset preset, Port start, List<ActiveTask> activeTasks, int taskCapacity)
 	{
+		return plan(preset, start, activeTasks, taskCapacity, Collections.emptySet());
+	}
+
+	public RoutePlan plan(RoutePreset preset, Port start, List<ActiveTask> activeTasks, int taskCapacity,
+		Set<Port> checkedBoards)
+	{
 		List<ActiveTask> tasks = new ArrayList<>();
 		for (ActiveTask task : activeTasks)
 		{
@@ -62,7 +68,7 @@ public final class RoutePlanner
 		order.add(routeStart);
 		order.addAll(best.order);
 		List<WorldPoint> seaPath = expandSeaPath(order);
-		List<RouteStep> steps = buildSteps(order, tasks, preset, activeTasks.size(), taskCapacity);
+		List<RouteStep> steps = buildSteps(order, tasks, preset, activeTasks.size(), taskCapacity, checkedBoards);
 		int experience = activeTasks.stream().mapToInt(task -> task.getDefinition().getExperience()).sum();
 		return new RoutePlan(order, seaPath, steps, experience, best.distance);
 	}
@@ -160,7 +166,7 @@ public final class RoutePlanner
 	}
 
 	private List<RouteStep> buildSteps(List<Port> order, List<ActiveTask> tasks, RoutePreset preset,
-		int occupiedSlots, int taskCapacity)
+		int occupiedSlots, int taskCapacity, Set<Port> checkedBoards)
 	{
 		List<RouteStep> steps = new ArrayList<>();
 		Set<Integer> picked = new LinkedHashSet<>();
@@ -203,7 +209,8 @@ public final class RoutePlanner
 					delivered.add(task.getSlot());
 				}
 			}
-			if (port.hasNoticeBoard() && port != preset.getFinish() && occupiedSlots < taskCapacity)
+			if (port.hasNoticeBoard() && port != preset.getFinish() && occupiedSlots < taskCapacity
+				&& !checkedBoards.contains(port))
 			{
 				steps.add(new RouteStep(StepKind.NOTICE_BOARD, port, "Check the notice board",
 					"If a slot is open, take only a highlighted forward task.", 0));

@@ -10,6 +10,7 @@ import com.easycourier.model.Port;
 import com.easycourier.model.RoutePhase;
 import com.easycourier.model.RoutePlan;
 import com.easycourier.model.RoutePreset;
+import com.easycourier.model.StepKind;
 import com.easycourier.model.TaskDefinition;
 import com.easycourier.overlay.DockOverlay;
 import com.easycourier.overlay.CargoItemOverlay;
@@ -127,6 +128,7 @@ public class EasyCourierPlugin extends Plugin
 	private final Set<GameObject> ledgers = new HashSet<>();
 	private final Set<Port> pickupAnnouncements = EnumSet.noneOf(Port.class);
 	private final Set<Port> deliveryAnnouncements = EnumSet.noneOf(Port.class);
+	private final Set<Port> deliveryBoardsChecked = EnumSet.noneOf(Port.class);
 
 	private EasyCourierPanel panel;
 	private NavigationButton navigationButton;
@@ -139,12 +141,14 @@ public class EasyCourierPlugin extends Plugin
 	private boolean boardWasOpen;
 	private Port openBoardPort = Port.UNKNOWN;
 	private Port currentPort = Port.UNKNOWN;
+	private Port lastKnownPort = Port.UNKNOWN;
 	private RoutePlan routePlan;
 
 	@Override
 	protected void startUp()
 	{
 		selectedRoute = config.defaultRoute();
+		restoreLastKnownPort();
 		panel = new EasyCourierPanel(this);
 		navigationButton = NavigationButton.builder()
 			.tooltip("Easy Courier")
@@ -176,6 +180,7 @@ public class EasyCourierPlugin extends Plugin
 		ledgers.clear();
 		pickupAnnouncements.clear();
 		deliveryAnnouncements.clear();
+		deliveryBoardsChecked.clear();
 		panel = null;
 		navigationButton = null;
 	}
@@ -237,9 +242,11 @@ public class EasyCourierPlugin extends Plugin
 		boolean boardOpen = board != null && !board.isHidden();
 		if (boardWasOpen && !boardOpen)
 		{
+			Port closedBoardPort = openBoardPort == Port.UNKNOWN ? currentPort : openBoardPort;
 			boardWasOpen = false;
 			boardOffers.clear();
 			advanceCollectionAfterBoard();
+			advanceDeliveryAfterBoard(closedBoardPort);
 			openBoardPort = Port.UNKNOWN;
 			refreshPanel();
 		}
@@ -292,6 +299,7 @@ public class EasyCourierPlugin extends Plugin
 		phase = RoutePhase.COLLECTION;
 		collectionIndex = 0;
 		deliverySkipCount = 0;
+		deliveryBoardsChecked.clear();
 		skipUnavailableCollectionStops();
 		refreshBoardAdvice();
 		refreshPanel();
@@ -301,6 +309,7 @@ public class EasyCourierPlugin extends Plugin
 	{
 		phase = RoutePhase.DELIVERY;
 		deliverySkipCount = 0;
+		deliveryBoardsChecked.clear();
 		rebuildRoutePlan();
 		refreshBoardAdvice();
 		refreshPanel();
@@ -321,7 +330,17 @@ public class EasyCourierPlugin extends Plugin
 		}
 		else if (phase == RoutePhase.DELIVERY && routePlan != null)
 		{
-			deliverySkipCount = Math.min(deliverySkipCount + 1, routePlan.getSteps().size());
+			int index = Math.min(deliverySkipCount, routePlan.getSteps().size() - 1);
+			if (index >= 0 && routePlan.getSteps().get(index).getKind() == StepKind.NOTICE_BOARD)
+			{
+				deliveryBoardsChecked.add(routePlan.getSteps().get(index).getPort());
+				rebuildRoutePlan();
+				deliverySkipCount = 0;
+			}
+			else
+			{
+				deliverySkipCount = Math.min(deliverySkipCount + 1, routePlan.getSteps().size());
+			}
 		}
 		refreshPanel();
 	}
@@ -333,6 +352,7 @@ public class EasyCourierPlugin extends Plugin
 		deliverySkipCount = 0;
 		routePlan = null;
 		boardOffers.clear();
+		deliveryBoardsChecked.clear();
 		refreshPanel();
 	}
 
@@ -344,12 +364,18 @@ public class EasyCourierPlugin extends Plugin
 		}
 		catalog.load(client);
 		sailingLevel = client.getRealSkillLevel(Skill.SAILING);
+		updateCurrentPort();
 		refreshTasks();
 		if (phase == RoutePhase.IDLE && !activeTasks.isEmpty())
 		{
 			selectedRoute = detectRoute();
+			if (currentPort == Port.UNKNOWN && selectedRoute.routeRank(lastKnownPort) < 0)
+			{
+				lastKnownPort = inferProgressPort();
+			}
 			phase = RoutePhase.DELIVERY;
 			deliverySkipCount = 0;
+			deliveryBoardsChecked.clear();
 			rebuildRoutePlan();
 			refreshBoardAdvice();
 			refreshPanel();
@@ -464,7 +490,7 @@ public class EasyCourierPlugin extends Plugin
 				}
 			}
 		}
-		boardOffers.addAll(advisor.advise(selectedRoute, phase, collectionIndex, sailingLevel, occupiedTaskSlots,
+		boardOffers.addAll(advisor.advise(selectedRoute, phase, openBoardPort, collectionIndex, sailingLevel, occupiedTaskSlots,
 			activeTasks, tasks));
 		refreshPanel();
 	}
@@ -502,6 +528,16 @@ public class EasyCourierPlugin extends Plugin
 		}
 	}
 
+	private void advanceDeliveryAfterBoard(Port port)
+	{
+		if (phase == RoutePhase.DELIVERY && port != Port.UNKNOWN)
+		{
+			deliveryBoardsChecked.add(port);
+			rebuildRoutePlan();
+			deliverySkipCount = 0;
+		}
+	}
+
 	private void skipUnavailableCollectionStops()
 	{
 		while (collectionIndex < selectedRoute.getCollectionStops().size()
@@ -525,6 +561,10 @@ public class EasyCourierPlugin extends Plugin
 			point = client.getLocalPlayer().getWorldLocation();
 		}
 		Port detected = Port.nearest(point, 110);
+		if (detected != Port.UNKNOWN)
+		{
+			rememberPort(detected);
+		}
 		if (detected != currentPort)
 		{
 			currentPort = detected;
@@ -539,12 +579,72 @@ public class EasyCourierPlugin extends Plugin
 
 	private void rebuildRoutePlan()
 	{
-		routePlan = planner.plan(selectedRoute, currentPort, activeTasks,
-			TaskStateReader.taskCapacity(sailingLevel));
+		Port routeStart = currentPort == Port.UNKNOWN ? lastKnownPort : currentPort;
+		routePlan = planner.plan(selectedRoute, routeStart, activeTasks,
+			TaskStateReader.taskCapacity(sailingLevel), deliveryBoardsChecked);
 		if (activeTasks.stream().allMatch(ActiveTask::isComplete)
 			&& currentPort == selectedRoute.getFinish())
 		{
 			phase = RoutePhase.COMPLETE;
+		}
+	}
+
+	private Port inferProgressPort()
+	{
+		Port best = Port.UNKNOWN;
+		int bestRank = -1;
+		for (ActiveTask task : activeTasks)
+		{
+			if (task.getCargoTaken() > 0)
+			{
+				int rank = selectedRoute.routeRank(task.getDefinition().getPickup());
+				if (rank > bestRank)
+				{
+					best = task.getDefinition().getPickup();
+					bestRank = rank;
+				}
+			}
+			if (task.getCargoDelivered() > 0)
+			{
+				int rank = selectedRoute.routeRank(task.getDefinition().getDelivery());
+				if (rank > bestRank)
+				{
+					best = task.getDefinition().getDelivery();
+					bestRank = rank;
+				}
+			}
+		}
+		if (best != Port.UNKNOWN)
+		{
+			rememberPort(best);
+		}
+		return best;
+	}
+
+	private void rememberPort(Port port)
+	{
+		if (port == Port.UNKNOWN || port == lastKnownPort)
+		{
+			return;
+		}
+		lastKnownPort = port;
+		configManager.setConfiguration(EasyCourierConfig.GROUP, "lastDeliveryPort", port.name());
+	}
+
+	private void restoreLastKnownPort()
+	{
+		String value = configManager.getConfiguration(EasyCourierConfig.GROUP, "lastDeliveryPort");
+		if (value == null)
+		{
+			return;
+		}
+		try
+		{
+			lastKnownPort = Port.valueOf(value);
+		}
+		catch (IllegalArgumentException ignored)
+		{
+			lastKnownPort = Port.UNKNOWN;
 		}
 	}
 

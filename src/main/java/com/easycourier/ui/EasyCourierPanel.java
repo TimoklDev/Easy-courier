@@ -15,6 +15,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GridLayout;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -422,13 +423,54 @@ public final class EasyCourierPanel extends PluginPanel
 
 	private JLabel wrapped(String text, int width, Font font, Color color)
 	{
-		String safe = text == null ? "" : text
-			.replace("&", "&amp;")
-			.replace("<", "&lt;")
-			.replace(">", "&gt;");
-		JLabel label = new JLabel("<html><body style='width:" + width + "px'>" + safe + "</body></html>");
+		JLabel label = new JLabel();
 		label.setFont(font);
 		label.setForeground(color);
+		label.setVerticalAlignment(SwingConstants.TOP);
+		label.setText("<html>" + wrapText(text, width, label.getFontMetrics(font)) + "</html>");
+		Dimension preferred = label.getPreferredSize();
+		label.setPreferredSize(new Dimension(width, preferred.height));
+		label.setMinimumSize(new Dimension(width, preferred.height));
 		return label;
+	}
+
+	private String wrapText(String text, int width, FontMetrics metrics)
+	{
+		String value = text == null ? "" : text.trim().replaceAll("\\s+", " ");
+		if (value.isEmpty())
+		{
+			return "&nbsp;";
+		}
+		StringBuilder result = new StringBuilder();
+		StringBuilder line = new StringBuilder();
+		for (String word : value.split(" "))
+		{
+			String candidate = line.length() == 0 ? word : line + " " + word;
+			if (line.length() > 0 && metrics.stringWidth(candidate) > width)
+			{
+				if (result.length() > 0)
+				{
+					result.append("<br>");
+				}
+				result.append(escape(line.toString()));
+				line.setLength(0);
+			}
+			if (line.length() > 0)
+			{
+				line.append(' ');
+			}
+			line.append(word);
+		}
+		if (result.length() > 0)
+		{
+			result.append("<br>");
+		}
+		result.append(escape(line.toString()));
+		return result.toString();
+	}
+
+	private String escape(String text)
+	{
+		return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
 	}
 }

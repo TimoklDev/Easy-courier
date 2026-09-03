@@ -5,6 +5,7 @@ import com.easycourier.model.ActiveTask;
 import com.easycourier.model.BoardOffer;
 import com.easycourier.model.CollectionStop;
 import com.easycourier.model.OfferStatus;
+import com.easycourier.model.Port;
 import com.easycourier.model.RoutePhase;
 import com.easycourier.model.RoutePreset;
 import com.easycourier.model.TaskDefinition;
@@ -18,7 +19,7 @@ import net.runelite.api.widgets.Widget;
 
 public final class RouteAdvisor
 {
-	public List<BoardOffer> advise(RoutePreset preset, RoutePhase phase, int collectionIndex, int sailingLevel,
+	public List<BoardOffer> advise(RoutePreset preset, RoutePhase phase, Port boardPort, int collectionIndex, int sailingLevel,
 		int occupiedSlots, List<ActiveTask> activeTasks, List<WidgetTask> widgetTasks)
 	{
 		List<BoardOffer> decisions = new ArrayList<>();
@@ -43,10 +44,15 @@ public final class RouteAdvisor
 					"Requires level " + task.getLevelRequired()));
 				continue;
 			}
-			boolean accepted = phase == RoutePhase.DELIVERY ? preset.movesForward(task) : stop != null && stop.accepts(task);
+			boolean startsHere = task.getPickup() == boardPort;
+			boolean accepted = phase == RoutePhase.DELIVERY
+				? startsHere && preset.movesForward(task)
+				: stop != null && stop.accepts(task);
 			if (!accepted)
 			{
-				decisions.add(new BoardOffer(widgetTask.getWidget(), task, OfferStatus.OFF_ROUTE, 0, "Moves away from this route"));
+				String reason = phase == RoutePhase.DELIVERY && !startsHere
+					? "Task starts at another port" : "Moves away from this route";
+				decisions.add(new BoardOffer(widgetTask.getWidget(), task, OfferStatus.OFF_ROUTE, 0, reason));
 				continue;
 			}
 			boolean preferred = stop != null && stop.isPreferred(task);
