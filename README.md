@@ -1,0 +1,91 @@
+# Easy Courier
+
+Easy Courier is a RuneLite Sailing assistant for the four common courier training routes:
+
+- The Summer Shore
+- Rellekka
+- Prifddinas
+- Lunar Isle
+
+It does not click, accept, collect, sail, or deliver anything for you. It reads the game state and shows the next useful choice.
+
+## What it does
+
+Easy Courier splits each lap into two clear phases.
+
+### 1. Collection phase
+
+1. Select a route.
+2. Press **Start collection**.
+3. Follow the current instruction to the next port.
+4. Open the notice board.
+5. Green tasks are the best choices. Amber tasks are useful alternatives.
+6. Tasks above your Sailing level, bounty tasks, backward tasks, and tasks that would consume a reserved slot are dimmed.
+7. Pick the tasks you want and close the board.
+8. The assistant moves to the next collection stop.
+
+The Prifddinas and Rellekka routes can reserve one open slot for a preferred Aldarin task when it has not appeared yet.
+
+### 2. Delivery phase
+
+1. Press **Move to delivery phase** when the collection lap is ready.
+2. Easy Courier builds one route from every active courier task.
+3. Cargo pickups always happen before their matching deliveries.
+4. Tasks sharing a dock are combined into one stop.
+5. The route always finishes at the selected route point.
+6. Open the world map to see the planned sea lanes.
+7. At a delivery stop, an open notice board only highlights tasks that continue forward.
+
+The side panel shows the current instruction, task progress, XP per task, total route XP, and the complete ordered checklist. Every phase also has a **Skip current step** button.
+
+## Highlight guide
+
+- Green border: best task available
+- Amber border: useful task that fits the route
+- Darkened card: unavailable, bounty, backward, off-route, or intentionally left for a reserved slot
+- Teal dock highlight: collect or deliver cargo here
+- Teal cargo outline: an inventory or cargo-hold item used by an active courier task
+
+## Cargo messages
+
+The plugin sends these game messages after the matching state change:
+
+- `You now have all the cargo`
+- `You delivered all cargo for this dock`
+
+Several tasks for the same dock are counted together before the message is sent.
+
+## Requirements
+
+- Java 11 compatible source
+- A current RuneLite client
+- Sailing route and quest requirements still apply in game
+
+The route card shows important unlock notes such as Song of the Elves for Prifddinas, Troubled Tortugans for The Summer Shore, and the level 65 Etceteria option.
+
+## Local testing
+
+On Windows:
+
+```powershell
+.\gradlew.bat clean test
+.\gradlew.bat run
+```
+
+On macOS or Linux:
+
+```bash
+./gradlew clean test
+./gradlew run
+```
+
+The first command verifies route order, pickup and delivery precedence, shared-dock merging, level checks, backward-task rejection, and reserved-slot behavior. The second starts RuneLite in developer mode with Easy Courier loaded.
+
+## Plugin Hub submission
+
+The repository already contains the standard `runelite-plugin.properties` metadata and uses `latest.release` for local validation. A Plugin Hub submission still needs a small entry in the RuneLite Plugin Hub repository that points to a tagged commit from this repository.
+
+## Credits
+
+The public [Port Tasks plugin](https://github.com/nucleon/port-tasks) was used as a behavior and game-data reference. Easy Courier has its own route model, optimizer, state handling, overlays, and interface.
+

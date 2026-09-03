@@ -1,0 +1,117 @@
+package com.easycourier.service;
+
+import com.easycourier.data.TaskStateReader;
+import com.easycourier.model.ActiveTask;
+import com.easycourier.model.BoardOffer;
+import com.easycourier.model.CollectionStop;
+import com.easycourier.model.OfferStatus;
+import com.easycourier.model.RoutePhase;
+import com.easycourier.model.RoutePreset;
+import com.easycourier.model.TaskDefinition;
+import com.easycourier.model.TaskEdge;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import net.runelite.api.widgets.Widget;
+
+public final class RouteAdvisor
+{
+	public List<BoardOffer> advise(RoutePreset preset, RoutePhase phase, int collectionIndex, int sailingLevel,
+		int occupiedSlots, List<ActiveTask> activeTasks, List<WidgetTask> widgetTasks)
+	{
+		List<BoardOffer> decisions = new ArrayList<>();
+		CollectionStop stop = phase == RoutePhase.COLLECTION && collectionIndex < preset.getCollectionStops().size()
+			? preset.getCollectionStops().get(collectionIndex) : null;
+		for (WidgetTask widgetTask : widgetTasks)
+		{
+			TaskDefinition task = widgetTask.getTask();
+			if (task == null)
+			{
+				decisions.add(new BoardOffer(widgetTask.getWidget(), null, OfferStatus.OFF_ROUTE, 0, "Not a courier task"));
+				continue;
+			}
+			if (!task.isCourier())
+			{
+				decisions.add(new BoardOffer(widgetTask.getWidget(), task, OfferStatus.BOUNTY, 0, "Bounty task"));
+				continue;
+			}
+			if (sailingLevel < task.getLevelRequired())
+			{
+				decisions.add(new BoardOffer(widgetTask.getWidget(), task, OfferStatus.INELIGIBLE, 0,
+					"Requires level " + task.getLevelRequired()));
+				continue;
+			}
+			boolean accepted = phase == RoutePhase.DELIVERY ? preset.movesForward(task) : stop != null && stop.accepts(task);
+			if (!accepted)
+			{
+				decisions.add(new BoardOffer(widgetTask.getWidget(), task, OfferStatus.OFF_ROUTE, 0, "Moves away from this route"));
+				continue;
+			}
+			boolean preferred = stop != null && stop.isPreferred(task);
+			int score = task.getExperience() + (preferred ? 1_000_000 : 0);
+			decisions.add(new BoardOffer(widgetTask.getWidget(), task,
+				preferred ? OfferStatus.PRIORITY : OfferStatus.USEFUL, score,
+				preferred ? "Priority task" : "Useful forward task"));
+		}
+		limitHighlights(decisions, stop, sailingLevel, occupiedSlots, activeTasks);
+		decisions.sort(Comparator.comparingInt(BoardOffer::getScore).reversed());
+		return decisions;
+	}
+
+	private void limitHighlights(List<BoardOffer> decisions, CollectionStop stop, int sailingLevel, int occupiedSlots,
+		List<ActiveTask> activeTasks)
+	{
+		int capacity = TaskStateReader.taskCapacity(sailingLevel);
+		int freeSlots = Math.max(0, capacity - occupiedSlots);
+		TaskEdge reserved = stop == null ? null : stop.getReservedTask();
+		boolean alreadyHasPreferred = reserved != null && activeTasks.stream()
+			.anyMatch(task -> stop.isPreferred(task.getDefinition()));
+		boolean boardHasPreferred = reserved != null && decisions.stream()
+			.anyMatch(offer -> offer.getTask() != null && stop.isPreferred(offer.getTask())
+				&& (offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL));
+		int usableSlots = freeSlots;
+		if (reserved != null && !alreadyHasPreferred && !boardHasPreferred)
+		{
+			usableSlots = Math.max(0, freeSlots - 1);
+		}
+		Set<BoardOffer> keep = new HashSet<>();
+		decisions.stream()
+			.filter(offer -> offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL)
+			.sorted(Comparator.comparingInt(BoardOffer::getScore).reversed())
+			.limit(usableSlots)
+			.forEach(keep::add);
+		for (int index = 0; index < decisions.size(); index++)
+		{
+			BoardOffer offer = decisions.get(index);
+			if ((offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL) && !keep.contains(offer))
+			{
+				decisions.set(index, new BoardOffer(offer.getWidget(), offer.getTask(), OfferStatus.OFF_ROUTE, 0,
+					freeSlots == 0 ? "No free task slots" : "Keep a slot for a better task"));
+			}
+		}
+	}
+
+	public static final class WidgetTask
+	{
+		private final Widget widget;
+		private final TaskDefinition task;
+
+		public WidgetTask(Widget widget, TaskDefinition task)
+		{
+			this.widget = widget;
+			this.task = task;
+		}
+
+		public Widget getWidget()
+		{
+			return widget;
+		}
+
+		public TaskDefinition getTask()
+		{
+			return task;
+		}
+	}
+}
