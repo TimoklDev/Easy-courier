@@ -42,8 +42,10 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
+import net.runelite.api.Player;
 import net.runelite.api.Skill;
-import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.WorldEntity;
+import net.runelite.api.WorldView;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
@@ -75,6 +77,9 @@ import net.runelite.client.ui.overlay.OverlayManager;
 )
 public class EasyCourierPlugin extends Plugin
 {
+	private static final int PORT_DETECTION_DISTANCE = 110;
+	private static final int ACTIVE_DESTINATION_DISTANCE = 64;
+	private static final Color CHAT_MESSAGE_COLOR = new Color(31, 78, 121);
 	private static final Set<Integer> TASK_VARBITS = new HashSet<>();
 
 	static
@@ -573,13 +578,12 @@ public class EasyCourierPlugin extends Plugin
 			currentPort = Port.UNKNOWN;
 			return;
 		}
-		LocalPoint local = client.getLocalPlayer().getLocalLocation();
-		WorldPoint point = WorldPoint.fromLocalInstance(client, local);
-		if (point == null)
+		WorldPoint point = navigationWorldPoint();
+		Port detected = activeDestinationAt(point);
+		if (detected == Port.UNKNOWN)
 		{
-			point = client.getLocalPlayer().getWorldLocation();
+			detected = Port.nearest(point, PORT_DETECTION_DISTANCE);
 		}
-		Port detected = Port.nearest(point, 110);
 		if (detected != Port.UNKNOWN)
 		{
 			rememberPort(detected);
@@ -606,6 +610,42 @@ public class EasyCourierPlugin extends Plugin
 		{
 			phase = RoutePhase.COMPLETE;
 		}
+	}
+
+	private WorldPoint navigationWorldPoint()
+	{
+		Player player = client.getLocalPlayer();
+		if (player == null)
+		{
+			return null;
+		}
+		WorldView view = player.getWorldView();
+		WorldView topLevel = client.getTopLevelWorldView();
+		if (view != null && !view.isTopLevel() && view.getId() != WorldView.TOPLEVEL && topLevel != null)
+		{
+			WorldEntity entity = topLevel.worldEntities().byIndex(view.getId());
+			if (entity != null)
+			{
+				WorldPoint point = WorldPoint.fromLocalInstance(client, entity.getLocalLocation());
+				if (point != null)
+				{
+					return point;
+				}
+			}
+		}
+		WorldPoint point = WorldPoint.fromLocalInstance(client, player.getLocalLocation());
+		return point == null ? player.getWorldLocation() : point;
+	}
+
+	private Port activeDestinationAt(WorldPoint point)
+	{
+		RouteStep step = getCurrentDeliveryStep();
+		if (point == null || step == null || step.getKind() != StepKind.TRAVEL)
+		{
+			return Port.UNKNOWN;
+		}
+		return point.distanceTo2D(step.getPort().getMapPoint()) <= ACTIVE_DESTINATION_DISTANCE
+			? step.getPort() : Port.UNKNOWN;
 	}
 
 	private Port inferProgressPort()
@@ -713,7 +753,7 @@ public class EasyCourierPlugin extends Plugin
 		}
 		chatMessageManager.queue(QueuedMessage.builder()
 			.type(ChatMessageType.GAMEMESSAGE)
-			.runeLiteFormattedMessage(new ChatMessageBuilder().append(message).build())
+			.runeLiteFormattedMessage(new ChatMessageBuilder().append(CHAT_MESSAGE_COLOR, message).build())
 			.build());
 	}
 
