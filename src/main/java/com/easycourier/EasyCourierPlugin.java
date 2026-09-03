@@ -30,11 +30,7 @@ import com.easycourier.service.PortDetector;
 import com.easycourier.service.ExperienceSession;
 import com.easycourier.ui.EasyCourierPanel;
 import com.google.inject.Provides;
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -76,6 +72,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.util.ImageUtil;
 
 @PluginDescriptor(
 	name = "Easy Courier",
@@ -179,7 +176,7 @@ public class EasyCourierPlugin extends Plugin
 		panel = new EasyCourierPanel(this);
 		navigationButton = NavigationButton.builder()
 			.tooltip("Easy Courier")
-			.icon(createIcon())
+			.icon(ImageUtil.loadImageResource(getClass(), "icon.png"))
 			.priority(5)
 			.panel(panel)
 			.build();
@@ -877,22 +874,6 @@ public class EasyCourierPlugin extends Plugin
 		{
 			SwingUtilities.invokeLater(panel::refresh);
 		}
-	}
-
-	private BufferedImage createIcon()
-	{
-		BufferedImage image = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D graphics = image.createGraphics();
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		graphics.setColor(new Color(70, 181, 165));
-		graphics.fillRoundRect(5, 18, 22, 7, 7, 7);
-		graphics.setColor(new Color(229, 214, 178));
-		graphics.fillPolygon(new int[]{9, 17, 24}, new int[]{18, 6, 18}, 3);
-		graphics.setColor(new Color(24, 35, 43));
-		graphics.setStroke(new BasicStroke(2));
-		graphics.drawLine(17, 6, 17, 23);
-		graphics.dispose();
-		return image;
 	}
 
 	public List<BoardOffer> getBoardOffers()
