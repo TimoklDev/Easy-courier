@@ -25,6 +25,7 @@ import com.easycourier.overlay.RouteWorldOverlay;
 import com.easycourier.service.RouteAdvisor;
 import com.easycourier.service.RoutePlanner;
 import com.easycourier.service.SeaNetwork;
+import com.easycourier.service.PortDetector;
 import com.easycourier.ui.EasyCourierPanel;
 import com.google.inject.Provides;
 import java.awt.BasicStroke;
@@ -81,8 +82,6 @@ import net.runelite.client.ui.overlay.OverlayManager;
 )
 public class EasyCourierPlugin extends Plugin
 {
-	private static final int PORT_DETECTION_DISTANCE = 110;
-	private static final int ACTIVE_DESTINATION_DISTANCE = 64;
 	private static final Color CHAT_MESSAGE_COLOR = new Color(31, 78, 121);
 	private static final Set<Integer> TASK_VARBITS = new HashSet<>();
 
@@ -140,6 +139,7 @@ public class EasyCourierPlugin extends Plugin
 	private final TaskCatalog catalog = new TaskCatalog();
 	private final TaskStateReader stateReader = new TaskStateReader();
 	private final RouteAdvisor advisor = new RouteAdvisor();
+	private final PortDetector portDetector = new PortDetector();
 	private final RoutePlanner planner = new RoutePlanner(new SeaNetwork());
 	private final List<ActiveTask> activeTasks = new ArrayList<>();
 	private final List<BoardOffer> boardOffers = new ArrayList<>();
@@ -410,9 +410,14 @@ public class EasyCourierPlugin extends Plugin
 		if (phase == RoutePhase.IDLE && !activeTasks.isEmpty())
 		{
 			selectedRoute = detectRoute();
-			if (currentPort == Port.UNKNOWN && selectedRoute.routeRank(lastKnownPort) < 0)
+			if (currentPort == Port.UNKNOWN
+				&& (isAboardBoat() || selectedRoute.routeRank(lastKnownPort) < 0))
 			{
-				lastKnownPort = inferProgressPort();
+				Port inferred = inferProgressPort();
+				if (inferred != Port.UNKNOWN)
+				{
+					lastKnownPort = inferred;
+				}
 			}
 			phase = RoutePhase.DELIVERY;
 			deliverySkipCount = 0;
@@ -671,11 +676,7 @@ public class EasyCourierPlugin extends Plugin
 			return;
 		}
 		WorldPoint point = navigationWorldPoint();
-		Port detected = activeDestinationAt(point);
-		if (detected == Port.UNKNOWN)
-		{
-			detected = Port.nearest(point, PORT_DETECTION_DISTANCE);
-		}
+		Port detected = portDetector.detect(point, getCurrentDeliveryStep(), isAboardBoat());
 		if (detected != Port.UNKNOWN)
 		{
 			rememberPort(detected);
@@ -729,15 +730,11 @@ public class EasyCourierPlugin extends Plugin
 		return point == null ? player.getWorldLocation() : point;
 	}
 
-	private Port activeDestinationAt(WorldPoint point)
+	private boolean isAboardBoat()
 	{
-		RouteStep step = getCurrentDeliveryStep();
-		if (point == null || step == null || step.getKind() != StepKind.TRAVEL)
-		{
-			return Port.UNKNOWN;
-		}
-		return point.distanceTo2D(step.getPort().getMapPoint()) <= ACTIVE_DESTINATION_DISTANCE
-			? step.getPort() : Port.UNKNOWN;
+		Player player = client.getLocalPlayer();
+		WorldView view = player == null ? null : player.getWorldView();
+		return view != null && !view.isTopLevel() && view.getId() != WorldView.TOPLEVEL;
 	}
 
 	private Port inferProgressPort()

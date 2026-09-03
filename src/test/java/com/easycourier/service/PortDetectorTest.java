@@ -1,0 +1,46 @@
+package com.easycourier.service;
+
+import com.easycourier.model.Port;
+import com.easycourier.model.RouteStep;
+import com.easycourier.model.StepKind;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
+public class PortDetectorTest
+{
+	private final PortDetector detector = new PortDetector();
+
+	@Test
+	public void ignoresUnrelatedPortsDuringTravel()
+	{
+		RouteStep step = travelTo(Port.DEEPFIN_POINT);
+		assertEquals(Port.UNKNOWN, detector.detect(Port.SUNSET_COAST.getMapPoint(), step, true));
+	}
+
+	@Test
+	public void doesNotArriveTwentyOneTilesEarly()
+	{
+		RouteStep step = travelTo(Port.DEEPFIN_POINT);
+		assertEquals(Port.UNKNOWN, detector.detect(Port.DEEPFIN_POINT.getMapPoint().dx(21), step, true));
+	}
+
+	@Test
+	public void arrivesWithinTwentyTiles()
+	{
+		RouteStep step = travelTo(Port.DEEPFIN_POINT);
+		assertEquals(Port.DEEPFIN_POINT, detector.detect(Port.DEEPFIN_POINT.getMapPoint().dx(20), step, true));
+	}
+
+	@Test
+	public void usesTightDetectionWithoutATravelStepWhileAboard()
+	{
+		assertEquals(Port.UNKNOWN, detector.detect(Port.SUNSET_COAST.getMapPoint().dx(21), null, true));
+		assertEquals(Port.SUNSET_COAST, detector.detect(Port.SUNSET_COAST.getMapPoint().dx(20), null, true));
+	}
+
+	private RouteStep travelTo(Port port)
+	{
+		return new RouteStep(StepKind.TRAVEL, port, "Sail", "Follow the route", 0);
+	}
+}

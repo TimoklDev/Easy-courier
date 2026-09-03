@@ -36,7 +36,7 @@ The Prifddinas route keeps one slot reserved for Aldarin to Prifddinas until tha
 4. Each collect and deliver action remains visible, even when tasks share a dock.
 5. The route always finishes at the selected route point.
 6. The actual sea lane is visible only while the current step is to sail, both in the game view and on the world map.
-7. Reaching the active destination automatically advances from sailing to that port's next action.
+7. Entering the active destination's 20-tile docking radius advances to the next action. Other nearby ports are ignored while sailing.
 8. Later delivery stops can include a notice-board check, but the route's starting port never repeats that task.
 9. Closing that board completes its checklist step, even when no suitable task was available.
 
