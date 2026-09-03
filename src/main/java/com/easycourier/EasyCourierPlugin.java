@@ -143,7 +143,8 @@ public class EasyCourierPlugin extends Plugin
 	private final RouteAdvisor advisor = new RouteAdvisor();
 	private final PortDetector portDetector = new PortDetector();
 	private final ExperienceSession experienceSession = new ExperienceSession();
-	private final RoutePlanner planner = new RoutePlanner(new SeaNetwork());
+	private final SeaNetwork seaNetwork = new SeaNetwork();
+	private final RoutePlanner planner = new RoutePlanner(seaNetwork);
 	private final List<ActiveTask> activeTasks = new ArrayList<>();
 	private final List<BoardOffer> boardOffers = new ArrayList<>();
 	private final Set<GameObject> ledgers = new HashSet<>();
@@ -166,6 +167,7 @@ public class EasyCourierPlugin extends Plugin
 	private Port currentPort = Port.UNKNOWN;
 	private Port lastKnownPort = Port.UNKNOWN;
 	private RoutePlan routePlan;
+	private RoutePlan collectionRoutePlan;
 
 	@Override
 	protected void startUp()
@@ -218,6 +220,7 @@ public class EasyCourierPlugin extends Plugin
 		resetExperienceSession();
 		panel = null;
 		navigationButton = null;
+		collectionRoutePlan = null;
 	}
 
 	@Provides
@@ -347,8 +350,11 @@ public class EasyCourierPlugin extends Plugin
 		phase = RoutePhase.COLLECTION;
 		collectionIndex = 0;
 		deliverySkipCount = 0;
+		routePlan = null;
+		collectionRoutePlan = null;
 		deliveryBoardsChecked.clear();
 		skipUnavailableCollectionStops();
+		rebuildCollectionRoutePlan();
 		refreshBoardAdvice();
 		refreshPanel();
 	}
@@ -357,6 +363,7 @@ public class EasyCourierPlugin extends Plugin
 	{
 		phase = RoutePhase.DELIVERY;
 		deliverySkipCount = 0;
+		collectionRoutePlan = null;
 		deliveryBoardsChecked.clear();
 		rebuildRoutePlan();
 		refreshBoardAdvice();
@@ -369,6 +376,7 @@ public class EasyCourierPlugin extends Plugin
 		{
 			collectionIndex++;
 			skipUnavailableCollectionStops();
+			rebuildCollectionRoutePlan();
 			if (collectionIndex >= selectedRoute.getCollectionStops().size())
 			{
 				refreshPanel();
@@ -399,6 +407,7 @@ public class EasyCourierPlugin extends Plugin
 		collectionIndex = 0;
 		deliverySkipCount = 0;
 		routePlan = null;
+		collectionRoutePlan = null;
 		boardOffers.clear();
 		deliveryBoardsChecked.clear();
 		refreshPanel();
@@ -580,6 +589,7 @@ public class EasyCourierPlugin extends Plugin
 		{
 			collectionIndex++;
 			skipUnavailableCollectionStops();
+			rebuildCollectionRoutePlan();
 		}
 	}
 
@@ -695,7 +705,7 @@ public class EasyCourierPlugin extends Plugin
 			return;
 		}
 		WorldPoint point = navigationWorldPoint();
-		Port detected = portDetector.detect(point, getCurrentDeliveryStep(), isAboardBoat());
+		Port detected = portDetector.detect(point, getCurrentTravelStep(), isAboardBoat());
 		if (detected != Port.UNKNOWN)
 		{
 			rememberPort(detected);
@@ -703,7 +713,11 @@ public class EasyCourierPlugin extends Plugin
 		if (detected != currentPort)
 		{
 			currentPort = detected;
-			if (phase == RoutePhase.DELIVERY)
+			if (phase == RoutePhase.COLLECTION)
+			{
+				rebuildCollectionRoutePlan();
+			}
+			else if (phase == RoutePhase.DELIVERY)
 			{
 				rebuildRoutePlan();
 				deliverySkipCount = 0;
@@ -722,6 +736,21 @@ public class EasyCourierPlugin extends Plugin
 		{
 			phase = RoutePhase.COMPLETE;
 		}
+	}
+
+	private void rebuildCollectionRoutePlan()
+	{
+		collectionRoutePlan = null;
+		if (phase != RoutePhase.COLLECTION || collectionIndex >= selectedRoute.getCollectionStops().size())
+		{
+			return;
+		}
+		CollectionStop stop = selectedRoute.getCollectionStops().get(collectionIndex);
+		if (!stop.isSailingLeg() || currentPort == stop.getPort())
+		{
+			return;
+		}
+		collectionRoutePlan = planner.planLeg(stop.getSailingStart(), stop.getPort());
 	}
 
 	private WorldPoint navigationWorldPoint()
@@ -911,10 +940,25 @@ public class EasyCourierPlugin extends Plugin
 		return routePlan.getSteps().get(index);
 	}
 
+	private RouteStep getCurrentTravelStep()
+	{
+		if (phase == RoutePhase.COLLECTION && collectionRoutePlan != null
+			&& !collectionRoutePlan.getSteps().isEmpty())
+		{
+			return collectionRoutePlan.getSteps().get(0);
+		}
+		return getCurrentDeliveryStep();
+	}
+
 	public boolean isTravelStepActive()
 	{
-		RouteStep step = getCurrentDeliveryStep();
+		RouteStep step = getCurrentTravelStep();
 		return step != null && step.getKind() == StepKind.TRAVEL;
+	}
+
+	public RoutePlan getNavigationRoutePlan()
+	{
+		return phase == RoutePhase.COLLECTION ? collectionRoutePlan : routePlan;
 	}
 
 	public Port getNoticeBoardTarget()
@@ -1051,8 +1095,9 @@ public class EasyCourierPlugin extends Plugin
 		{
 			if (collectionIndex >= selectedRoute.getCollectionStops().size())
 			{
-				return selectedRoute == RoutePreset.PRIFDDINAS
-					? "Recover boat to Aldarin" : "Move to delivery phase";
+				Port recoveryPort = selectedRoute.getBoatRecoveryPort();
+				return recoveryPort == Port.UNKNOWN
+					? "Move to delivery phase" : "Recover boat to " + recoveryPort;
 			}
 			CollectionStop stop = selectedRoute.getCollectionStops().get(collectionIndex);
 			if (isBoardOpenAt(stop.getPort()))
@@ -1063,7 +1108,11 @@ public class EasyCourierPlugin extends Plugin
 			{
 				return "Open " + stop.getPort() + " board";
 			}
-			return stop.isCharterRequired() ? "Charter to " + stop.getPort() : "Travel to " + stop.getPort();
+			if (stop.isCharterRequired())
+			{
+				return "Charter to " + stop.getPort();
+			}
+			return stop.isSailingLeg() ? "Sail to " + stop.getPort() : "Travel to " + stop.getPort();
 		}
 		RouteStep step = getCurrentDeliveryStep();
 		return step == null ? "Accept a courier task" : step.getTitle();

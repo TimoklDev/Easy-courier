@@ -2,6 +2,7 @@ package com.easycourier.service;
 
 import com.easycourier.model.ActiveTask;
 import com.easycourier.model.BoardOffer;
+import com.easycourier.model.CollectionStop;
 import com.easycourier.model.OfferStatus;
 import com.easycourier.model.Port;
 import com.easycourier.model.RoutePhase;
@@ -28,6 +29,24 @@ public class RouteAdvisorTest
 		assertFalse(RoutePreset.PRIFDDINAS.getCollectionStops().get(0).isCharterRequired());
 		assertTrue(RoutePreset.PRIFDDINAS.getCollectionStops().get(1).isCharterRequired());
 		assertFalse(RoutePreset.PRIFDDINAS.getCollectionStops().get(2).isCharterRequired());
+	}
+
+	@Test
+	public void rellekkaEtceteriaStopUsesASailingLeg()
+	{
+		CollectionStop stop = RoutePreset.RELLEKKA.getCollectionStops().get(1);
+		assertTrue(stop.isSailingLeg());
+		assertEquals(Port.RELLEKKA, stop.getSailingStart());
+		assertEquals(Port.ETCETERIA, stop.getPort());
+	}
+
+	@Test
+	public void rellekkaAndPrifddinasRequireBoatRecoveryAtAldarin()
+	{
+		assertEquals(Port.ALDARIN, RoutePreset.RELLEKKA.getBoatRecoveryPort());
+		assertEquals(Port.ALDARIN, RoutePreset.PRIFDDINAS.getBoatRecoveryPort());
+		assertEquals(Port.UNKNOWN, RoutePreset.SUMMER_SHORE.getBoatRecoveryPort());
+		assertEquals(Port.UNKNOWN, RoutePreset.LUNAR_ISLE.getBoatRecoveryPort());
 	}
 
 	@Test

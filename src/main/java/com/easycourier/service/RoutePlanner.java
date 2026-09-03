@@ -25,6 +25,16 @@ public final class RoutePlanner
 		this.seaNetwork = seaNetwork;
 	}
 
+	public RoutePlan planLeg(Port start, Port finish)
+	{
+		List<Port> order = new ArrayList<>();
+		order.add(start);
+		order.add(finish);
+		List<RouteStep> steps = Collections.singletonList(new RouteStep(StepKind.TRAVEL, finish,
+			"Sail to " + finish, "Follow the highlighted sea route.", 0));
+		return new RoutePlan(order, expandSeaPath(order), steps, 0, seaNetwork.distance(start, finish));
+	}
+
 	public RoutePlan plan(RoutePreset preset, Port start, List<ActiveTask> activeTasks)
 	{
 		return plan(preset, start, activeTasks, activeTasks.size());

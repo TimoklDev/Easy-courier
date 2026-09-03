@@ -251,12 +251,13 @@ public final class EasyCourierPanel extends PluginPanel
 			list.add(stepCard(index + 1, step, complete, active));
 			list.add(Box.createRigidArea(new Dimension(0, 5)));
 		}
-		if (plugin.getSelectedRoute() == RoutePreset.PRIFDDINAS)
+		Port recoveryPort = plugin.getSelectedRoute().getBoatRecoveryPort();
+		if (recoveryPort != Port.UNKNOWN)
 		{
 			boolean active = plugin.getPhase() == RoutePhase.COLLECTION
 				&& plugin.getCollectionIndex() >= stops.size();
-			RouteStep step = new RouteStep(StepKind.TRAVEL, Port.ALDARIN,
-				"Recover your boat to Aldarin", "Then move on to the delivery phase.", 0);
+			RouteStep step = new RouteStep(StepKind.TRAVEL, recoveryPort,
+				"Recover your boat to " + recoveryPort, "Then move on to the delivery phase.", 0);
 			list.add(stepCard(stops.size() + 1, step, plugin.getPhase() == RoutePhase.COMPLETE, active));
 			list.add(Box.createRigidArea(new Dimension(0, 5)));
 		}
@@ -315,9 +316,10 @@ public final class EasyCourierPanel extends PluginPanel
 		{
 			if (plugin.getCollectionIndex() >= plugin.getSelectedRoute().getCollectionStops().size())
 			{
-				if (plugin.getSelectedRoute() == RoutePreset.PRIFDDINAS)
+				Port recoveryPort = plugin.getSelectedRoute().getBoatRecoveryPort();
+				if (recoveryPort != Port.UNKNOWN)
 				{
-					return "Recover your boat to Aldarin, then move on to the delivery phase.";
+					return "Recover your boat to " + recoveryPort + ", then move on to the delivery phase.";
 				}
 				return "Every collection board has been checked. Move to the delivery phase when your task list is ready.";
 			}

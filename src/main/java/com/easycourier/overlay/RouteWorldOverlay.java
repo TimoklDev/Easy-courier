@@ -2,7 +2,6 @@ package com.easycourier.overlay;
 
 import com.easycourier.EasyCourierPlugin;
 import com.easycourier.model.Port;
-import com.easycourier.model.RoutePhase;
 import com.easycourier.model.RoutePlan;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -45,9 +44,8 @@ public final class RouteWorldOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		RoutePlan plan = plugin.getRoutePlan();
-		if (!plugin.getConfig().showWorldRoute() || plugin.getPhase() != RoutePhase.DELIVERY
-			|| !plugin.isTravelStepActive()
+		RoutePlan plan = plugin.getNavigationRoutePlan();
+		if (!plugin.getConfig().showWorldRoute() || !plugin.isTravelStepActive()
 			|| plan == null || plan.getSeaPath().size() < 2)
 		{
 			return null;

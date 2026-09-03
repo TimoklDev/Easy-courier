@@ -11,17 +11,19 @@ public final class CollectionStop
 	private final String travelInstruction;
 	private final int minimumLevel;
 	private final boolean charterRequired;
+	private final Port sailingStart;
 	private final Set<TaskEdge> accepted;
 	private final Set<TaskEdge> preferred;
 	private final TaskEdge reservedTask;
 
-	public CollectionStop(Port port, String travelInstruction, int minimumLevel, boolean charterRequired, TaskEdge reservedTask,
-		TaskEdge[] accepted, TaskEdge[] preferred)
+	public CollectionStop(Port port, String travelInstruction, int minimumLevel, boolean charterRequired, Port sailingStart,
+		TaskEdge reservedTask, TaskEdge[] accepted, TaskEdge[] preferred)
 	{
 		this.port = port;
 		this.travelInstruction = travelInstruction;
 		this.minimumLevel = minimumLevel;
 		this.charterRequired = charterRequired;
+		this.sailingStart = sailingStart;
 		this.reservedTask = reservedTask;
 		this.accepted = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(accepted)));
 		this.preferred = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(preferred)));
@@ -45,6 +47,16 @@ public final class CollectionStop
 	public boolean isCharterRequired()
 	{
 		return charterRequired;
+	}
+
+	public boolean isSailingLeg()
+	{
+		return sailingStart != Port.UNKNOWN;
+	}
+
+	public Port getSailingStart()
+	{
+		return sailingStart;
 	}
 
 	public Set<TaskEdge> getAccepted()

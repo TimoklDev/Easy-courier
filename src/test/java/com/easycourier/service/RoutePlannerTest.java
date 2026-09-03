@@ -21,6 +21,17 @@ public class RoutePlannerTest
 	private final RoutePlanner planner = new RoutePlanner(new SeaNetwork());
 
 	@Test
+	public void buildsRellekkaToEtceteriaCollectionLeg()
+	{
+		RoutePlan plan = planner.planLeg(Port.RELLEKKA, Port.ETCETERIA);
+		assertEquals(Arrays.asList(Port.RELLEKKA, Port.ETCETERIA), plan.getPortOrder());
+		assertEquals(Port.RELLEKKA.getMapPoint(), plan.getSeaPath().get(0));
+		assertEquals(Port.ETCETERIA.getMapPoint(), plan.getSeaPath().get(plan.getSeaPath().size() - 1));
+		assertEquals(StepKind.TRAVEL, plan.getSteps().get(0).getKind());
+		assertEquals(Port.ETCETERIA, plan.getSteps().get(0).getPort());
+	}
+
+	@Test
 	public void respectsPickupBeforeDeliveryAndFinishesAtRoutePoint()
 	{
 		List<ActiveTask> tasks = Arrays.asList(

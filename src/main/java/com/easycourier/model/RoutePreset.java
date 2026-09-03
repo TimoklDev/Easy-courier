@@ -44,7 +44,8 @@ public enum RoutePreset
 				edges(
 					edge(Port.ALDARIN, Port.RELLEKKA),
 					edge(Port.SUNSET_COAST, Port.RELLEKKA))),
-			stop(Port.ETCETERIA, "At level 65, sail to Etceteria and open its notice board.", 65, null,
+			sailingStop(Port.RELLEKKA, Port.ETCETERIA,
+				"At level 65, sail to Etceteria and open its notice board.", 65, null,
 				edges(
 					edge(Port.SUNSET_COAST, Port.PORT_ROBERTS),
 					edge(Port.SUNSET_COAST, Port.HOSIDIUS),
@@ -230,6 +231,11 @@ public enum RoutePreset
 		return this == PRIFDDINAS ? Port.ALDARIN : Port.UNKNOWN;
 	}
 
+	public Port getBoatRecoveryPort()
+	{
+		return this == RELLEKKA || this == PRIFDDINAS ? Port.ALDARIN : Port.UNKNOWN;
+	}
+
 	@Override
 	public String toString()
 	{
@@ -249,13 +255,19 @@ public enum RoutePreset
 	private static CollectionStop stop(Port port, String instruction, int level, TaskEdge reserved,
 		TaskEdge[] accepted, TaskEdge[] preferred)
 	{
-		return new CollectionStop(port, instruction, level, false, reserved, accepted, preferred);
+		return new CollectionStop(port, instruction, level, false, Port.UNKNOWN, reserved, accepted, preferred);
 	}
 
 	private static CollectionStop charterStop(Port port, String instruction, int level, TaskEdge reserved,
 		TaskEdge[] accepted, TaskEdge[] preferred)
 	{
-		return new CollectionStop(port, instruction, level, true, reserved, accepted, preferred);
+		return new CollectionStop(port, instruction, level, true, Port.UNKNOWN, reserved, accepted, preferred);
+	}
+
+	private static CollectionStop sailingStop(Port start, Port port, String instruction, int level, TaskEdge reserved,
+		TaskEdge[] accepted, TaskEdge[] preferred)
+	{
+		return new CollectionStop(port, instruction, level, false, start, reserved, accepted, preferred);
 	}
 
 	private static Map<Port, Integer> order(Object... values)
