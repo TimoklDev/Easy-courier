@@ -80,7 +80,7 @@ public final class EasyCourierPanel extends PluginPanel
 		JLabel title = new JLabel("Easy Courier");
 		title.setFont(FontManager.getRunescapeBoldFont().deriveFont(22f));
 		title.setForeground(PARCHMENT);
-		JLabel subtitle = new JLabel("Sailing route assistant");
+		JLabel subtitle = new JLabel("By TimoKLDev");
 		subtitle.setFont(FontManager.getRunescapeSmallFont());
 		subtitle.setForeground(SEA);
 		panel.add(title, BorderLayout.NORTH);
