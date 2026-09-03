@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -31,6 +32,9 @@ import net.runelite.client.ui.PluginPanel;
 
 public final class EasyCourierPanel extends PluginPanel
 {
+	private static final int PANEL_TEXT_WIDTH = 205;
+	private static final int CARD_TEXT_WIDTH = 181;
+	private static final int STEP_TEXT_WIDTH = 143;
 	private static final Color SEA = new Color(70, 181, 165);
 	private static final Color CARGO = new Color(226, 175, 75);
 	private static final Color PARCHMENT = new Color(229, 214, 178);
@@ -57,13 +61,13 @@ public final class EasyCourierPanel extends PluginPanel
 		add(statusCard());
 		add(Box.createRigidArea(new Dimension(0, 8)));
 		add(actions());
+		add(sectionTitle(plugin.getPhase() == RoutePhase.DELIVERY ? "Delivery course" : "Route checklist"));
+		add(routeSteps());
 		if (!plugin.getActiveTasks().isEmpty())
 		{
 			add(sectionTitle("Cargo manifest"));
 			add(taskManifest());
 		}
-		add(sectionTitle(plugin.getPhase() == RoutePhase.DELIVERY ? "Delivery course" : "Route checklist"));
-		add(routeSteps());
 		add(Box.createVerticalGlue());
 		revalidate();
 		repaint();
@@ -72,7 +76,6 @@ public final class EasyCourierPanel extends PluginPanel
 	private JPanel header()
 	{
 		JPanel panel = basePanel(new BorderLayout());
-		panel.setBackground(ColorScheme.DARK_GRAY_COLOR);
 		JLabel title = new JLabel("Easy Courier");
 		title.setFont(FontManager.getRunescapeBoldFont().deriveFont(22f));
 		title.setForeground(PARCHMENT);
@@ -97,13 +100,11 @@ public final class EasyCourierPanel extends PluginPanel
 		routes.addActionListener(event -> plugin.selectRoute((RoutePreset) routes.getSelectedItem()));
 		JPanel details = basePanel(new BorderLayout(0, 2));
 		details.setOpaque(false);
-		JLabel rate = new JLabel(plugin.getSelectedRoute().getExpectedRate());
-		rate.setFont(FontManager.getRunescapeSmallFont());
-		rate.setForeground(SEA);
-		JLabel requirement = html("Requires Sailing " + plugin.getSelectedRoute().getMinimumLevel() + ". "
-			+ plugin.getSelectedRoute().getRequirementNote() + ".", 215);
-		requirement.setFont(FontManager.getRunescapeSmallFont());
-		requirement.setForeground(MUTED);
+		JLabel rate = wrapped(plugin.getSelectedRoute().getExpectedRate(), PANEL_TEXT_WIDTH,
+			FontManager.getRunescapeSmallFont(), SEA);
+		JLabel requirement = wrapped("Requires Sailing " + plugin.getSelectedRoute().getMinimumLevel() + ". "
+			+ plugin.getSelectedRoute().getRequirementNote() + ".", PANEL_TEXT_WIDTH,
+			FontManager.getRunescapeSmallFont(), MUTED);
 		details.add(rate, BorderLayout.NORTH);
 		details.add(requirement, BorderLayout.CENTER);
 		panel.add(label, BorderLayout.NORTH);
@@ -121,12 +122,13 @@ public final class EasyCourierPanel extends PluginPanel
 		phase.setFont(FontManager.getRunescapeBoldFont());
 		phase.setForeground(phaseColor());
 		JLabel level = new JLabel("Sailing " + plugin.getSailingLevel());
+		level.setFont(FontManager.getRunescapeSmallFont());
 		level.setForeground(MUTED);
 		level.setHorizontalAlignment(SwingConstants.RIGHT);
 		top.add(phase, BorderLayout.WEST);
 		top.add(level, BorderLayout.EAST);
-		JLabel instruction = html(currentInstruction(), 215);
-		instruction.setForeground(Color.WHITE);
+		JLabel instruction = wrapped(currentInstruction(), CARD_TEXT_WIDTH,
+			FontManager.getRunescapeBoldFont(), Color.WHITE);
 		card.add(top, BorderLayout.NORTH);
 		card.add(instruction, BorderLayout.CENTER);
 		card.add(summaryStrip(), BorderLayout.SOUTH);
@@ -135,24 +137,24 @@ public final class EasyCourierPanel extends PluginPanel
 
 	private JPanel summaryStrip()
 	{
-		JPanel strip = basePanel(new GridLayout(1, 3, 5, 0));
+		JPanel strip = basePanel(new GridLayout(1, 3, 4, 0));
 		strip.setOpaque(false);
 		int totalXp = plugin.getRoutePlan() == null
 			? plugin.getActiveTasks().stream().mapToInt(task -> task.getDefinition().getExperience()).sum()
 			: plugin.getRoutePlan().getTotalExperience();
-		strip.add(metric("Tasks", String.valueOf(plugin.getActiveTasks().size())));
-		strip.add(metric("Route XP", totalXp > 0 ? String.format("%,d", totalXp) : "Unknown"));
-		strip.add(metric("At", shortPort(plugin.getCurrentPort())));
+		strip.add(metric("Tasks", String.valueOf(plugin.getActiveTasks().size()), PARCHMENT));
+		strip.add(metric("Route XP", totalXp > 0 ? String.format("%,d", totalXp) : "0", CARGO));
+		strip.add(metric("At", shortPort(plugin.getCurrentPort()), PARCHMENT));
 		return strip;
 	}
 
-	private JPanel metric(String label, String value)
+	private JPanel metric(String label, String value, Color valueColor)
 	{
 		JPanel panel = basePanel(new BorderLayout());
 		panel.setOpaque(false);
 		JLabel valueLabel = new JLabel(value, SwingConstants.CENTER);
 		valueLabel.setFont(FontManager.getRunescapeBoldFont());
-		valueLabel.setForeground(PARCHMENT);
+		valueLabel.setForeground(valueColor);
 		JLabel nameLabel = new JLabel(label, SwingConstants.CENTER);
 		nameLabel.setFont(FontManager.getRunescapeSmallFont());
 		nameLabel.setForeground(MUTED);
@@ -187,28 +189,39 @@ public final class EasyCourierPanel extends PluginPanel
 		JPanel list = verticalList();
 		for (ActiveTask task : plugin.getActiveTasks())
 		{
-			JPanel row = cardPanel(new BorderLayout(0, 5));
-			JLabel route = new JLabel(task.getDefinition().routeLabel());
-			route.setFont(FontManager.getRunescapeBoldFont());
-			route.setForeground(PARCHMENT);
+			JPanel row = cardPanel(new BorderLayout(0, 7));
+			JLabel route = wrapped(task.getDefinition().routeLabel(), CARD_TEXT_WIDTH,
+				FontManager.getRunescapeBoldFont(), PARCHMENT);
+			JPanel metrics = basePanel(new GridLayout(1, 3, 4, 0));
+			metrics.setOpaque(false);
 			int amount = task.getDefinition().getCargoAmount();
-			String state = "Collected " + task.getCargoTaken() + "/" + amount + "  |  Delivered "
-				+ task.getCargoDelivered() + "/" + amount;
-			JLabel progress = new JLabel(state);
-			progress.setFont(FontManager.getRunescapeSmallFont());
-			progress.setForeground(task.isComplete() ? COMPLETE : MUTED);
-			String xp = task.getDefinition().getExperience() > 0
-				? String.format("%,d XP", task.getDefinition().getExperience()) : "XP unavailable";
-			JLabel experience = new JLabel(xp, SwingConstants.RIGHT);
-			experience.setForeground(CARGO);
-			experience.setFont(FontManager.getRunescapeSmallFont());
+			metrics.add(taskMetric("Collected", task.getCargoTaken() + "/" + amount,
+				task.needsPickup() ? SEA : COMPLETE));
+			metrics.add(taskMetric("Delivered", task.getCargoDelivered() + "/" + amount,
+				task.isComplete() ? COMPLETE : MUTED));
+			metrics.add(taskMetric("XP", task.getDefinition().getExperience() > 0
+				? String.format("%,d", task.getDefinition().getExperience()) : "0", CARGO));
 			row.add(route, BorderLayout.NORTH);
-			row.add(progress, BorderLayout.CENTER);
-			row.add(experience, BorderLayout.EAST);
+			row.add(metrics, BorderLayout.CENTER);
 			list.add(row);
 			list.add(Box.createRigidArea(new Dimension(0, 5)));
 		}
 		return list;
+	}
+
+	private JPanel taskMetric(String label, String value, Color color)
+	{
+		JPanel panel = basePanel(new BorderLayout());
+		panel.setOpaque(false);
+		JLabel valueLabel = new JLabel(value, SwingConstants.CENTER);
+		valueLabel.setFont(FontManager.getRunescapeBoldFont());
+		valueLabel.setForeground(color);
+		JLabel labelView = new JLabel(label, SwingConstants.CENTER);
+		labelView.setFont(FontManager.getRunescapeSmallFont());
+		labelView.setForeground(MUTED);
+		panel.add(valueLabel, BorderLayout.NORTH);
+		panel.add(labelView, BorderLayout.SOUTH);
+		return panel;
 	}
 
 	private JPanel routeSteps()
@@ -252,17 +265,17 @@ public final class EasyCourierPanel extends PluginPanel
 		JLabel marker = new JLabel(complete ? "✓" : String.valueOf(number), SwingConstants.CENTER);
 		marker.setOpaque(true);
 		marker.setPreferredSize(new Dimension(24, 24));
+		marker.setMinimumSize(new Dimension(24, 24));
+		marker.setMaximumSize(new Dimension(24, 24));
 		marker.setBackground(complete ? new Color(41, 91, 72) : active ? new Color(40, 94, 91) : CARD_DARK);
 		marker.setForeground(complete ? COMPLETE : active ? SEA : MUTED);
 		marker.setFont(FontManager.getRunescapeBoldFont());
-		JPanel text = basePanel(new BorderLayout(0, 2));
+		JPanel text = basePanel(new BorderLayout(0, 3));
 		text.setOpaque(false);
-		JLabel title = new JLabel(step.getTitle());
-		title.setFont(FontManager.getRunescapeBoldFont());
-		title.setForeground(complete ? MUTED : PARCHMENT);
-		JLabel detail = html(step.getDetail(), 170);
-		detail.setFont(FontManager.getRunescapeSmallFont());
-		detail.setForeground(MUTED);
+		JLabel title = wrapped(step.getTitle(), STEP_TEXT_WIDTH,
+			FontManager.getRunescapeBoldFont(), complete ? MUTED : PARCHMENT);
+		JLabel detail = wrapped(step.getDetail(), STEP_TEXT_WIDTH,
+			FontManager.getRunescapeSmallFont(), MUTED);
 		text.add(title, BorderLayout.NORTH);
 		text.add(detail, BorderLayout.CENTER);
 		if (step.getExperience() > 0)
@@ -321,7 +334,27 @@ public final class EasyCourierPanel extends PluginPanel
 
 	private String shortPort(Port port)
 	{
-		return port == null || port == Port.UNKNOWN ? "Away" : port.getDisplayName();
+		if (port == null || port == Port.UNKNOWN)
+		{
+			return "At sea";
+		}
+		switch (port)
+		{
+			case SUMMER_SHORE:
+				return "Summer";
+			case CIVITAS_ILLA_FORTIS:
+				return "Civitas";
+			case PORT_PISCARILIUS:
+				return "Piscarilius";
+			case DEEPFIN_POINT:
+				return "Deepfin";
+			case PORT_TYRAS:
+				return "Tyras";
+			case PORT_ROBERTS:
+				return "Roberts";
+			default:
+				return port.getDisplayName();
+		}
 	}
 
 	private Color phaseColor()
@@ -366,7 +399,7 @@ public final class EasyCourierPanel extends PluginPanel
 		JPanel panel = basePanel(layout);
 		panel.setBackground(CARD);
 		Border line = BorderFactory.createLineBorder(new Color(52, 70, 79));
-		Border padding = BorderFactory.createEmptyBorder(10, 10, 10, 10);
+		Border padding = BorderFactory.createEmptyBorder(9, 9, 9, 9);
 		panel.setBorder(BorderFactory.createCompoundBorder(line, padding));
 		return panel;
 	}
@@ -387,8 +420,15 @@ public final class EasyCourierPanel extends PluginPanel
 		return panel;
 	}
 
-	private JLabel html(String text, int width)
+	private JLabel wrapped(String text, int width, Font font, Color color)
 	{
-		return new JLabel("<html><div style='width:" + width + "px'>" + text + "</div></html>");
+		String safe = text == null ? "" : text
+			.replace("&", "&amp;")
+			.replace("<", "&lt;")
+			.replace(">", "&gt;");
+		JLabel label = new JLabel("<html><body style='width:" + width + "px'>" + safe + "</body></html>");
+		label.setFont(font);
+		label.setForeground(color);
+		return label;
 	}
 }

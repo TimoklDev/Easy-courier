@@ -14,6 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.runelite.api.coords.WorldPoint;
 
 public final class RoutePlanner
 {
@@ -25,6 +26,11 @@ public final class RoutePlanner
 	}
 
 	public RoutePlan plan(RoutePreset preset, Port start, List<ActiveTask> activeTasks)
+	{
+		return plan(preset, start, activeTasks, activeTasks.size());
+	}
+
+	public RoutePlan plan(RoutePreset preset, Port start, List<ActiveTask> activeTasks, int taskCapacity)
 	{
 		List<ActiveTask> tasks = new ArrayList<>();
 		for (ActiveTask task : activeTasks)
@@ -55,9 +61,9 @@ public final class RoutePlanner
 		List<Port> order = new ArrayList<>();
 		order.add(routeStart);
 		order.addAll(best.order);
-		List<Port> seaPath = expandSeaPath(order);
-		List<RouteStep> steps = buildSteps(order, tasks, preset);
-		int experience = tasks.stream().mapToInt(task -> task.getDefinition().getExperience()).sum();
+		List<WorldPoint> seaPath = expandSeaPath(order);
+		List<RouteStep> steps = buildSteps(order, tasks, preset, activeTasks.size(), taskCapacity);
+		int experience = activeTasks.stream().mapToInt(task -> task.getDefinition().getExperience()).sum();
 		return new RoutePlan(order, seaPath, steps, experience, best.distance);
 	}
 
@@ -134,12 +140,12 @@ public final class RoutePlanner
 		return new int[]{picked, delivered};
 	}
 
-	private List<Port> expandSeaPath(List<Port> order)
+	private List<WorldPoint> expandSeaPath(List<Port> order)
 	{
-		List<Port> result = new ArrayList<>();
+		List<WorldPoint> result = new ArrayList<>();
 		for (int index = 0; index < order.size() - 1; index++)
 		{
-			List<Port> leg = seaNetwork.path(order.get(index), order.get(index + 1));
+			List<WorldPoint> leg = seaNetwork.path(order.get(index), order.get(index + 1));
 			if (!result.isEmpty() && !leg.isEmpty())
 			{
 				leg = new ArrayList<>(leg.subList(1, leg.size()));
@@ -148,12 +154,13 @@ public final class RoutePlanner
 		}
 		if (result.isEmpty() && !order.isEmpty())
 		{
-			result.add(order.get(0));
+			result.add(order.get(0).getMapPoint());
 		}
 		return result;
 	}
 
-	private List<RouteStep> buildSteps(List<Port> order, List<ActiveTask> tasks, RoutePreset preset)
+	private List<RouteStep> buildSteps(List<Port> order, List<ActiveTask> tasks, RoutePreset preset,
+		int occupiedSlots, int taskCapacity)
 	{
 		List<RouteStep> steps = new ArrayList<>();
 		Set<Integer> picked = new LinkedHashSet<>();
@@ -172,42 +179,31 @@ public final class RoutePlanner
 			{
 				steps.add(new RouteStep(StepKind.TRAVEL, port, "Sail to " + port, "Follow the highlighted sea route.", 0));
 			}
-			int pickupCrates = 0;
-			int pickupTasks = 0;
 			for (ActiveTask task : tasks)
 			{
 				if (!picked.contains(task.getSlot()) && task.getDefinition().getPickup() == port)
 				{
-					pickupCrates += Math.max(0, task.getDefinition().getCargoAmount() - task.getCargoTaken());
-					pickupTasks++;
+					int remaining = Math.max(0, task.getDefinition().getCargoAmount() - task.getCargoTaken());
+					steps.add(new RouteStep(StepKind.PICKUP, port,
+						"Collect " + remaining + " for " + task.getDefinition().getDelivery(),
+						"At " + port + ", use the highlighted cargo ledger and collect every remaining crate.", 0));
 					picked.add(task.getSlot());
 				}
 			}
-			if (pickupTasks > 0)
-			{
-				steps.add(new RouteStep(StepKind.PICKUP, port, "Collect " + pickupCrates + " cargo crates",
-					"Use the highlighted ledger for " + pickupTasks + plural(pickupTasks, " task", " tasks") + ".", 0));
-			}
-			int deliveryCrates = 0;
-			int deliveryTasks = 0;
-			int experience = 0;
 			for (ActiveTask task : tasks)
 			{
 				if (!delivered.contains(task.getSlot()) && picked.contains(task.getSlot())
 					&& task.getDefinition().getDelivery() == port)
 				{
-					deliveryCrates += Math.max(0, task.getDefinition().getCargoAmount() - task.getCargoDelivered());
-					deliveryTasks++;
-					experience += task.getDefinition().getExperience();
+					int remaining = Math.max(0, task.getDefinition().getCargoAmount() - task.getCargoDelivered());
+					steps.add(new RouteStep(StepKind.DELIVER, port,
+						"Deliver " + remaining + " from " + task.getDefinition().getPickup(),
+						"At " + port + ", use the highlighted cargo ledger to deposit the remaining crates.",
+						task.getDefinition().getExperience()));
 					delivered.add(task.getSlot());
 				}
 			}
-			if (deliveryTasks > 0)
-			{
-				steps.add(new RouteStep(StepKind.DELIVER, port, "Deliver " + deliveryCrates + " cargo crates",
-					deliveryTasks + plural(deliveryTasks, " task ends here.", " tasks end here."), experience));
-			}
-			if (orderIndex > 0 && port != preset.getFinish())
+			if (port.hasNoticeBoard() && port != preset.getFinish() && occupiedSlots < taskCapacity)
 			{
 				steps.add(new RouteStep(StepKind.NOTICE_BOARD, port, "Check the notice board",
 					"If a slot is open, take only a highlighted forward task.", 0));
@@ -216,11 +212,6 @@ public final class RoutePlanner
 		steps.add(new RouteStep(StepKind.FINISH, preset.getFinish(), "Finish at " + preset.getFinish(),
 			"Claim rewards and begin the next collection lap.", 0));
 		return steps;
-	}
-
-	private String plural(int value, String single, String multiple)
-	{
-		return value == 1 ? single : multiple;
 	}
 
 	private static final class SearchResult
@@ -235,4 +226,3 @@ public final class RoutePlanner
 		}
 	}
 }
-

@@ -34,7 +34,7 @@ public class RoutePlannerTest
 	}
 
 	@Test
-	public void mergesCargoForTheSameDeliveryDock()
+	public void keepsEachTaskVisibleAtSharedDeliveryDock()
 	{
 		List<ActiveTask> tasks = Arrays.asList(
 			active(0, Port.ALDARIN, Port.PRIFDDINAS, 8, 7082),
@@ -43,11 +43,35 @@ public class RoutePlannerTest
 		long prifDeliveries = plan.getSteps().stream()
 			.filter(step -> step.getKind() == StepKind.DELIVER && step.getPort() == Port.PRIFDDINAS)
 			.count();
-		assertEquals(1, prifDeliveries);
-		RouteStep delivery = plan.getSteps().stream()
-			.filter(step -> step.getKind() == StepKind.DELIVER && step.getPort() == Port.PRIFDDINAS)
-			.findFirst().orElseThrow(AssertionError::new);
-		assertEquals("Deliver 14 cargo crates", delivery.getTitle());
+		assertEquals(2, prifDeliveries);
+		assertTrue(plan.getSteps().stream().map(RouteStep::getTitle)
+			.anyMatch(title -> title.equals("Deliver 8 from Aldarin")));
+		assertTrue(plan.getSteps().stream().map(RouteStep::getTitle)
+			.anyMatch(title -> title.equals("Deliver 6 from Port Tyras")));
+	}
+
+	@Test
+	public void currentPortPickupIsTheFirstAction()
+	{
+		TaskDefinition definition = new TaskDefinition(9037, 2000, 70, Port.PRIFDDINAS,
+			Port.ALDARIN, Port.PRIFDDINAS, "Prifddinas potion delivery", 3000, 7, 7082);
+		ActiveTask task = new ActiveTask(definition, 0, 0, 0);
+		RoutePlan plan = planner.plan(RoutePreset.PRIFDDINAS, Port.ALDARIN,
+			Collections.singletonList(task));
+		assertEquals(StepKind.PICKUP, plan.getSteps().get(0).getKind());
+		assertEquals("Collect 7 for Prifddinas", plan.getSteps().get(0).getTitle());
+		assertEquals(7082, plan.getTotalExperience());
+	}
+
+	@Test
+	public void partialPickupShowsOnlyTheRemainingCargo()
+	{
+		TaskDefinition definition = new TaskDefinition(9037, 2000, 70, Port.PRIFDDINAS,
+			Port.ALDARIN, Port.PRIFDDINAS, "Prifddinas potion delivery", 3000, 7, 7082);
+		ActiveTask task = new ActiveTask(definition, 0, 3, 0);
+		RoutePlan plan = planner.plan(RoutePreset.PRIFDDINAS, Port.ALDARIN,
+			Collections.singletonList(task));
+		assertEquals("Collect 4 for Prifddinas", plan.getSteps().get(0).getTitle());
 	}
 
 	@Test
@@ -64,4 +88,3 @@ public class RoutePlannerTest
 		return new ActiveTask(definition, slot, 0, 0);
 	}
 }
-

@@ -46,10 +46,21 @@ public interface EasyCourierConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showWorldRoute",
+		name = "Show route while sailing",
+		description = "Draw the planned sea lanes in the game view",
+		position = 3
+	)
+	default boolean showWorldRoute()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "chatUpdates",
 		name = "Cargo chat updates",
 		description = "Send a message when all cargo at a dock has been collected or delivered",
-		position = 3
+		position = 4
 	)
 	default boolean chatUpdates()
 	{
@@ -61,7 +72,7 @@ public interface EasyCourierConfig extends Config
 		keyName = "priorityColor",
 		name = "Priority task color",
 		description = "Border color for the best task choices",
-		position = 4
+		position = 5
 	)
 	default Color priorityColor()
 	{
@@ -73,7 +84,7 @@ public interface EasyCourierConfig extends Config
 		keyName = "usefulColor",
 		name = "Useful task color",
 		description = "Border color for other tasks that fit the route",
-		position = 5
+		position = 6
 	)
 	default Color usefulColor()
 	{
@@ -85,11 +96,10 @@ public interface EasyCourierConfig extends Config
 		keyName = "routeColor",
 		name = "Sea route color",
 		description = "Color used for the route and dock highlights",
-		position = 6
+		position = 7
 	)
 	default Color routeColor()
 	{
 		return new Color(70, 181, 165, 255);
 	}
 }
-

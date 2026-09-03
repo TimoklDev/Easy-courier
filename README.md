@@ -31,12 +31,14 @@ The Prifddinas and Rellekka routes can reserve one open slot for a preferred Ald
 1. Press **Move to delivery phase** when the collection lap is ready.
 2. Easy Courier builds one route from every active courier task.
 3. Cargo pickups always happen before their matching deliveries.
-4. Tasks sharing a dock are combined into one stop.
+4. Each collect and deliver action remains visible, even when tasks share a dock.
 5. The route always finishes at the selected route point.
-6. Open the world map to see the planned sea lanes.
+6. The actual sea lane is visible while sailing and on the world map.
 7. At a delivery stop, an open notice board only highlights tasks that continue forward.
 
 The side panel shows the current instruction, task progress, XP per task, total route XP, and the complete ordered checklist. Every phase also has a **Skip current step** button.
+
+If the plugin starts while courier tasks are already active, it detects the best matching training route and resumes the delivery phase from the live cargo and location state.
 
 ## Highlight guide
 
@@ -63,5 +65,4 @@ The route card shows important unlock notes such as Song of the Elves for Prifdd
 
 ## Credits
 
-The public [Port Tasks plugin](https://github.com/nucleon/port-tasks) was used as a behavior and game-data reference. Easy Courier has its own route model, optimizer, state handling, overlays, and interface.
-
+The public [Port Tasks plugin](https://github.com/nucleon/port-tasks) was used as a behavior and game-data reference. Its BSD license is reproduced in `THIRD_PARTY_NOTICES.txt` inside the plugin JAR. Easy Courier has its own route model, optimizer, state handling, overlays, and interface.

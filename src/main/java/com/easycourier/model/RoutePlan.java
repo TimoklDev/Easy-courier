@@ -2,16 +2,18 @@ package com.easycourier.model;
 
 import java.util.Collections;
 import java.util.List;
+import net.runelite.api.coords.WorldPoint;
 
 public final class RoutePlan
 {
 	private final List<Port> portOrder;
-	private final List<Port> seaPath;
+	private final List<WorldPoint> seaPath;
 	private final List<RouteStep> steps;
 	private final int totalExperience;
 	private final double distance;
 
-	public RoutePlan(List<Port> portOrder, List<Port> seaPath, List<RouteStep> steps, int totalExperience, double distance)
+	public RoutePlan(List<Port> portOrder, List<WorldPoint> seaPath, List<RouteStep> steps, int totalExperience,
+		double distance)
 	{
 		this.portOrder = Collections.unmodifiableList(portOrder);
 		this.seaPath = Collections.unmodifiableList(seaPath);
@@ -25,7 +27,7 @@ public final class RoutePlan
 		return portOrder;
 	}
 
-	public List<Port> getSeaPath()
+	public List<WorldPoint> getSeaPath()
 	{
 		return seaPath;
 	}
@@ -57,4 +59,3 @@ public final class RoutePlan
 		return portOrder.isEmpty() ? null : portOrder.get(portOrder.size() - 1);
 	}
 }
-

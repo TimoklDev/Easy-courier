@@ -15,6 +15,7 @@ import com.easycourier.overlay.DockOverlay;
 import com.easycourier.overlay.CargoItemOverlay;
 import com.easycourier.overlay.NoticeBoardOverlay;
 import com.easycourier.overlay.RouteMapOverlay;
+import com.easycourier.overlay.RouteWorldOverlay;
 import com.easycourier.service.RouteAdvisor;
 import com.easycourier.service.RoutePlanner;
 import com.easycourier.service.SeaNetwork;
@@ -114,6 +115,8 @@ public class EasyCourierPlugin extends Plugin
 	private CargoItemOverlay cargoItemOverlay;
 	@Inject
 	private RouteMapOverlay routeMapOverlay;
+	@Inject
+	private RouteWorldOverlay routeWorldOverlay;
 
 	private final TaskCatalog catalog = new TaskCatalog();
 	private final TaskStateReader stateReader = new TaskStateReader();
@@ -154,6 +157,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.add(dockOverlay);
 		overlayManager.add(cargoItemOverlay);
 		overlayManager.add(routeMapOverlay);
+		overlayManager.add(routeWorldOverlay);
 		clientThread.invokeLater(this::loadGameData);
 		refreshPanel();
 	}
@@ -166,6 +170,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.remove(dockOverlay);
 		overlayManager.remove(cargoItemOverlay);
 		overlayManager.remove(routeMapOverlay);
+		overlayManager.remove(routeWorldOverlay);
 		activeTasks.clear();
 		boardOffers.clear();
 		ledgers.clear();
@@ -340,6 +345,15 @@ public class EasyCourierPlugin extends Plugin
 		catalog.load(client);
 		sailingLevel = client.getRealSkillLevel(Skill.SAILING);
 		refreshTasks();
+		if (phase == RoutePhase.IDLE && !activeTasks.isEmpty())
+		{
+			selectedRoute = detectRoute();
+			phase = RoutePhase.DELIVERY;
+			deliverySkipCount = 0;
+			rebuildRoutePlan();
+			refreshBoardAdvice();
+			refreshPanel();
+		}
 	}
 
 	private void refreshTasks()
@@ -525,11 +539,51 @@ public class EasyCourierPlugin extends Plugin
 
 	private void rebuildRoutePlan()
 	{
-		routePlan = planner.plan(selectedRoute, currentPort, activeTasks);
-		if (activeTasks.isEmpty() && currentPort == selectedRoute.getFinish())
+		routePlan = planner.plan(selectedRoute, currentPort, activeTasks,
+			TaskStateReader.taskCapacity(sailingLevel));
+		if (activeTasks.stream().allMatch(ActiveTask::isComplete)
+			&& currentPort == selectedRoute.getFinish())
 		{
 			phase = RoutePhase.COMPLETE;
 		}
+	}
+
+	private RoutePreset detectRoute()
+	{
+		RoutePreset best = selectedRoute;
+		int bestScore = routeScore(best);
+		for (RoutePreset route : RoutePreset.values())
+		{
+			int score = routeScore(route);
+			if (score > bestScore)
+			{
+				best = route;
+				bestScore = score;
+			}
+		}
+		return best;
+	}
+
+	private int routeScore(RoutePreset route)
+	{
+		int score = 0;
+		for (ActiveTask task : activeTasks)
+		{
+			TaskDefinition definition = task.getDefinition();
+			if (route.movesForward(definition))
+			{
+				score += 2;
+			}
+			if (definition.getDelivery() == route.getFinish())
+			{
+				score += 4;
+			}
+			if (route.routeRank(definition.getPickup()) >= 0)
+			{
+				score++;
+			}
+		}
+		return score;
 	}
 
 	private void sendMessage(String message)

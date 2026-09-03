@@ -52,7 +52,7 @@ public final class TaskCatalog
 		Integer pickupRow = integer(client, databaseRow, DBTableID.PortTask.COL_CARGO_PORT, 0, 0);
 		Integer deliveryRow = integer(client, databaseRow, DBTableID.PortTask.COL_ENDING_PORT, 0, 0);
 		Integer cargoItem = integer(client, databaseRow, DBTableID.PortTask.COL_CARGO, 0, 0);
-		Integer cargoAmount = integer(client, databaseRow, DBTableID.PortTask.COL_CARGO, 0, 1);
+		Integer cargoAmount = integer(client, databaseRow, DBTableID.PortTask.COL_CARGO, 1, 0);
 		String name = string(client, databaseRow, DBTableID.PortTask.COL_NAME);
 		if (taskId == null || level == null || boardRow == null || pickupRow == null || deliveryRow == null || name == null)
 		{
@@ -91,4 +91,3 @@ public final class TaskCatalog
 		return (String) values[0];
 	}
 }
-

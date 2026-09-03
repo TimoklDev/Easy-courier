@@ -12,19 +12,28 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import javax.inject.Inject;
+import net.runelite.api.Client;
+import net.runelite.api.Point;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.tooltip.Tooltip;
+import net.runelite.client.ui.overlay.tooltip.TooltipManager;
 
 public final class NoticeBoardOverlay extends Overlay
 {
 	private final EasyCourierPlugin plugin;
+	private final Client client;
+	private final TooltipManager tooltipManager;
 
 	@Inject
-	private NoticeBoardOverlay(EasyCourierPlugin plugin)
+	private NoticeBoardOverlay(EasyCourierPlugin plugin, Client client, TooltipManager tooltipManager)
 	{
 		this.plugin = plugin;
+		this.client = client;
+		this.tooltipManager = tooltipManager;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		setPriority(PRIORITY_HIGHEST);
@@ -33,11 +42,47 @@ public final class NoticeBoardOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
+		if (!plugin.isBoardOpen() || isCovered())
+		{
+			return null;
+		}
+		boolean tooltipShown = false;
 		for (BoardOffer offer : plugin.getBoardOffers())
 		{
 			renderOffer(graphics, offer);
+			if (!tooltipShown && isHovered(offer))
+			{
+				int experience = offer.getTask().getExperience();
+				tooltipManager.add(new Tooltip("<col=e2af4b>" + String.format("%,d XP", experience)
+					+ "</col><br>Task reward"));
+				tooltipShown = true;
+			}
 		}
 		return null;
+	}
+
+	private boolean isCovered()
+	{
+		Widget confirmation = client.getWidget(InterfaceID.PortTaskInfo.WINDOW);
+		if (confirmation != null && !confirmation.isHidden())
+		{
+			return true;
+		}
+		Widget worldMap = client.getWidget(InterfaceID.Worldmap.CONTENT);
+		return worldMap != null && !worldMap.isHidden();
+	}
+
+	private boolean isHovered(BoardOffer offer)
+	{
+		if (offer.getTask() == null || offer.getTask().getExperience() <= 0
+			|| (offer.getStatus() != OfferStatus.PRIORITY && offer.getStatus() != OfferStatus.USEFUL))
+		{
+			return false;
+		}
+		Widget widget = offer.getWidget();
+		Point mouse = client.getMouseCanvasPosition();
+		Rectangle bounds = widget == null ? null : widget.getBounds();
+		return bounds != null && mouse != null && bounds.contains(mouse.getX(), mouse.getY());
 	}
 
 	private void renderOffer(Graphics2D graphics, BoardOffer offer)
@@ -77,10 +122,6 @@ public final class NoticeBoardOverlay extends Overlay
 	private void drawBadge(Graphics2D graphics, Rectangle bounds, BoardOffer offer)
 	{
 		String label = offer.getStatus() == OfferStatus.PRIORITY ? "BEST" : "ROUTE";
-		if (bounds.width >= 125 && offer.getTask() != null && offer.getTask().getExperience() > 0)
-		{
-			label += "  " + String.format("%,d XP", offer.getTask().getExperience());
-		}
 		graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		int width = graphics.getFontMetrics().stringWidth(label) + 12;
 		int x = Math.max(bounds.x + 4, bounds.x + bounds.width - width - 4);

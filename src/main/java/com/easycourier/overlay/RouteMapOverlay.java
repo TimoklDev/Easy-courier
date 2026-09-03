@@ -6,6 +6,7 @@ import com.easycourier.model.RoutePlan;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -17,6 +18,7 @@ import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.Widget;
+import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -57,30 +59,51 @@ public final class RouteMapOverlay extends Overlay
 		Color color = plugin.getConfig().routeColor();
 		copy.setColor(color);
 		copy.setStroke(new BasicStroke(4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-		List<Port> path = plan.getSeaPath();
+		List<WorldPoint> path = plan.getSeaPath();
 		for (int index = 0; index < path.size() - 1; index++)
 		{
-			Point first = toMapPoint(path.get(index).getMapPoint(), bounds);
-			Point second = toMapPoint(path.get(index + 1).getMapPoint(), bounds);
+			Point first = toMapPoint(path.get(index), bounds);
+			Point second = toMapPoint(path.get(index + 1), bounds);
 			if (first != null && second != null)
 			{
 				copy.drawLine(first.getX(), first.getY(), second.getX(), second.getY());
 			}
 		}
-		for (Port port : plan.getPortOrder())
+		for (int index = 0; index < plan.getPortOrder().size(); index++)
 		{
-			Point point = toMapPoint(port.getMapPoint(), bounds);
-			if (point != null)
-			{
-				copy.setColor(new Color(8, 18, 22, 235));
-				copy.fillOval(point.getX() - 6, point.getY() - 6, 12, 12);
-				copy.setColor(color);
-				copy.drawOval(point.getX() - 6, point.getY() - 6, 12, 12);
-			}
+			drawStop(copy, bounds, plan.getPortOrder().get(index), index + 1, color);
 		}
 		copy.setClip(oldClip);
 		copy.dispose();
 		return null;
+	}
+
+	private void drawStop(Graphics2D graphics, Rectangle bounds, Port port, int number, Color color)
+	{
+		Point point = toMapPoint(port.getMapPoint(), bounds);
+		if (point == null)
+		{
+			return;
+		}
+		graphics.setFont(FontManager.getRunescapeSmallFont());
+		String marker = String.valueOf(number);
+		FontMetrics metrics = graphics.getFontMetrics();
+		graphics.setColor(new Color(8, 18, 22, 235));
+		graphics.fillOval(point.getX() - 9, point.getY() - 9, 18, 18);
+		graphics.setColor(color);
+		graphics.drawOval(point.getX() - 9, point.getY() - 9, 18, 18);
+		graphics.setColor(Color.WHITE);
+		graphics.drawString(marker, point.getX() - metrics.stringWidth(marker) / 2, point.getY() + 4);
+		String label = port.getDisplayName();
+		int width = metrics.stringWidth(label) + 10;
+		int x = point.getX() + 12;
+		int y = point.getY() - 9;
+		graphics.setColor(new Color(8, 18, 22, 220));
+		graphics.fillRoundRect(x, y, width, 18, 7, 7);
+		graphics.setColor(color);
+		graphics.drawRoundRect(x, y, width, 18, 7, 7);
+		graphics.setColor(Color.WHITE);
+		graphics.drawString(label, x + 5, y + 13);
 	}
 
 	private Point toMapPoint(WorldPoint point, Rectangle bounds)
