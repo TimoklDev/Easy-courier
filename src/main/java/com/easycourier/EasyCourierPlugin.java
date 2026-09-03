@@ -82,7 +82,8 @@ import net.runelite.client.ui.overlay.OverlayManager;
 )
 public class EasyCourierPlugin extends Plugin
 {
-	private static final Color CHAT_MESSAGE_COLOR = new Color(31, 78, 121);
+	private static final Color CHAT_LABEL_COLOR = new Color(0, 55, 130);
+	private static final Color CHAT_MESSAGE_COLOR = new Color(0, 82, 180);
 	private static final Set<Integer> TASK_VARBITS = new HashSet<>();
 
 	static
@@ -333,7 +334,7 @@ public class EasyCourierPlugin extends Plugin
 	{
 		if (sailingLevel < selectedRoute.getMinimumLevel())
 		{
-			sendMessage("Easy Courier: This route requires Sailing level " + selectedRoute.getMinimumLevel() + ".");
+			sendMessage("This route requires Sailing level " + selectedRoute.getMinimumLevel() + ".");
 			return;
 		}
 		phase = RoutePhase.COLLECTION;
@@ -842,7 +843,10 @@ public class EasyCourierPlugin extends Plugin
 		}
 		chatMessageManager.queue(QueuedMessage.builder()
 			.type(ChatMessageType.GAMEMESSAGE)
-			.runeLiteFormattedMessage(new ChatMessageBuilder().append(CHAT_MESSAGE_COLOR, message).build())
+			.runeLiteFormattedMessage(new ChatMessageBuilder()
+				.append(CHAT_LABEL_COLOR, "Easy Courier: ")
+				.append(CHAT_MESSAGE_COLOR, message)
+				.build())
 			.build());
 	}
 

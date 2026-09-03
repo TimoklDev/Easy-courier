@@ -60,7 +60,7 @@ The portal warning can be disabled with **Paint portal range for dodging**. It i
 
 ## Cargo messages
 
-The plugin sends these game messages in readable dark blue after the matching state change:
+The plugin sends these game messages with a strong blue **Easy Courier:** label after the matching state change:
 
 - `You now have all the cargo`
 - `You delivered all cargo for this dock`
