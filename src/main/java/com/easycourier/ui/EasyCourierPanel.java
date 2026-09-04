@@ -248,7 +248,8 @@ public final class EasyCourierPanel extends PluginPanel
 			boolean complete = index < plugin.getCollectionIndex() || unavailable || handoff;
 			boolean active = plugin.getPhase() == RoutePhase.COLLECTION && !handoff
 				&& index == plugin.getCollectionIndex();
-			String detail = unavailable ? "Skipped until Sailing " + stop.getMinimumLevel() : stop.getTravelInstruction();
+			String detail = unavailable ? "Skipped until Sailing " + stop.getMinimumLevel()
+				: plugin.getCollectionTravelInstruction(stop);
 			RouteStep step = new RouteStep(StepKind.NOTICE_BOARD, stop.getPort(), "Check " + stop.getPort(), detail, 0);
 			list.add(stepCard(index + 1, step, complete, active));
 			list.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -351,7 +352,7 @@ public final class EasyCourierPanel extends PluginPanel
 			{
 				return "Open the " + stop.getPort() + " notice board.";
 			}
-			return stop.getTravelInstruction();
+			return plugin.getCollectionTravelInstruction(stop);
 		}
 		RoutePlan plan = plugin.getRoutePlan();
 		if (plan == null || plan.getSteps().isEmpty())

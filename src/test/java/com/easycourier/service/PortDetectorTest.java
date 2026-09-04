@@ -39,6 +39,15 @@ public class PortDetectorTest
 		assertEquals(Port.SUNSET_COAST, detector.detect(Port.SUNSET_COAST.getMapPoint().dx(20), null, true));
 	}
 
+	@Test
+	public void waitsUntilTheEndOfTheEtceteriaShortcutRoute()
+	{
+		RouteStep step = EtceteriaShortcutRoute.getTravelStep();
+		assertEquals(Port.UNKNOWN, detector.detect(EtceteriaShortcutRoute.getPath().get(0), step, false));
+		assertEquals(Port.ETCETERIA, detector.detect(
+			EtceteriaShortcutRoute.getPath().get(EtceteriaShortcutRoute.getPath().size() - 1), step, false));
+	}
+
 	private RouteStep travelTo(Port port)
 	{
 		return new RouteStep(StepKind.TRAVEL, port, "Sail", "Follow the route", 0);

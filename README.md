@@ -28,7 +28,7 @@ Easy Courier splits each lap into two clear phases.
 
 When the task list becomes full, the remaining collection stops are skipped. Easy Courier chooses the available shipwright closest to the first location in the optimized delivery route. The shipwright is highlighted, along with the first cargo ledger when both are at the same port. Taking that cargo or boarding the recovered boat starts the delivery phase automatically.
 
-The Rellekka to Etceteria sailing step uses the same game-view and world-map route overlays as delivery travel. The Rellekka and Prifddinas checklists also remind you to recover your boat to Aldarin before starting delivery.
+The Rellekka to Etceteria step uses the sailing route when its shortcut requirements are not met. With 65 Sailing, 55 Agility, and The Fremennik Trials completed, Easy Courier instead highlights the Rellekka sailor, the Miscellania stepping stone, and a short land route to the Etceteria notice board. The Rellekka and Prifddinas checklists also remind you to recover your boat to Aldarin before starting delivery.
 
 Only the Prifddinas route keeps one slot reserved for Aldarin to Prifddinas until that task is accepted. When only that slot remains, the collection checklist skips directly to Aldarin.
 

@@ -18,6 +18,7 @@ import com.easycourier.model.TaskEdge;
 import com.easycourier.overlay.DockOverlay;
 import com.easycourier.overlay.CargoItemOverlay;
 import com.easycourier.overlay.CharterCrewmemberOverlay;
+import com.easycourier.overlay.EtceteriaShortcutOverlay;
 import com.easycourier.overlay.InfoPanelOverlay;
 import com.easycourier.overlay.NoticeBoardOverlay;
 import com.easycourier.overlay.NoticeBoardWorldOverlay;
@@ -30,6 +31,7 @@ import com.easycourier.service.RoutePlanner;
 import com.easycourier.service.SeaNetwork;
 import com.easycourier.service.PortDetector;
 import com.easycourier.service.ExperienceSession;
+import com.easycourier.service.EtceteriaShortcutRoute;
 import com.easycourier.service.ShipwrightLocator;
 import com.easycourier.ui.EasyCourierPanel;
 import com.google.inject.Provides;
@@ -48,6 +50,8 @@ import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.ObjectComposition;
 import net.runelite.api.Player;
+import net.runelite.api.Quest;
+import net.runelite.api.QuestState;
 import net.runelite.api.Skill;
 import net.runelite.api.Tile;
 import net.runelite.api.WorldEntity;
@@ -61,6 +65,7 @@ import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.ObjectID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
@@ -133,6 +138,8 @@ public class EasyCourierPlugin extends Plugin
 	@Inject
 	private CharterCrewmemberOverlay charterCrewmemberOverlay;
 	@Inject
+	private EtceteriaShortcutOverlay etceteriaShortcutOverlay;
+	@Inject
 	private RouteMapOverlay routeMapOverlay;
 	@Inject
 	private RouteWorldOverlay routeWorldOverlay;
@@ -156,6 +163,7 @@ public class EasyCourierPlugin extends Plugin
 	private final Set<GameObject> ledgers = new HashSet<>();
 	private final Set<GameObject> noticeBoards = new HashSet<>();
 	private final Set<GameObject> dodgePortals = new HashSet<>();
+	private final Set<GameObject> etceteriaSteppingStones = new HashSet<>();
 	private final Set<Port> pickupAnnouncements = EnumSet.noneOf(Port.class);
 	private final Set<Port> deliveryAnnouncements = EnumSet.noneOf(Port.class);
 	private final Set<Port> deliveryBoardsChecked = EnumSet.noneOf(Port.class);
@@ -167,7 +175,9 @@ public class EasyCourierPlugin extends Plugin
 	private int collectionIndex;
 	private int deliverySkipCount;
 	private int sailingLevel = 1;
+	private int agilityLevel = 1;
 	private int occupiedTaskSlots;
+	private boolean fremennikTrialsComplete;
 	private boolean boardWasOpen;
 	private Port openBoardPort = Port.UNKNOWN;
 	private Port currentPort = Port.UNKNOWN;
@@ -197,6 +207,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.add(dockOverlay);
 		overlayManager.add(cargoItemOverlay);
 		overlayManager.add(charterCrewmemberOverlay);
+		overlayManager.add(etceteriaShortcutOverlay);
 		overlayManager.add(routeMapOverlay);
 		overlayManager.add(routeWorldOverlay);
 		overlayManager.add(portalRangeOverlay);
@@ -215,6 +226,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.remove(dockOverlay);
 		overlayManager.remove(cargoItemOverlay);
 		overlayManager.remove(charterCrewmemberOverlay);
+		overlayManager.remove(etceteriaShortcutOverlay);
 		overlayManager.remove(routeMapOverlay);
 		overlayManager.remove(routeWorldOverlay);
 		overlayManager.remove(portalRangeOverlay);
@@ -225,6 +237,7 @@ public class EasyCourierPlugin extends Plugin
 		ledgers.clear();
 		noticeBoards.clear();
 		dodgePortals.clear();
+		etceteriaSteppingStones.clear();
 		pickupAnnouncements.clear();
 		deliveryAnnouncements.clear();
 		deliveryBoardsChecked.clear();
@@ -258,6 +271,7 @@ public class EasyCourierPlugin extends Plugin
 			ledgers.clear();
 			noticeBoards.clear();
 			dodgePortals.clear();
+			etceteriaSteppingStones.clear();
 		}
 	}
 
@@ -281,6 +295,15 @@ public class EasyCourierPlugin extends Plugin
 				rebuildCollectionRoutePlan();
 			}
 			refreshBoardAdvice();
+			refreshPanel();
+		}
+		else if (event.getSkill() == Skill.AGILITY)
+		{
+			agilityLevel = client.getRealSkillLevel(Skill.AGILITY);
+			if (phase == RoutePhase.COLLECTION)
+			{
+				rebuildCollectionRoutePlan();
+			}
 			refreshPanel();
 		}
 	}
@@ -337,6 +360,10 @@ public class EasyCourierPlugin extends Plugin
 		{
 			noticeBoards.add(event.getGameObject());
 		}
+		if (event.getGameObject().getId() == ObjectID.MISC_DIARY_STEPPINGSTONE)
+		{
+			etceteriaSteppingStones.add(event.getGameObject());
+		}
 		if (isDodgePortal(event.getGameObject()))
 		{
 			dodgePortals.add(event.getGameObject());
@@ -349,6 +376,7 @@ public class EasyCourierPlugin extends Plugin
 		ledgers.remove(event.getGameObject());
 		noticeBoards.remove(event.getGameObject());
 		dodgePortals.remove(event.getGameObject());
+		etceteriaSteppingStones.remove(event.getGameObject());
 	}
 
 	@Subscribe
@@ -465,6 +493,8 @@ public class EasyCourierPlugin extends Plugin
 			experienceSession.start(sailingExperience);
 		}
 		sailingLevel = client.getRealSkillLevel(Skill.SAILING);
+		agilityLevel = client.getRealSkillLevel(Skill.AGILITY);
+		fremennikTrialsComplete = Quest.THE_FREMENNIK_TRIALS.getState(client) == QuestState.FINISHED;
 		updateCurrentPort();
 		refreshTasks();
 		if (phase == RoutePhase.IDLE && !activeTasks.isEmpty())
@@ -679,6 +709,7 @@ public class EasyCourierPlugin extends Plugin
 	private void scanDodgePortals()
 	{
 		dodgePortals.clear();
+		etceteriaSteppingStones.clear();
 		WorldView topLevel = client.getTopLevelWorldView();
 		if (topLevel == null || topLevel.getScene() == null)
 		{
@@ -697,9 +728,17 @@ public class EasyCourierPlugin extends Plugin
 					}
 					for (GameObject object : tile.getGameObjects())
 					{
-						if (object != null && isDodgePortal(object))
+						if (object == null)
+						{
+							continue;
+						}
+						if (isDodgePortal(object))
 						{
 							dodgePortals.add(object);
+						}
+						if (object.getId() == ObjectID.MISC_DIARY_STEPPINGSTONE)
+						{
+							etceteriaSteppingStones.add(object);
 						}
 					}
 				}
@@ -870,6 +909,10 @@ public class EasyCourierPlugin extends Plugin
 		}
 		CollectionStop stop = selectedRoute.getCollectionStops().get(collectionIndex);
 		if (!stop.isSailingLeg() || currentPort == stop.getPort())
+		{
+			return;
+		}
+		if (isEtceteriaShortcutActive())
 		{
 			return;
 		}
@@ -1066,6 +1109,11 @@ public class EasyCourierPlugin extends Plugin
 		return Collections.unmodifiableSet(dodgePortals);
 	}
 
+	public Set<GameObject> getEtceteriaSteppingStones()
+	{
+		return Collections.unmodifiableSet(etceteriaSteppingStones);
+	}
+
 	public RouteStep getCurrentDeliveryStep()
 	{
 		if (phase != RoutePhase.DELIVERY || routePlan == null || routePlan.getSteps().isEmpty())
@@ -1078,6 +1126,10 @@ public class EasyCourierPlugin extends Plugin
 
 	private RouteStep getCurrentTravelStep()
 	{
+		if (isEtceteriaShortcutActive())
+		{
+			return EtceteriaShortcutRoute.getTravelStep();
+		}
 		if (phase == RoutePhase.COLLECTION && collectionRoutePlan != null
 			&& !collectionRoutePlan.getSteps().isEmpty())
 		{
@@ -1095,6 +1147,24 @@ public class EasyCourierPlugin extends Plugin
 	public RoutePlan getNavigationRoutePlan()
 	{
 		return phase == RoutePhase.COLLECTION ? collectionRoutePlan : routePlan;
+	}
+
+	public boolean isEtceteriaShortcutActive()
+	{
+		if (phase != RoutePhase.COLLECTION || isTaskListFull()
+			|| collectionIndex >= selectedRoute.getCollectionStops().size())
+		{
+			return false;
+		}
+		CollectionStop stop = selectedRoute.getCollectionStops().get(collectionIndex);
+		return EtceteriaShortcutRoute.isAvailable(selectedRoute, stop.getPort(), sailingLevel, agilityLevel,
+			fremennikTrialsComplete);
+	}
+
+	public String getCollectionTravelInstruction(CollectionStop stop)
+	{
+		return EtceteriaShortcutRoute.isAvailable(selectedRoute, stop.getPort(), sailingLevel, agilityLevel,
+			fremennikTrialsComplete) ? EtceteriaShortcutRoute.INSTRUCTION : stop.getTravelInstruction();
 	}
 
 	public boolean isCollectionHandoffActive()
@@ -1312,6 +1382,10 @@ public class EasyCourierPlugin extends Plugin
 			if (currentPort == stop.getPort())
 			{
 				return "Open " + stop.getPort() + " board";
+			}
+			if (isEtceteriaShortcutActive())
+			{
+				return "Take the sailor to Etceteria";
 			}
 			if (stop.isCharterRequired())
 			{
