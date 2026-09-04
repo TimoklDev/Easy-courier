@@ -59,6 +59,27 @@ public final class RoutePlanner
 		return best;
 	}
 
+	public RoutePlan planVia(RoutePreset preset, Port start, Port first, List<ActiveTask> activeTasks,
+		int taskCapacity, Set<Port> checkedBoards)
+	{
+		Port routeStart = start == null || start == Port.UNKNOWN
+			? preset.getCollectionStops().get(preset.getCollectionStops().size() - 1).getPort() : start;
+		RoutePlan remainder = plan(preset, first, activeTasks, taskCapacity, checkedBoards);
+		if (routeStart == first)
+		{
+			return remainder;
+		}
+		List<Port> order = new ArrayList<>();
+		order.add(routeStart);
+		order.addAll(remainder.getPortOrder());
+		List<RouteStep> steps = new ArrayList<>();
+		steps.add(new RouteStep(StepKind.TRAVEL, first, "Sail to " + first,
+			"Follow the highlighted sea route.", 0));
+		steps.addAll(remainder.getSteps());
+		return new RoutePlan(order, expandSeaPath(order), steps, remainder.getTotalExperience(),
+			seaNetwork.distance(routeStart, first) + remainder.getDistance());
+	}
+
 	public RoutePlan plan(RoutePreset preset, Port start, List<ActiveTask> activeTasks)
 	{
 		return plan(preset, start, activeTasks, activeTasks.size());

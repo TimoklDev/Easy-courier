@@ -90,6 +90,21 @@ public class RoutePlannerTest
 	}
 
 	@Test
+	public void preservesSelectedFirstPickupAfterBoatRecovery()
+	{
+		ActiveTask task = active(2, Port.SUNSET_COAST, Port.RELLEKKA, 5, 5000);
+		RoutePlan plan = planner.planVia(RoutePreset.RELLEKKA, Port.ALDARIN, Port.SUNSET_COAST,
+			Collections.singletonList(task), 4, Collections.emptySet());
+		assertEquals(Arrays.asList(Port.ALDARIN, Port.SUNSET_COAST, Port.RELLEKKA), plan.getPortOrder());
+		assertEquals(StepKind.TRAVEL, plan.getSteps().get(0).getKind());
+		assertEquals(Port.SUNSET_COAST, plan.getSteps().get(0).getPort());
+		assertEquals("Sail to Sunset Coast", plan.getSteps().get(0).getTitle());
+		assertEquals(StepKind.PICKUP, plan.getSteps().get(1).getKind());
+		assertEquals(Port.SUNSET_COAST, plan.getSteps().get(1).getPort());
+		assertEquals(Port.ALDARIN.getMapPoint(), plan.getSeaPath().get(0));
+	}
+
+	@Test
 	public void partialPickupShowsOnlyTheRemainingCargo()
 	{
 		TaskDefinition definition = new TaskDefinition(9037, 2000, 70, Port.PRIFDDINAS,

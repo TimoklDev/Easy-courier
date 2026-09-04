@@ -19,6 +19,7 @@ import com.easycourier.overlay.DockOverlay;
 import com.easycourier.overlay.CargoItemOverlay;
 import com.easycourier.overlay.CharterCrewmemberOverlay;
 import com.easycourier.overlay.EtceteriaShortcutOverlay;
+import com.easycourier.overlay.GangplankOverlay;
 import com.easycourier.overlay.InfoPanelOverlay;
 import com.easycourier.overlay.NoticeBoardOverlay;
 import com.easycourier.overlay.NoticeBoardWorldOverlay;
@@ -149,6 +150,8 @@ public class EasyCourierPlugin extends Plugin
 	private InfoPanelOverlay infoPanelOverlay;
 	@Inject
 	private ShipwrightOverlay shipwrightOverlay;
+	@Inject
+	private GangplankOverlay gangplankOverlay;
 
 	private final TaskCatalog catalog = new TaskCatalog();
 	private final TaskStateReader stateReader = new TaskStateReader();
@@ -164,6 +167,7 @@ public class EasyCourierPlugin extends Plugin
 	private final Set<GameObject> noticeBoards = new HashSet<>();
 	private final Set<GameObject> dodgePortals = new HashSet<>();
 	private final Set<GameObject> etceteriaSteppingStones = new HashSet<>();
+	private final Set<GameObject> gangplanks = new HashSet<>();
 	private final Set<Port> pickupAnnouncements = EnumSet.noneOf(Port.class);
 	private final Set<Port> deliveryAnnouncements = EnumSet.noneOf(Port.class);
 	private final Set<Port> deliveryBoardsChecked = EnumSet.noneOf(Port.class);
@@ -188,6 +192,7 @@ public class EasyCourierPlugin extends Plugin
 	private Shipwright collectionShipwright;
 	private Port collectionRouteStart = Port.UNKNOWN;
 	private Port collectionFirstCargoPort = Port.UNKNOWN;
+	private Port forcedDeliveryStart = Port.UNKNOWN;
 
 	@Override
 	protected void startUp()
@@ -215,6 +220,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.add(portalRangeOverlay);
 		overlayManager.add(infoPanelOverlay);
 		overlayManager.add(shipwrightOverlay);
+		overlayManager.add(gangplankOverlay);
 		clientThread.invokeLater(this::loadGameData);
 		refreshPanel();
 	}
@@ -234,12 +240,14 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.remove(portalRangeOverlay);
 		overlayManager.remove(infoPanelOverlay);
 		overlayManager.remove(shipwrightOverlay);
+		overlayManager.remove(gangplankOverlay);
 		activeTasks.clear();
 		boardOffers.clear();
 		ledgers.clear();
 		noticeBoards.clear();
 		dodgePortals.clear();
 		etceteriaSteppingStones.clear();
+		gangplanks.clear();
 		pickupAnnouncements.clear();
 		deliveryAnnouncements.clear();
 		deliveryBoardsChecked.clear();
@@ -248,6 +256,7 @@ public class EasyCourierPlugin extends Plugin
 		navigationButton = null;
 		collectionRoutePlan = null;
 		clearCollectionHandoff();
+		forcedDeliveryStart = Port.UNKNOWN;
 	}
 
 	@Provides
@@ -275,6 +284,7 @@ public class EasyCourierPlugin extends Plugin
 			noticeBoards.clear();
 			dodgePortals.clear();
 			etceteriaSteppingStones.clear();
+			gangplanks.clear();
 		}
 	}
 
@@ -379,6 +389,10 @@ public class EasyCourierPlugin extends Plugin
 		{
 			dodgePortals.add(event.getGameObject());
 		}
+		if (isGangplank(event.getGameObject()))
+		{
+			gangplanks.add(event.getGameObject());
+		}
 	}
 
 	@Subscribe
@@ -388,6 +402,7 @@ public class EasyCourierPlugin extends Plugin
 		noticeBoards.remove(event.getGameObject());
 		dodgePortals.remove(event.getGameObject());
 		etceteriaSteppingStones.remove(event.getGameObject());
+		gangplanks.remove(event.getGameObject());
 	}
 
 	@Subscribe
@@ -425,6 +440,7 @@ public class EasyCourierPlugin extends Plugin
 		routePlan = null;
 		collectionRoutePlan = null;
 		deliveryBoardsChecked.clear();
+		forcedDeliveryStart = Port.UNKNOWN;
 		skipUnavailableCollectionStops();
 		rebuildCollectionRoutePlan();
 		refreshBoardAdvice();
@@ -433,6 +449,7 @@ public class EasyCourierPlugin extends Plugin
 
 	public void moveToDelivery()
 	{
+		forcedDeliveryStart = isCollectionHandoffActive() ? collectionRouteStart : Port.UNKNOWN;
 		phase = RoutePhase.DELIVERY;
 		deliverySkipCount = 0;
 		clearCollectionHandoff();
@@ -459,6 +476,11 @@ public class EasyCourierPlugin extends Plugin
 		else if (phase == RoutePhase.DELIVERY && routePlan != null)
 		{
 			int index = Math.min(deliverySkipCount, routePlan.getSteps().size() - 1);
+			if (index >= 0 && routePlan.getSteps().get(index).getKind() == StepKind.TRAVEL
+				&& routePlan.getSteps().get(index).getPort() == forcedDeliveryStart)
+			{
+				forcedDeliveryStart = Port.UNKNOWN;
+			}
 			if (index >= 0 && routePlan.getSteps().get(index).getKind() == StepKind.NOTICE_BOARD)
 			{
 				deliveryBoardsChecked.add(routePlan.getSteps().get(index).getPort());
@@ -481,6 +503,7 @@ public class EasyCourierPlugin extends Plugin
 		routePlan = null;
 		collectionRoutePlan = null;
 		clearCollectionHandoff();
+		forcedDeliveryStart = Port.UNKNOWN;
 		boardOffers.clear();
 		deliveryBoardsChecked.clear();
 		refreshPanel();
@@ -721,6 +744,7 @@ public class EasyCourierPlugin extends Plugin
 	{
 		dodgePortals.clear();
 		etceteriaSteppingStones.clear();
+		gangplanks.clear();
 		WorldView topLevel = client.getTopLevelWorldView();
 		if (topLevel == null || topLevel.getScene() == null)
 		{
@@ -751,6 +775,10 @@ public class EasyCourierPlugin extends Plugin
 						{
 							etceteriaSteppingStones.add(object);
 						}
+						if (isGangplank(object))
+						{
+							gangplanks.add(object);
+						}
 					}
 				}
 			}
@@ -770,6 +798,21 @@ public class EasyCourierPlugin extends Plugin
 		}
 		String name = composition == null ? null : composition.getName();
 		return name != null && name.regionMatches(true, 0, "Portal of ", 0, 10);
+	}
+
+	private boolean isGangplank(GameObject object)
+	{
+		ObjectComposition composition = client.getObjectDefinition(object.getId());
+		if (composition == null)
+		{
+			return false;
+		}
+		if (composition.getImpostorIds() != null)
+		{
+			composition = composition.getImpostor();
+		}
+		String name = composition == null ? null : composition.getName();
+		return name != null && name.equalsIgnoreCase("Gangplank");
 	}
 
 	private void advanceDeliveryAfterBoard(Port port)
@@ -852,8 +895,15 @@ public class EasyCourierPlugin extends Plugin
 	private void rebuildRoutePlan()
 	{
 		Port routeStart = currentPort == Port.UNKNOWN ? lastKnownPort : currentPort;
-		routePlan = planner.plan(selectedRoute, routeStart, activeTasks,
-			TaskStateReader.taskCapacity(sailingLevel), deliveryBoardsChecked);
+		if (routeStart == forcedDeliveryStart)
+		{
+			forcedDeliveryStart = Port.UNKNOWN;
+		}
+		routePlan = forcedDeliveryStart == Port.UNKNOWN
+			? planner.plan(selectedRoute, routeStart, activeTasks,
+				TaskStateReader.taskCapacity(sailingLevel), deliveryBoardsChecked)
+			: planner.planVia(selectedRoute, routeStart, forcedDeliveryStart, activeTasks,
+				TaskStateReader.taskCapacity(sailingLevel), deliveryBoardsChecked);
 		if (activeTasks.stream().allMatch(ActiveTask::isComplete)
 			&& currentPort == selectedRoute.getFinish())
 		{
@@ -891,24 +941,15 @@ public class EasyCourierPlugin extends Plugin
 			{
 				return;
 			}
-			RoutePlan routeFromRecovery = planner.plan(selectedRoute, collectionShipwright.getPort(), activeTasks,
-				TaskStateReader.taskCapacity(sailingLevel));
-			for (RouteStep step : routeFromRecovery.getSteps())
+			collectionRouteStart = preferredStart;
+			for (RouteStep step : preview.getSteps())
 			{
-				if (collectionRouteStart == Port.UNKNOWN && step.getKind() != StepKind.FINISH)
-				{
-					collectionRouteStart = step.getPort();
-				}
 				if (collectionFirstCargoPort == Port.UNKNOWN && step.getKind() == StepKind.PICKUP)
 				{
 					collectionFirstCargoPort = step.getPort();
 				}
 			}
-			if (collectionRouteStart == Port.UNKNOWN)
-			{
-				collectionRouteStart = preferredStart;
-			}
-			if (collectionShipwright != null && collectionShipwright.getPort() != collectionRouteStart)
+			if (collectionShipwright.getPort() != collectionRouteStart)
 			{
 				collectionRoutePlan = planner.planLeg(collectionShipwright.getPort(), collectionRouteStart);
 			}
@@ -1125,6 +1166,11 @@ public class EasyCourierPlugin extends Plugin
 		return Collections.unmodifiableSet(etceteriaSteppingStones);
 	}
 
+	public Set<GameObject> getGangplanks()
+	{
+		return Collections.unmodifiableSet(gangplanks);
+	}
+
 	public RouteStep getCurrentDeliveryStep()
 	{
 		if (phase != RoutePhase.DELIVERY || routePlan == null || routePlan.getSteps().isEmpty())
@@ -1217,6 +1263,11 @@ public class EasyCourierPlugin extends Plugin
 		return canCollectFirstCargoAtRecovery()
 			? "Recover your boat and/or grab your first cargo."
 			: "Recover your boat and/or board it.";
+	}
+
+	public boolean shouldHighlightGangplank()
+	{
+		return isCollectionHandoffActive() && !canCollectFirstCargoAtRecovery();
 	}
 
 	public String getCollectionHandoffDetail()
