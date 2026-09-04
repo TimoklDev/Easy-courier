@@ -26,14 +26,25 @@ public final class ExperienceSession
 		startedAt = 0L;
 	}
 
-	public void record(int experience)
+	public void start(int experience)
 	{
-		if (startingExperience < 0)
+		startingExperience = experience;
+		currentExperience = experience;
+		startedAt = clock.getAsLong();
+	}
+
+	public void update(int experience)
+	{
+		if (!isStarted())
 		{
-			startingExperience = experience;
-			startedAt = clock.getAsLong();
+			return;
 		}
 		currentExperience = experience;
+	}
+
+	public boolean isStarted()
+	{
+		return startingExperience >= 0;
 	}
 
 	public int getGained()

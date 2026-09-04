@@ -232,6 +232,11 @@ public class EasyCourierPlugin extends Plugin
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
 	{
+		if (isExperienceSessionBoundary(event.getGameState()))
+		{
+			resetExperienceSession();
+			refreshPanel();
+		}
 		if (event.getGameState() == GameState.LOGGED_IN)
 		{
 			clientThread.invokeLater(this::loadGameData);
@@ -244,12 +249,20 @@ public class EasyCourierPlugin extends Plugin
 		}
 	}
 
+	static boolean isExperienceSessionBoundary(GameState gameState)
+	{
+		return gameState == GameState.STARTING || gameState == GameState.LOGIN_SCREEN;
+	}
+
 	@Subscribe
 	public void onStatChanged(StatChanged event)
 	{
 		if (event.getSkill() == Skill.SAILING)
 		{
-			recordSessionExperience(event.getXp());
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
+				experienceSession.update(event.getXp());
+			}
 			sailingLevel = client.getRealSkillLevel(Skill.SAILING);
 			refreshBoardAdvice();
 			refreshPanel();
@@ -421,7 +434,15 @@ public class EasyCourierPlugin extends Plugin
 		}
 		catalog.load(client);
 		scanDodgePortals();
-		recordSessionExperience(client.getSkillExperience(Skill.SAILING));
+		int sailingExperience = client.getSkillExperience(Skill.SAILING);
+		if (experienceSession.isStarted())
+		{
+			experienceSession.update(sailingExperience);
+		}
+		else
+		{
+			experienceSession.start(sailingExperience);
+		}
 		sailingLevel = client.getRealSkillLevel(Skill.SAILING);
 		updateCurrentPort();
 		refreshTasks();
@@ -596,11 +617,6 @@ public class EasyCourierPlugin extends Plugin
 	private void resetExperienceSession()
 	{
 		experienceSession.reset();
-	}
-
-	private void recordSessionExperience(int experience)
-	{
-		experienceSession.record(experience);
 	}
 
 	private void scanDodgePortals()
