@@ -7,8 +7,8 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import javax.inject.Inject;
-import net.runelite.api.GameObject;
 import net.runelite.api.Point;
+import net.runelite.api.TileObject;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -35,9 +35,9 @@ public final class GangplankOverlay extends Overlay
 			return null;
 		}
 		Color color = plugin.getConfig().routeColor();
-		for (GameObject gangplank : plugin.getGangplanks())
+		for (TileObject gangplank : plugin.getGangplanks())
 		{
-			Shape hull = gangplank.getConvexHull();
+			Shape hull = gangplank.getClickbox();
 			if (hull != null)
 			{
 				graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 55));

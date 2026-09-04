@@ -55,15 +55,22 @@ import net.runelite.api.Quest;
 import net.runelite.api.QuestState;
 import net.runelite.api.Skill;
 import net.runelite.api.Tile;
+import net.runelite.api.TileObject;
 import net.runelite.api.WorldEntity;
 import net.runelite.api.WorldView;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.DecorativeObjectDespawned;
+import net.runelite.api.events.DecorativeObjectSpawned;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.GroundObjectDespawned;
+import net.runelite.api.events.GroundObjectSpawned;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.WallObjectDespawned;
+import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.ObjectID;
@@ -167,7 +174,7 @@ public class EasyCourierPlugin extends Plugin
 	private final Set<GameObject> noticeBoards = new HashSet<>();
 	private final Set<GameObject> dodgePortals = new HashSet<>();
 	private final Set<GameObject> etceteriaSteppingStones = new HashSet<>();
-	private final Set<GameObject> gangplanks = new HashSet<>();
+	private final Set<TileObject> gangplanks = new HashSet<>();
 	private final Set<Port> pickupAnnouncements = EnumSet.noneOf(Port.class);
 	private final Set<Port> deliveryAnnouncements = EnumSet.noneOf(Port.class);
 	private final Set<Port> deliveryBoardsChecked = EnumSet.noneOf(Port.class);
@@ -182,7 +189,7 @@ public class EasyCourierPlugin extends Plugin
 	private int agilityLevel = 1;
 	private int occupiedTaskSlots;
 	private boolean fremennikTrialsComplete;
-	private boolean awaitingSailingStatSync;
+	private int experienceInitializationTicks;
 	private boolean boardWasOpen;
 	private Port openBoardPort = Port.UNKNOWN;
 	private Port currentPort = Port.UNKNOWN;
@@ -198,7 +205,7 @@ public class EasyCourierPlugin extends Plugin
 	protected void startUp()
 	{
 		resetExperienceSession();
-		awaitingSailingStatSync = client.getGameState() != GameState.LOGGED_IN;
+		experienceInitializationTicks = client.getGameState() == GameState.LOGGED_IN ? 0 : 2;
 		selectedRoute = config.defaultRoute();
 		restoreLastKnownPort();
 		panel = new EasyCourierPanel(this);
@@ -271,7 +278,7 @@ public class EasyCourierPlugin extends Plugin
 		if (isExperienceSessionBoundary(event.getGameState()))
 		{
 			resetExperienceSession();
-			awaitingSailingStatSync = true;
+			experienceInitializationTicks = 2;
 			refreshPanel();
 		}
 		if (event.getGameState() == GameState.LOGGED_IN)
@@ -298,7 +305,7 @@ public class EasyCourierPlugin extends Plugin
 	{
 		if (event.getSkill() == Skill.SAILING)
 		{
-			if (client.getGameState() == GameState.LOGGED_IN)
+			if (client.getGameState() == GameState.LOGGED_IN && experienceInitializationTicks == 0)
 			{
 				if (experienceSession.isStarted())
 				{
@@ -308,7 +315,6 @@ public class EasyCourierPlugin extends Plugin
 				{
 					experienceSession.start(event.getXp());
 				}
-				awaitingSailingStatSync = false;
 			}
 			sailingLevel = client.getRealSkillLevel(Skill.SAILING);
 			if (phase == RoutePhase.COLLECTION)
@@ -351,6 +357,7 @@ public class EasyCourierPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
+		initializeExperienceSession();
 		updateCurrentPort();
 		Widget board = client.getWidget(InterfaceID.PortTaskBoard.CONTAINER);
 		boolean boardOpen = board != null && !board.isHidden();
@@ -389,10 +396,7 @@ public class EasyCourierPlugin extends Plugin
 		{
 			dodgePortals.add(event.getGameObject());
 		}
-		if (isGangplank(event.getGameObject()))
-		{
-			gangplanks.add(event.getGameObject());
-		}
+		trackGangplank(event.getGameObject());
 	}
 
 	@Subscribe
@@ -403,6 +407,42 @@ public class EasyCourierPlugin extends Plugin
 		dodgePortals.remove(event.getGameObject());
 		etceteriaSteppingStones.remove(event.getGameObject());
 		gangplanks.remove(event.getGameObject());
+	}
+
+	@Subscribe
+	public void onWallObjectSpawned(WallObjectSpawned event)
+	{
+		trackGangplank(event.getWallObject());
+	}
+
+	@Subscribe
+	public void onWallObjectDespawned(WallObjectDespawned event)
+	{
+		gangplanks.remove(event.getWallObject());
+	}
+
+	@Subscribe
+	public void onGroundObjectSpawned(GroundObjectSpawned event)
+	{
+		trackGangplank(event.getGroundObject());
+	}
+
+	@Subscribe
+	public void onGroundObjectDespawned(GroundObjectDespawned event)
+	{
+		gangplanks.remove(event.getGroundObject());
+	}
+
+	@Subscribe
+	public void onDecorativeObjectSpawned(DecorativeObjectSpawned event)
+	{
+		trackGangplank(event.getDecorativeObject());
+	}
+
+	@Subscribe
+	public void onDecorativeObjectDespawned(DecorativeObjectDespawned event)
+	{
+		gangplanks.remove(event.getDecorativeObject());
 	}
 
 	@Subscribe
@@ -516,13 +556,13 @@ public class EasyCourierPlugin extends Plugin
 			return;
 		}
 		catalog.load(client);
-		scanDodgePortals();
+		scanSceneObjects();
 		int sailingExperience = client.getSkillExperience(Skill.SAILING);
 		if (experienceSession.isStarted())
 		{
 			experienceSession.update(sailingExperience);
 		}
-		else if (!awaitingSailingStatSync)
+		else if (experienceInitializationTicks == 0)
 		{
 			experienceSession.start(sailingExperience);
 		}
@@ -740,17 +780,40 @@ public class EasyCourierPlugin extends Plugin
 		experienceSession.reset();
 	}
 
-	private void scanDodgePortals()
+	private void initializeExperienceSession()
+	{
+		if (client.getGameState() != GameState.LOGGED_IN || experienceInitializationTicks <= 0)
+		{
+			return;
+		}
+		experienceInitializationTicks--;
+		if (experienceInitializationTicks == 0)
+		{
+			experienceSession.start(client.getSkillExperience(Skill.SAILING));
+			refreshPanel();
+		}
+	}
+
+	private void scanSceneObjects()
 	{
 		dodgePortals.clear();
 		etceteriaSteppingStones.clear();
 		gangplanks.clear();
 		WorldView topLevel = client.getTopLevelWorldView();
-		if (topLevel == null || topLevel.getScene() == null)
+		if (topLevel == null)
 		{
 			return;
 		}
-		Tile[][][] tiles = topLevel.getScene().getTiles();
+		scanWorldViewObjects(topLevel, new HashSet<>());
+	}
+
+	private void scanWorldViewObjects(WorldView worldView, Set<Integer> scannedViews)
+	{
+		if (worldView == null || worldView.getScene() == null || !scannedViews.add(worldView.getId()))
+		{
+			return;
+		}
+		Tile[][][] tiles = worldView.getScene().getTiles();
 		for (Tile[][] plane : tiles)
 		{
 			for (Tile[] column : plane)
@@ -775,13 +838,17 @@ public class EasyCourierPlugin extends Plugin
 						{
 							etceteriaSteppingStones.add(object);
 						}
-						if (isGangplank(object))
-						{
-							gangplanks.add(object);
-						}
+						trackGangplank(object);
 					}
+					trackGangplank(tile.getWallObject());
+					trackGangplank(tile.getGroundObject());
+					trackGangplank(tile.getDecorativeObject());
 				}
 			}
+		}
+		for (WorldView child : worldView.worldViews())
+		{
+			scanWorldViewObjects(child, scannedViews);
 		}
 	}
 
@@ -800,7 +867,15 @@ public class EasyCourierPlugin extends Plugin
 		return name != null && name.regionMatches(true, 0, "Portal of ", 0, 10);
 	}
 
-	private boolean isGangplank(GameObject object)
+	private void trackGangplank(TileObject object)
+	{
+		if (object != null && isGangplank(object))
+		{
+			gangplanks.add(object);
+		}
+	}
+
+	private boolean isGangplank(TileObject object)
 	{
 		ObjectComposition composition = client.getObjectDefinition(object.getId());
 		if (composition == null)
@@ -1166,7 +1241,7 @@ public class EasyCourierPlugin extends Plugin
 		return Collections.unmodifiableSet(etceteriaSteppingStones);
 	}
 
-	public Set<GameObject> getGangplanks()
+	public Set<TileObject> getGangplanks()
 	{
 		return Collections.unmodifiableSet(gangplanks);
 	}
