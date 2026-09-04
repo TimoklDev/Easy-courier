@@ -178,6 +178,7 @@ public class EasyCourierPlugin extends Plugin
 	private int agilityLevel = 1;
 	private int occupiedTaskSlots;
 	private boolean fremennikTrialsComplete;
+	private boolean awaitingSailingStatSync;
 	private boolean boardWasOpen;
 	private Port openBoardPort = Port.UNKNOWN;
 	private Port currentPort = Port.UNKNOWN;
@@ -192,6 +193,7 @@ public class EasyCourierPlugin extends Plugin
 	protected void startUp()
 	{
 		resetExperienceSession();
+		awaitingSailingStatSync = client.getGameState() != GameState.LOGGED_IN;
 		selectedRoute = config.defaultRoute();
 		restoreLastKnownPort();
 		panel = new EasyCourierPanel(this);
@@ -260,6 +262,7 @@ public class EasyCourierPlugin extends Plugin
 		if (isExperienceSessionBoundary(event.getGameState()))
 		{
 			resetExperienceSession();
+			awaitingSailingStatSync = true;
 			refreshPanel();
 		}
 		if (event.getGameState() == GameState.LOGGED_IN)
@@ -287,7 +290,15 @@ public class EasyCourierPlugin extends Plugin
 		{
 			if (client.getGameState() == GameState.LOGGED_IN)
 			{
-				experienceSession.update(event.getXp());
+				if (experienceSession.isStarted())
+				{
+					experienceSession.update(event.getXp());
+				}
+				else
+				{
+					experienceSession.start(event.getXp());
+				}
+				awaitingSailingStatSync = false;
 			}
 			sailingLevel = client.getRealSkillLevel(Skill.SAILING);
 			if (phase == RoutePhase.COLLECTION)
@@ -488,7 +499,7 @@ public class EasyCourierPlugin extends Plugin
 		{
 			experienceSession.update(sailingExperience);
 		}
-		else
+		else if (!awaitingSailingStatSync)
 		{
 			experienceSession.start(sailingExperience);
 		}

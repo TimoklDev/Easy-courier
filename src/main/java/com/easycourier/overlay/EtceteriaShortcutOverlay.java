@@ -69,7 +69,7 @@ public final class EtceteriaShortcutOverlay extends Overlay
 		for (NPC npc : worldView.npcs())
 		{
 			WorldPoint location = npc.getWorldLocation();
-			if (npc.getId() != NpcID.MISC_SAILOR || location == null
+			if (npc.getId() != NpcID.VIKING_SAILOR || location == null
 				|| location.distanceTo2D(EtceteriaShortcutRoute.getRellekkaSailor()) > 6)
 			{
 				continue;
