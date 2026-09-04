@@ -76,7 +76,3 @@ Several tasks for the same dock are counted together before the message is sent.
 - Sailing route and quest requirements still apply in game
 
 The route card shows important unlock notes such as Song of the Elves for Prifddinas, Troubled Tortugans for The Summer Shore, and the level 65 Etceteria option.
-
-## Credits
-
-The public [Port Tasks plugin](https://github.com/nucleon/port-tasks) was used as a behavior and game-data reference. Its BSD license is reproduced in `THIRD_PARTY_NOTICES.txt` inside the plugin JAR. Easy Courier has its own route model, optimizer, state handling, overlays, and interface.
