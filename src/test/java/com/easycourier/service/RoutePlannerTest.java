@@ -76,6 +76,20 @@ public class RoutePlannerTest
 	}
 
 	@Test
+	public void findsBestDynamicTaskStart()
+	{
+		List<ActiveTask> tasks = Arrays.asList(
+			active(0, Port.ALDARIN, Port.PRIFDDINAS, 8, 7082),
+			active(1, Port.DEEPFIN_POINT, Port.PORT_TYRAS, 5, 4030));
+		RoutePlan best = planner.planFromBestTaskStart(RoutePreset.PRIFDDINAS, tasks, 4);
+		RoutePlan fromAldarin = planner.plan(RoutePreset.PRIFDDINAS, Port.ALDARIN, tasks, 4);
+		RoutePlan fromDeepfin = planner.plan(RoutePreset.PRIFDDINAS, Port.DEEPFIN_POINT, tasks, 4);
+		Port expected = fromAldarin.getDistance() <= fromDeepfin.getDistance()
+			? Port.ALDARIN : Port.DEEPFIN_POINT;
+		assertEquals(expected, best.getPortOrder().get(0));
+	}
+
+	@Test
 	public void partialPickupShowsOnlyTheRemainingCargo()
 	{
 		TaskDefinition definition = new TaskDefinition(9037, 2000, 70, Port.PRIFDDINAS,

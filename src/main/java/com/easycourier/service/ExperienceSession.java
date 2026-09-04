@@ -8,6 +8,7 @@ public final class ExperienceSession
 	private int startingExperience = -1;
 	private int currentExperience = -1;
 	private long startedAt;
+	private boolean gainingStarted;
 
 	public ExperienceSession()
 	{
@@ -24,13 +25,15 @@ public final class ExperienceSession
 		startingExperience = -1;
 		currentExperience = -1;
 		startedAt = 0L;
+		gainingStarted = false;
 	}
 
 	public void start(int experience)
 	{
 		startingExperience = experience;
 		currentExperience = experience;
-		startedAt = clock.getAsLong();
+		startedAt = 0L;
+		gainingStarted = false;
 	}
 
 	public void update(int experience)
@@ -38,6 +41,11 @@ public final class ExperienceSession
 		if (!isStarted())
 		{
 			return;
+		}
+		if (!gainingStarted && experience > startingExperience)
+		{
+			startedAt = clock.getAsLong();
+			gainingStarted = true;
 		}
 		currentExperience = experience;
 	}
@@ -59,6 +67,10 @@ public final class ExperienceSession
 	public long getPerHour()
 	{
 		int gained = getGained();
+		if (!gainingStarted)
+		{
+			return 0L;
+		}
 		long elapsed = clock.getAsLong() - startedAt;
 		if (gained == 0 || elapsed <= 0L)
 		{

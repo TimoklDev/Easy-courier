@@ -38,6 +38,14 @@ public final class DockOverlay extends Overlay
 			Port port = Port.fromLedgerObjectId(ledger.getId());
 			List<ActiveTask> pickups = plugin.tasksAtPickup(port);
 			List<ActiveTask> deliveries = plugin.tasksAtDelivery(port);
+			if (plugin.isCollectionHandoffActive())
+			{
+				deliveries.clear();
+				if (!plugin.isCollectionHandoffCargoPort(port))
+				{
+					pickups.clear();
+				}
+			}
 			deliveries.removeIf(task -> !task.canDeliver());
 			if (pickups.isEmpty() && deliveries.isEmpty())
 			{

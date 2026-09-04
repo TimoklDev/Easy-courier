@@ -11,6 +11,7 @@ import com.easycourier.model.RoutePhase;
 import com.easycourier.model.RoutePlan;
 import com.easycourier.model.RoutePreset;
 import com.easycourier.model.RouteStep;
+import com.easycourier.model.Shipwright;
 import com.easycourier.model.StepKind;
 import com.easycourier.model.TaskDefinition;
 import com.easycourier.model.TaskEdge;
@@ -23,11 +24,13 @@ import com.easycourier.overlay.NoticeBoardWorldOverlay;
 import com.easycourier.overlay.PortalRangeOverlay;
 import com.easycourier.overlay.RouteMapOverlay;
 import com.easycourier.overlay.RouteWorldOverlay;
+import com.easycourier.overlay.ShipwrightOverlay;
 import com.easycourier.service.RouteAdvisor;
 import com.easycourier.service.RoutePlanner;
 import com.easycourier.service.SeaNetwork;
 import com.easycourier.service.PortDetector;
 import com.easycourier.service.ExperienceSession;
+import com.easycourier.service.ShipwrightLocator;
 import com.easycourier.ui.EasyCourierPanel;
 import com.google.inject.Provides;
 import java.awt.Color;
@@ -137,6 +140,8 @@ public class EasyCourierPlugin extends Plugin
 	private PortalRangeOverlay portalRangeOverlay;
 	@Inject
 	private InfoPanelOverlay infoPanelOverlay;
+	@Inject
+	private ShipwrightOverlay shipwrightOverlay;
 
 	private final TaskCatalog catalog = new TaskCatalog();
 	private final TaskStateReader stateReader = new TaskStateReader();
@@ -145,6 +150,7 @@ public class EasyCourierPlugin extends Plugin
 	private final ExperienceSession experienceSession = new ExperienceSession();
 	private final SeaNetwork seaNetwork = new SeaNetwork();
 	private final RoutePlanner planner = new RoutePlanner(seaNetwork);
+	private final ShipwrightLocator shipwrightLocator = new ShipwrightLocator(seaNetwork);
 	private final List<ActiveTask> activeTasks = new ArrayList<>();
 	private final List<BoardOffer> boardOffers = new ArrayList<>();
 	private final Set<GameObject> ledgers = new HashSet<>();
@@ -168,6 +174,9 @@ public class EasyCourierPlugin extends Plugin
 	private Port lastKnownPort = Port.UNKNOWN;
 	private RoutePlan routePlan;
 	private RoutePlan collectionRoutePlan;
+	private Shipwright collectionShipwright;
+	private Port collectionRouteStart = Port.UNKNOWN;
+	private Port collectionFirstCargoPort = Port.UNKNOWN;
 
 	@Override
 	protected void startUp()
@@ -192,6 +201,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.add(routeWorldOverlay);
 		overlayManager.add(portalRangeOverlay);
 		overlayManager.add(infoPanelOverlay);
+		overlayManager.add(shipwrightOverlay);
 		clientThread.invokeLater(this::loadGameData);
 		refreshPanel();
 	}
@@ -209,6 +219,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.remove(routeWorldOverlay);
 		overlayManager.remove(portalRangeOverlay);
 		overlayManager.remove(infoPanelOverlay);
+		overlayManager.remove(shipwrightOverlay);
 		activeTasks.clear();
 		boardOffers.clear();
 		ledgers.clear();
@@ -221,6 +232,7 @@ public class EasyCourierPlugin extends Plugin
 		panel = null;
 		navigationButton = null;
 		collectionRoutePlan = null;
+		clearCollectionHandoff();
 	}
 
 	@Provides
@@ -264,6 +276,10 @@ public class EasyCourierPlugin extends Plugin
 				experienceSession.update(event.getXp());
 			}
 			sailingLevel = client.getRealSkillLevel(Skill.SAILING);
+			if (phase == RoutePhase.COLLECTION)
+			{
+				rebuildCollectionRoutePlan();
+			}
 			refreshBoardAdvice();
 			refreshPanel();
 		}
@@ -303,6 +319,10 @@ public class EasyCourierPlugin extends Plugin
 			advanceDeliveryAfterBoard(closedBoardPort);
 			openBoardPort = Port.UNKNOWN;
 			refreshPanel();
+		}
+		if (isCollectionHandoffActive() && isAboardBoat())
+		{
+			moveToDelivery();
 		}
 	}
 
@@ -376,7 +396,7 @@ public class EasyCourierPlugin extends Plugin
 	{
 		phase = RoutePhase.DELIVERY;
 		deliverySkipCount = 0;
-		collectionRoutePlan = null;
+		clearCollectionHandoff();
 		deliveryBoardsChecked.clear();
 		rebuildRoutePlan();
 		refreshBoardAdvice();
@@ -421,6 +441,7 @@ public class EasyCourierPlugin extends Plugin
 		deliverySkipCount = 0;
 		routePlan = null;
 		collectionRoutePlan = null;
+		clearCollectionHandoff();
 		boardOffers.clear();
 		deliveryBoardsChecked.clear();
 		refreshPanel();
@@ -469,6 +490,8 @@ public class EasyCourierPlugin extends Plugin
 
 	private void refreshTasks()
 	{
+		Port expectedFirstCargo = collectionFirstCargoPort;
+		boolean handoffWasActive = isCollectionHandoffActive();
 		List<ActiveTask> previous = new ArrayList<>(activeTasks);
 		activeTasks.clear();
 		activeTasks.addAll(stateReader.read(client, catalog));
@@ -478,6 +501,17 @@ public class EasyCourierPlugin extends Plugin
 		{
 			rebuildRoutePlan();
 			deliverySkipCount = 0;
+		}
+		else if (phase == RoutePhase.COLLECTION)
+		{
+			boolean firstCargoTaken = handoffWasActive
+				&& cargoTakenAt(previous, expectedFirstCargo);
+			rebuildCollectionRoutePlan();
+			if (firstCargoTaken || (isCollectionHandoffActive() && isAboardBoat()))
+			{
+				moveToDelivery();
+				return;
+			}
 		}
 		refreshBoardAdvice();
 		refreshPanel();
@@ -536,6 +570,29 @@ public class EasyCourierPlugin extends Plugin
 	private boolean wasIncompleteDelivery(List<ActiveTask> previous, Port port)
 	{
 		return previous.stream().anyMatch(task -> task.getDefinition().getDelivery() == port && task.needsDelivery());
+	}
+
+	private boolean cargoTakenAt(List<ActiveTask> previous, Port port)
+	{
+		if (port == Port.UNKNOWN)
+		{
+			return false;
+		}
+		for (ActiveTask task : activeTasks)
+		{
+			if (task.getDefinition().getPickup() != port)
+			{
+				continue;
+			}
+			for (ActiveTask oldTask : previous)
+			{
+				if (oldTask.getSlot() == task.getSlot() && task.getCargoTaken() > oldTask.getCargoTaken())
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private void scanNoticeBoard()
@@ -756,8 +813,58 @@ public class EasyCourierPlugin extends Plugin
 
 	private void rebuildCollectionRoutePlan()
 	{
-		collectionRoutePlan = null;
-		if (phase != RoutePhase.COLLECTION || collectionIndex >= selectedRoute.getCollectionStops().size())
+		clearCollectionHandoff();
+		if (phase != RoutePhase.COLLECTION)
+		{
+			return;
+		}
+		boolean full = isTaskListFull();
+		boolean completedWithRecovery = collectionIndex >= selectedRoute.getCollectionStops().size()
+			&& selectedRoute.getBoatRecoveryPort() != Port.UNKNOWN;
+		if (full || completedWithRecovery)
+		{
+			RoutePlan preview = planner.planFromBestTaskStart(selectedRoute, activeTasks,
+				TaskStateReader.taskCapacity(sailingLevel));
+			if (preview == null || preview.getPortOrder().isEmpty())
+			{
+				return;
+			}
+			Port preferredStart = preview.getPortOrder().get(0);
+			collectionShipwright = full
+				? shipwrightLocator.nearestTo(preferredStart, sailingLevel)
+				: Shipwright.at(selectedRoute.getBoatRecoveryPort());
+			if (collectionShipwright == null)
+			{
+				collectionShipwright = shipwrightLocator.nearestTo(preferredStart, sailingLevel);
+			}
+			if (collectionShipwright == null)
+			{
+				return;
+			}
+			RoutePlan routeFromRecovery = planner.plan(selectedRoute, collectionShipwright.getPort(), activeTasks,
+				TaskStateReader.taskCapacity(sailingLevel));
+			for (RouteStep step : routeFromRecovery.getSteps())
+			{
+				if (collectionRouteStart == Port.UNKNOWN && step.getKind() != StepKind.FINISH)
+				{
+					collectionRouteStart = step.getPort();
+				}
+				if (collectionFirstCargoPort == Port.UNKNOWN && step.getKind() == StepKind.PICKUP)
+				{
+					collectionFirstCargoPort = step.getPort();
+				}
+			}
+			if (collectionRouteStart == Port.UNKNOWN)
+			{
+				collectionRouteStart = preferredStart;
+			}
+			if (collectionShipwright != null && collectionShipwright.getPort() != collectionRouteStart)
+			{
+				collectionRoutePlan = planner.planLeg(collectionShipwright.getPort(), collectionRouteStart);
+			}
+			return;
+		}
+		if (collectionIndex >= selectedRoute.getCollectionStops().size())
 		{
 			return;
 		}
@@ -767,6 +874,19 @@ public class EasyCourierPlugin extends Plugin
 			return;
 		}
 		collectionRoutePlan = planner.planLeg(stop.getSailingStart(), stop.getPort());
+	}
+
+	private void clearCollectionHandoff()
+	{
+		collectionRoutePlan = null;
+		collectionShipwright = null;
+		collectionRouteStart = Port.UNKNOWN;
+		collectionFirstCargoPort = Port.UNKNOWN;
+	}
+
+	private boolean isTaskListFull()
+	{
+		return occupiedTaskSlots >= TaskStateReader.taskCapacity(sailingLevel);
 	}
 
 	private WorldPoint navigationWorldPoint()
@@ -977,6 +1097,70 @@ public class EasyCourierPlugin extends Plugin
 		return phase == RoutePhase.COLLECTION ? collectionRoutePlan : routePlan;
 	}
 
+	public boolean isCollectionHandoffActive()
+	{
+		if (phase != RoutePhase.COLLECTION || collectionShipwright == null || collectionRouteStart == Port.UNKNOWN)
+		{
+			return false;
+		}
+		return isTaskListFull() || collectionIndex >= selectedRoute.getCollectionStops().size();
+	}
+
+	public Shipwright getActiveShipwright()
+	{
+		return isCollectionHandoffActive() ? collectionShipwright : null;
+	}
+
+	public Port getCollectionRecoveryPort()
+	{
+		return isCollectionHandoffActive() ? collectionShipwright.getPort() : selectedRoute.getBoatRecoveryPort();
+	}
+
+	public Port getCollectionRouteStart()
+	{
+		return collectionRouteStart;
+	}
+
+	public Port getCollectionFirstCargoPort()
+	{
+		return collectionFirstCargoPort;
+	}
+
+	public boolean isCollectionHandoffCargoPort(Port port)
+	{
+		return canCollectFirstCargoAtRecovery() && port == collectionFirstCargoPort;
+	}
+
+	public String getCollectionHandoffTitle()
+	{
+		return canCollectFirstCargoAtRecovery()
+			? "Recover your boat and/or grab your first cargo."
+			: "Recover your boat and/or board it.";
+	}
+
+	public String getCollectionHandoffDetail()
+	{
+		if (!isCollectionHandoffActive())
+		{
+			return "Move on to the delivery phase.";
+		}
+		Port recoveryPort = collectionShipwright.getPort();
+		if (canCollectFirstCargoAtRecovery())
+		{
+			return "Speak to " + collectionShipwright.getNpcName() + " at " + recoveryPort
+				+ ", or collect the first cargo from the highlighted ledger.";
+		}
+		return "Speak to " + collectionShipwright.getNpcName() + " at " + recoveryPort
+			+ ", recover your boat, and board it. The delivery route begins toward " + collectionRouteStart + ".";
+	}
+
+	private boolean canCollectFirstCargoAtRecovery()
+	{
+		return collectionShipwright != null
+			&& collectionShipwright.getPort() == collectionRouteStart
+			&& collectionShipwright.getPort() == collectionFirstCargoPort;
+	}
+
 	public Port getNoticeBoardTarget()
 	{
 		if (occupiedTaskSlots >= TaskStateReader.taskCapacity(sailingLevel))
@@ -993,7 +1177,8 @@ public class EasyCourierPlugin extends Plugin
 
 	public Port getCharterTarget()
 	{
-		if (phase != RoutePhase.COLLECTION || collectionIndex >= selectedRoute.getCollectionStops().size())
+		if (phase != RoutePhase.COLLECTION || isCollectionHandoffActive()
+			|| collectionIndex >= selectedRoute.getCollectionStops().size())
 		{
 			return Port.UNKNOWN;
 		}
@@ -1109,6 +1294,10 @@ public class EasyCourierPlugin extends Plugin
 		}
 		if (phase == RoutePhase.COLLECTION)
 		{
+			if (isCollectionHandoffActive())
+			{
+				return getCollectionHandoffTitle();
+			}
 			if (collectionIndex >= selectedRoute.getCollectionStops().size())
 			{
 				Port recoveryPort = selectedRoute.getBoatRecoveryPort();

@@ -26,6 +26,8 @@ Easy Courier splits each lap into two clear phases.
 9. Pick the tasks you want and close the board.
 10. The assistant moves to the next collection stop.
 
+When the task list becomes full, the remaining collection stops are skipped. Easy Courier chooses the available shipwright closest to the first location in the optimized delivery route. The shipwright is highlighted, along with the first cargo ledger when both are at the same port. Taking that cargo or boarding the recovered boat starts the delivery phase automatically.
+
 The Rellekka to Etceteria sailing step uses the same game-view and world-map route overlays as delivery travel. The Rellekka and Prifddinas checklists also remind you to recover your boat to Aldarin before starting delivery.
 
 Only the Prifddinas route keeps one slot reserved for Aldarin to Prifddinas until that task is accepted. When only that slot remains, the collection checklist skips directly to Aldarin.
@@ -44,7 +46,7 @@ Only the Prifddinas route keeps one slot reserved for Aldarin to Prifddinas unti
 
 The side panel shows the current instruction, task progress, XP per task, total route XP, and the complete ordered checklist. Every phase also has a **Skip current step** button.
 
-The optional **Show info panel** setting adds a compact top-left display with the current step, route XP, Sailing XP gained this plugin session, and XP per hour. The session statistics reset whenever the plugin is disabled and enabled again.
+The optional **Show info panel** setting adds a compact top-left display with the current step, route XP, Sailing XP gained this plugin session, and XP per hour. The XP baseline resets with the client session, and the timer begins when the first Sailing XP is gained.
 
 If the plugin starts while courier tasks are already active, it detects the best matching training route and resumes the delivery phase from the live cargo and location state. While sailing, it remembers the last dock so a temporary unknown location cannot restart the route from an earlier port.
 
@@ -58,6 +60,7 @@ If the plugin starts while courier tasks are already active, it detects the best
 - Teal cargo outline: an inventory or cargo-hold item used by an active courier task
 - Gold notice-board highlight: check this board while a task slot is free
 - Teal Trader Crewmember highlight: use the charter required by the current collection step
+- Teal shipwright highlight: recover the boat for the delivery route
 - Red 17 by 17 DODGE square: keep clear of a Sailing portal's danger range
 
 The portal warning can be disabled with **Paint portal range for dodging**. It is enabled by default.

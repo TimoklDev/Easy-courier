@@ -240,24 +240,27 @@ public final class EasyCourierPanel extends PluginPanel
 			return list;
 		}
 		List<CollectionStop> stops = plugin.getSelectedRoute().getCollectionStops();
+		boolean handoff = plugin.isCollectionHandoffActive();
 		for (int index = 0; index < stops.size(); index++)
 		{
 			CollectionStop stop = stops.get(index);
 			boolean unavailable = plugin.getSailingLevel() < stop.getMinimumLevel();
-			boolean complete = index < plugin.getCollectionIndex() || unavailable;
-			boolean active = plugin.getPhase() == RoutePhase.COLLECTION && index == plugin.getCollectionIndex();
+			boolean complete = index < plugin.getCollectionIndex() || unavailable || handoff;
+			boolean active = plugin.getPhase() == RoutePhase.COLLECTION && !handoff
+				&& index == plugin.getCollectionIndex();
 			String detail = unavailable ? "Skipped until Sailing " + stop.getMinimumLevel() : stop.getTravelInstruction();
 			RouteStep step = new RouteStep(StepKind.NOTICE_BOARD, stop.getPort(), "Check " + stop.getPort(), detail, 0);
 			list.add(stepCard(index + 1, step, complete, active));
 			list.add(Box.createRigidArea(new Dimension(0, 5)));
 		}
-		Port recoveryPort = plugin.getSelectedRoute().getBoatRecoveryPort();
+		Port recoveryPort = plugin.getCollectionRecoveryPort();
 		if (recoveryPort != Port.UNKNOWN)
 		{
 			boolean active = plugin.getPhase() == RoutePhase.COLLECTION
-				&& plugin.getCollectionIndex() >= stops.size();
-			RouteStep step = new RouteStep(StepKind.TRAVEL, recoveryPort,
-				"Recover your boat to " + recoveryPort, "Then move on to the delivery phase.", 0);
+				&& (handoff || plugin.getCollectionIndex() >= stops.size());
+			String title = handoff ? plugin.getCollectionHandoffTitle() : "Recover your boat at " + recoveryPort;
+			String detail = handoff ? plugin.getCollectionHandoffDetail() : "Then move on to the delivery phase.";
+			RouteStep step = new RouteStep(StepKind.TRAVEL, recoveryPort, title, detail, 0);
 			list.add(stepCard(stops.size() + 1, step, plugin.getPhase() == RoutePhase.COMPLETE, active));
 			list.add(Box.createRigidArea(new Dimension(0, 5)));
 		}
@@ -314,9 +317,13 @@ public final class EasyCourierPanel extends PluginPanel
 		}
 		if (phase == RoutePhase.COLLECTION)
 		{
+			if (plugin.isCollectionHandoffActive())
+			{
+				return plugin.getCollectionHandoffDetail();
+			}
 			if (plugin.getCollectionIndex() >= plugin.getSelectedRoute().getCollectionStops().size())
 			{
-				Port recoveryPort = plugin.getSelectedRoute().getBoatRecoveryPort();
+				Port recoveryPort = plugin.getCollectionRecoveryPort();
 				if (recoveryPort != Port.UNKNOWN)
 				{
 					return "Recover your boat to " + recoveryPort + ", then move on to the delivery phase.";

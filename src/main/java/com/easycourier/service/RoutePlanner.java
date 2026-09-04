@@ -35,6 +35,30 @@ public final class RoutePlanner
 		return new RoutePlan(order, expandSeaPath(order), steps, 0, seaNetwork.distance(start, finish));
 	}
 
+	public RoutePlan planFromBestTaskStart(RoutePreset preset, List<ActiveTask> activeTasks, int taskCapacity)
+	{
+		Set<Port> candidates = new LinkedHashSet<>();
+		for (ActiveTask task : activeTasks)
+		{
+			if (task.isComplete())
+			{
+				continue;
+			}
+			candidates.add(task.needsPickup()
+				? task.getDefinition().getPickup() : task.getDefinition().getDelivery());
+		}
+		RoutePlan best = null;
+		for (Port candidate : candidates)
+		{
+			RoutePlan plan = plan(preset, candidate, activeTasks, taskCapacity);
+			if (best == null || plan.getDistance() < best.getDistance())
+			{
+				best = plan;
+			}
+		}
+		return best;
+	}
+
 	public RoutePlan plan(RoutePreset preset, Port start, List<ActiveTask> activeTasks)
 	{
 		return plan(preset, start, activeTasks, activeTasks.size());
