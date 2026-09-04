@@ -24,7 +24,7 @@ public class SeaNetworkGraphTest
 			+ "    {\"id\": -9, \"port\": \"PORT_ROBERTS\", \"x\": 1858, \"y\": 3307, \"plane\": 0, \"connections\": [1]}\n"
 			+ "  ]\n"
 			+ "}";
-		SeaNetwork network = new SeaNetwork(new ByteArrayInputStream(document.getBytes(StandardCharsets.UTF_8)), null);
+		SeaNetwork network = new SeaNetwork(new ByteArrayInputStream(document.getBytes(StandardCharsets.UTF_8)));
 		List<WorldPoint> path = network.path(Port.ALDARIN, Port.PORT_ROBERTS);
 		assertEquals(Port.ALDARIN.getMapPoint(), path.get(0));
 		assertEquals(Port.PORT_ROBERTS.getMapPoint(), path.get(path.size() - 1));

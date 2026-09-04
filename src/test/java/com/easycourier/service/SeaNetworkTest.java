@@ -14,6 +14,30 @@ public class SeaNetworkTest
 	private final SeaNetwork network = new SeaNetwork();
 
 	@Test
+	public void connectsEverySupportedPort()
+	{
+		for (Port start : Port.values())
+		{
+			if (start == Port.UNKNOWN)
+			{
+				continue;
+			}
+			for (Port finish : Port.values())
+			{
+				if (finish == Port.UNKNOWN || finish == start)
+				{
+					continue;
+				}
+				List<WorldPoint> path = network.path(start, finish);
+				assertFalse(path.isEmpty());
+				assertEquals(start.getMapPoint(), path.get(0));
+				assertEquals(finish.getMapPoint(), path.get(path.size() - 1));
+				assertTrue(Double.isFinite(network.distance(start, finish)));
+			}
+		}
+	}
+
+	@Test
 	public void usesDetailedSeaWaypoints()
 	{
 		List<WorldPoint> path = network.path(Port.ALDARIN, Port.PRIFDDINAS);

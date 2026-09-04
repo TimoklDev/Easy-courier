@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,23 +23,18 @@ import net.runelite.api.coords.WorldPoint;
 public final class SeaNetwork
 {
 	private static final String NETWORK_RESOURCE = "/com/easycourier/data/sea-network.json";
-	private static final String ROUTE_RESOURCE = "/com/easycourier/data/sea-routes.csv";
 	private static final int MAX_SEGMENT_LENGTH = 32;
-	private final Map<Port, List<SeaLeg>> lanes = new EnumMap<>(Port.class);
 	private final Map<Integer, GraphPoint> graphPoints = new HashMap<>();
 	private final Map<Port, Integer> graphPorts = new EnumMap<>(Port.class);
 
 	public SeaNetwork()
 	{
-		this(SeaNetwork.class.getResourceAsStream(NETWORK_RESOURCE), SeaNetwork.class.getResourceAsStream(ROUTE_RESOURCE));
+		this(SeaNetwork.class.getResourceAsStream(NETWORK_RESOURCE));
 	}
 
-	SeaNetwork(InputStream networkStream, InputStream routeStream)
+	SeaNetwork(InputStream networkStream)
 	{
-		if (!loadNetwork(networkStream))
-		{
-			loadRoutes(routeStream);
-		}
+		loadNetwork(networkStream);
 	}
 
 	public double distance(Port start, Port finish)
@@ -53,11 +47,11 @@ public final class SeaNetwork
 		return find(start, finish).points;
 	}
 
-	private boolean loadNetwork(InputStream stream)
+	private void loadNetwork(InputStream stream)
 	{
 		if (stream == null)
 		{
-			return false;
+			throw new IllegalStateException("Missing sea network data");
 		}
 		try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8))
 		{
@@ -65,6 +59,10 @@ public final class SeaNetwork
 			if (!"easy-courier-sea-network".equals(document.get("format").getAsString()))
 			{
 				throw new IllegalStateException("Unsupported sea network format");
+			}
+			if (document.get("schemaVersion").getAsInt() != 1)
+			{
+				throw new IllegalStateException("Unsupported sea network schema");
 			}
 			JsonArray nodes = document.getAsJsonArray("nodes");
 			if (nodes == null || nodes.size() == 0)
@@ -85,7 +83,11 @@ public final class SeaNetwork
 				JsonElement portName = node.get("port");
 				if (portName != null && !portName.isJsonNull())
 				{
-					graphPorts.put(Port.valueOf(portName.getAsString()), id);
+					Port port = Port.valueOf(portName.getAsString());
+					if (graphPorts.put(port, id) != null)
+					{
+						throw new IllegalStateException("Duplicate sea network port " + port);
+					}
 				}
 			}
 			for (JsonElement element : nodes)
@@ -99,14 +101,19 @@ public final class SeaNetwork
 				}
 				for (JsonElement targetElement : connections)
 				{
-					GraphPoint target = graphPoints.get(targetElement.getAsInt());
-					if (target != null && target.point.getPlane() == point.point.getPlane())
+					int targetId = targetElement.getAsInt();
+					GraphPoint target = graphPoints.get(targetId);
+					if (target == null)
 					{
-						addGraphConnection(point, target);
+						throw new IllegalStateException("Missing sea network node " + targetId);
 					}
+					if (target.point.getPlane() != point.point.getPlane())
+					{
+						throw new IllegalStateException("Sea network connection crosses planes");
+					}
+					addGraphConnection(point, target);
 				}
 			}
-			return true;
 		}
 		catch (IOException | RuntimeException ex)
 		{
@@ -130,64 +137,6 @@ public final class SeaNetwork
 		}
 	}
 
-	private void loadRoutes(InputStream stream)
-	{
-		if (stream == null)
-		{
-			throw new IllegalStateException("Missing sea route data");
-		}
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)))
-		{
-			String line;
-			while ((line = reader.readLine()) != null)
-			{
-				if (!line.trim().isEmpty())
-				{
-					readRoute(line);
-				}
-			}
-		}
-		catch (IOException ex)
-		{
-			throw new IllegalStateException("Unable to read sea route data", ex);
-		}
-	}
-
-	private void readRoute(String line)
-	{
-		String[] fields = line.split("\\|", 3);
-		if (fields.length != 3)
-		{
-			return;
-		}
-		Port start = Port.valueOf(fields[0]);
-		Port finish = Port.valueOf(fields[1]);
-		List<WorldPoint> rawPoints = new ArrayList<>();
-		for (String value : fields[2].split(";"))
-		{
-			String[] coordinates = value.split(",", 2);
-			if (coordinates.length == 2)
-			{
-				rawPoints.add(new WorldPoint(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]), 0));
-			}
-		}
-		if (rawPoints.size() < 2)
-		{
-			return;
-		}
-		List<WorldPoint> forward = interpolate(rawPoints);
-		List<WorldPoint> reverse = new ArrayList<>(forward);
-		Collections.reverse(reverse);
-		addLeg(start, finish, forward);
-		addLeg(finish, start, reverse);
-	}
-
-	private void addLeg(Port start, Port finish, List<WorldPoint> points)
-	{
-		lanes.computeIfAbsent(start, key -> new ArrayList<>())
-			.add(new SeaLeg(start, finish, Collections.unmodifiableList(points), routeDistance(points)));
-	}
-
 	private PathResult find(Port start, Port finish)
 	{
 		if (start == null || finish == null || start == Port.UNKNOWN || finish == Port.UNKNOWN)
@@ -198,68 +147,7 @@ public final class SeaNetwork
 		{
 			return new PathResult(Collections.singletonList(start.getMapPoint()), 0);
 		}
-		if (!graphPoints.isEmpty())
-		{
-			return findGraph(start, finish);
-		}
-		Map<Port, Double> distances = new EnumMap<>(Port.class);
-		Map<Port, SeaLeg> previous = new EnumMap<>(Port.class);
-		PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingDouble(node -> node.distance));
-		distances.put(start, 0.0);
-		queue.add(new Node(start, 0.0));
-		while (!queue.isEmpty())
-		{
-			Node node = queue.poll();
-			if (node.distance > distances.getOrDefault(node.port, Double.POSITIVE_INFINITY))
-			{
-				continue;
-			}
-			if (node.port == finish)
-			{
-				break;
-			}
-			for (SeaLeg leg : lanes.getOrDefault(node.port, Collections.emptyList()))
-			{
-				if (usesAldarinAsSunsetTransit(start, finish, leg.finish))
-				{
-					continue;
-				}
-				double nextDistance = node.distance + leg.distance;
-				if (nextDistance < distances.getOrDefault(leg.finish, Double.POSITIVE_INFINITY))
-				{
-					distances.put(leg.finish, nextDistance);
-					previous.put(leg.finish, leg);
-					queue.add(new Node(leg.finish, nextDistance));
-				}
-			}
-		}
-		if (!distances.containsKey(finish))
-		{
-			List<WorldPoint> fallback = new ArrayList<>();
-			fallback.add(start.getMapPoint());
-			fallback.add(finish.getMapPoint());
-			return new PathResult(interpolate(fallback), routeDistance(fallback));
-		}
-		List<SeaLeg> reverseLegs = new ArrayList<>();
-		Port cursor = finish;
-		while (cursor != start)
-		{
-			SeaLeg leg = previous.get(cursor);
-			if (leg == null)
-			{
-				break;
-			}
-			reverseLegs.add(leg);
-			cursor = leg.start;
-		}
-		Collections.reverse(reverseLegs);
-		List<WorldPoint> points = new ArrayList<>();
-		for (SeaLeg leg : reverseLegs)
-		{
-			int first = points.isEmpty() ? 0 : 1;
-			points.addAll(leg.points.subList(first, leg.points.size()));
-		}
-		return new PathResult(Collections.unmodifiableList(points), distances.get(finish));
+		return findGraph(start, finish);
 	}
 
 	private PathResult findGraph(Port start, Port finish)
@@ -268,7 +156,7 @@ public final class SeaNetwork
 		Integer finishId = graphPorts.get(finish);
 		if (startId == null || finishId == null)
 		{
-			return directPath(start, finish);
+			return new PathResult(Collections.emptyList(), Double.POSITIVE_INFINITY);
 		}
 		GraphPoint destination = graphPoints.get(finishId);
 		Map<Integer, Double> distances = new HashMap<>();
@@ -302,7 +190,7 @@ public final class SeaNetwork
 		}
 		if (!distances.containsKey(finishId))
 		{
-			return directPath(start, finish);
+			return new PathResult(Collections.emptyList(), Double.POSITIVE_INFINITY);
 		}
 		List<WorldPoint> points = new ArrayList<>();
 		Integer cursor = finishId;
@@ -315,24 +203,9 @@ public final class SeaNetwork
 		return new PathResult(Collections.unmodifiableList(interpolate(points)), distances.get(finishId));
 	}
 
-	private PathResult directPath(Port start, Port finish)
-	{
-		List<WorldPoint> points = new ArrayList<>();
-		points.add(start.getMapPoint());
-		points.add(finish.getMapPoint());
-		return new PathResult(Collections.unmodifiableList(interpolate(points)), routeDistance(points));
-	}
-
 	private double graphDistance(GraphPoint first, GraphPoint second)
 	{
 		return Math.hypot(second.point.getX() - first.point.getX(), second.point.getY() - first.point.getY());
-	}
-
-	private boolean usesAldarinAsSunsetTransit(Port start, Port finish, Port next)
-	{
-		boolean includesSunset = start == Port.SUNSET_COAST || finish == Port.SUNSET_COAST;
-		boolean endsAtAldarin = start == Port.ALDARIN || finish == Port.ALDARIN;
-		return includesSunset && !endsAtAldarin && next == Port.ALDARIN;
 	}
 
 	private List<WorldPoint> interpolate(List<WorldPoint> points)
@@ -355,30 +228,6 @@ public final class SeaNetwork
 			}
 		}
 		return result;
-	}
-
-	private double routeDistance(List<WorldPoint> points)
-	{
-		double distance = 0;
-		for (int index = 0; index < points.size() - 1; index++)
-		{
-			int dx = points.get(index + 1).getX() - points.get(index).getX();
-			int dy = points.get(index + 1).getY() - points.get(index).getY();
-			distance += Math.hypot(dx, dy);
-		}
-		return distance;
-	}
-
-	private static final class Node
-	{
-		private final Port port;
-		private final double distance;
-
-		private Node(Port port, double distance)
-		{
-			this.port = port;
-			this.distance = distance;
-		}
 	}
 
 	private static final class GraphPoint
@@ -405,22 +254,6 @@ public final class SeaNetwork
 			this.id = id;
 			this.distance = distance;
 			this.score = score;
-		}
-	}
-
-	private static final class SeaLeg
-	{
-		private final Port start;
-		private final Port finish;
-		private final List<WorldPoint> points;
-		private final double distance;
-
-		private SeaLeg(Port start, Port finish, List<WorldPoint> points, double distance)
-		{
-			this.start = start;
-			this.finish = finish;
-			this.points = points;
-			this.distance = distance;
 		}
 	}
 

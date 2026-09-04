@@ -1,0 +1,5307 @@
+{
+  "format": "easy-courier-sea-network",
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-04T11:59:49.165Z",
+  "ports": {
+    "ETCETERIA": -18,
+    "RELLEKKA": -17,
+    "LUNAR_ISLE": -16,
+    "PISCATORIS": -15,
+    "PRIFDDINAS": -14,
+    "PORT_TYRAS": -13,
+    "DEEPFIN_POINT": -12,
+    "PORT_PISCARILIUS": -11,
+    "HOSIDIUS": -10,
+    "PORT_ROBERTS": -9,
+    "CIVITAS_ILLA_FORTIS": -8,
+    "SUNSET_COAST": -7,
+    "ALDARIN": -6,
+    "SUMMER_SHORE": -5,
+    "RUINS_OF_UNKAH": -4,
+    "PANDEMONIUM": -3,
+    "PORT_SARIM": -2,
+    "MUSA_POINT": -1
+  },
+  "nodes": [
+    {
+      "id": -18,
+      "type": "PORT",
+      "port": "ETCETERIA",
+      "x": 2612,
+      "y": 3836,
+      "plane": 0,
+      "connections": [
+        209,
+        210
+      ]
+    },
+    {
+      "id": -17,
+      "type": "PORT",
+      "port": "RELLEKKA",
+      "x": 2630,
+      "y": 3709,
+      "plane": 0,
+      "connections": [
+        196,
+        209
+      ]
+    },
+    {
+      "id": -16,
+      "type": "PORT",
+      "port": "LUNAR_ISLE",
+      "x": 2157,
+      "y": 3881,
+      "plane": 0,
+      "connections": [
+        180
+      ]
+    },
+    {
+      "id": -15,
+      "type": "PORT",
+      "port": "PISCATORIS",
+      "x": 2300,
+      "y": 3689,
+      "plane": 0,
+      "connections": [
+        184,
+        197
+      ]
+    },
+    {
+      "id": -14,
+      "type": "PORT",
+      "port": "PRIFDDINAS",
+      "x": 2158,
+      "y": 3319,
+      "plane": 0,
+      "connections": [
+        123,
+        137
+      ]
+    },
+    {
+      "id": -13,
+      "type": "PORT",
+      "port": "PORT_TYRAS",
+      "x": 2141,
+      "y": 3115,
+      "plane": 0,
+      "connections": [
+        90,
+        92,
+        93,
+        118
+      ]
+    },
+    {
+      "id": -12,
+      "type": "PORT",
+      "port": "DEEPFIN_POINT",
+      "x": 1923,
+      "y": 2752,
+      "plane": 0,
+      "connections": [
+        28,
+        66,
+        85,
+        87
+      ]
+    },
+    {
+      "id": -11,
+      "type": "PORT",
+      "port": "PORT_PISCARILIUS",
+      "x": 1845,
+      "y": 3681,
+      "plane": 0,
+      "connections": [
+        172,
+        173,
+        380,
+        381
+      ]
+    },
+    {
+      "id": -10,
+      "type": "PORT",
+      "port": "HOSIDIUS",
+      "x": 1726,
+      "y": 3447,
+      "plane": 0,
+      "connections": [
+        115,
+        235
+      ]
+    },
+    {
+      "id": -9,
+      "type": "PORT",
+      "port": "PORT_ROBERTS",
+      "x": 1858,
+      "y": 3307,
+      "plane": 0,
+      "connections": [
+        42,
+        63,
+        110
+      ]
+    },
+    {
+      "id": -8,
+      "type": "PORT",
+      "port": "CIVITAS_ILLA_FORTIS",
+      "x": 1769,
+      "y": 3144,
+      "plane": 0,
+      "connections": [
+        40
+      ]
+    },
+    {
+      "id": -7,
+      "type": "PORT",
+      "port": "SUNSET_COAST",
+      "x": 1506,
+      "y": 2971,
+      "plane": 0,
+      "connections": [
+        4,
+        5,
+        17
+      ]
+    },
+    {
+      "id": -6,
+      "type": "PORT",
+      "port": "ALDARIN",
+      "x": 1454,
+      "y": 2977,
+      "plane": 0,
+      "connections": [
+        1
+      ]
+    },
+    {
+      "id": -5,
+      "type": "PORT",
+      "port": "SUMMER_SHORE",
+      "x": 3174,
+      "y": 2367,
+      "plane": 0,
+      "connections": [
+        325
+      ]
+    },
+    {
+      "id": -4,
+      "type": "PORT",
+      "port": "RUINS_OF_UNKAH",
+      "x": 3143,
+      "y": 2824,
+      "plane": 0,
+      "connections": [
+        316,
+        317
+      ]
+    },
+    {
+      "id": -3,
+      "type": "PORT",
+      "port": "PANDEMONIUM",
+      "x": 3078,
+      "y": 2987,
+      "plane": 0,
+      "connections": [
+        329,
+        335,
+        350
+      ]
+    },
+    {
+      "id": -2,
+      "type": "PORT",
+      "port": "PORT_SARIM",
+      "x": 3056,
+      "y": 3194,
+      "plane": 0,
+      "connections": [
+        352
+      ]
+    },
+    {
+      "id": -1,
+      "type": "PORT",
+      "port": "MUSA_POINT",
+      "x": 2965,
+      "y": 3146,
+      "plane": 0,
+      "connections": [
+        358,
+        359
+      ]
+    },
+    {
+      "id": 1,
+      "type": "NODE",
+      "port": null,
+      "x": 1466,
+      "y": 2977,
+      "plane": 0,
+      "connections": [
+        -6,
+        2,
+        9
+      ]
+    },
+    {
+      "id": 2,
+      "type": "NODE",
+      "port": null,
+      "x": 1474,
+      "y": 2977,
+      "plane": 0,
+      "connections": [
+        1,
+        3,
+        8
+      ]
+    },
+    {
+      "id": 3,
+      "type": "NODE",
+      "port": null,
+      "x": 1483,
+      "y": 2977,
+      "plane": 0,
+      "connections": [
+        2,
+        4,
+        6,
+        17
+      ]
+    },
+    {
+      "id": 4,
+      "type": "NODE",
+      "port": null,
+      "x": 1500,
+      "y": 2977,
+      "plane": 0,
+      "connections": [
+        -7,
+        3
+      ]
+    },
+    {
+      "id": 5,
+      "type": "NODE",
+      "port": null,
+      "x": 1506,
+      "y": 2963,
+      "plane": 0,
+      "connections": [
+        -7,
+        7
+      ]
+    },
+    {
+      "id": 6,
+      "type": "NODE",
+      "port": null,
+      "x": 1523,
+      "y": 2937,
+      "plane": 0,
+      "connections": [
+        3,
+        7,
+        8,
+        21
+      ]
+    },
+    {
+      "id": 7,
+      "type": "NODE",
+      "port": null,
+      "x": 1532,
+      "y": 2937,
+      "plane": 0,
+      "connections": [
+        5,
+        6,
+        10
+      ]
+    },
+    {
+      "id": 8,
+      "type": "NODE",
+      "port": null,
+      "x": 1514,
+      "y": 2937,
+      "plane": 0,
+      "connections": [
+        2,
+        6,
+        14
+      ]
+    },
+    {
+      "id": 9,
+      "type": "NODE",
+      "port": null,
+      "x": 1563,
+      "y": 2879,
+      "plane": 0,
+      "connections": [
+        1,
+        16
+      ]
+    },
+    {
+      "id": 10,
+      "type": "NODE",
+      "port": null,
+      "x": 1565,
+      "y": 2937,
+      "plane": 0,
+      "connections": [
+        7,
+        11
+      ]
+    },
+    {
+      "id": 11,
+      "type": "NODE",
+      "port": null,
+      "x": 1576,
+      "y": 2926,
+      "plane": 0,
+      "connections": [
+        10,
+        12,
+        20
+      ]
+    },
+    {
+      "id": 12,
+      "type": "NODE",
+      "port": null,
+      "x": 1576,
+      "y": 2899,
+      "plane": 0,
+      "connections": [
+        11,
+        13,
+        18,
+        20
+      ]
+    },
+    {
+      "id": 13,
+      "type": "NODE",
+      "port": null,
+      "x": 1596,
+      "y": 2879,
+      "plane": 0,
+      "connections": [
+        12,
+        16,
+        19,
+        22
+      ]
+    },
+    {
+      "id": 14,
+      "type": "NODE",
+      "port": null,
+      "x": 1548,
+      "y": 2902,
+      "plane": 0,
+      "connections": [
+        8,
+        15,
+        21
+      ]
+    },
+    {
+      "id": 15,
+      "type": "NODE",
+      "port": null,
+      "x": 1548,
+      "y": 2899,
+      "plane": 0,
+      "connections": [
+        14,
+        16,
+        18
+      ]
+    },
+    {
+      "id": 16,
+      "type": "NODE",
+      "port": null,
+      "x": 1569,
+      "y": 2879,
+      "plane": 0,
+      "connections": [
+        9,
+        13,
+        15,
+        19
+      ]
+    },
+    {
+      "id": 17,
+      "type": "NODE",
+      "port": null,
+      "x": 1489,
+      "y": 2971,
+      "plane": 0,
+      "connections": [
+        -7,
+        3
+      ]
+    },
+    {
+      "id": 18,
+      "type": "NODE",
+      "port": null,
+      "x": 1571,
+      "y": 2899,
+      "plane": 0,
+      "connections": [
+        12,
+        15,
+        19
+      ]
+    },
+    {
+      "id": 19,
+      "type": "NODE",
+      "port": null,
+      "x": 1591,
+      "y": 2879,
+      "plane": 0,
+      "connections": [
+        13,
+        16,
+        18,
+        25
+      ]
+    },
+    {
+      "id": 20,
+      "type": "NODE",
+      "port": null,
+      "x": 1564,
+      "y": 2914,
+      "plane": 0,
+      "connections": [
+        11,
+        12,
+        21
+      ]
+    },
+    {
+      "id": 21,
+      "type": "NODE",
+      "port": null,
+      "x": 1548,
+      "y": 2914,
+      "plane": 0,
+      "connections": [
+        6,
+        14,
+        20
+      ]
+    },
+    {
+      "id": 22,
+      "type": "NODE",
+      "port": null,
+      "x": 1693,
+      "y": 2879,
+      "plane": 0,
+      "connections": [
+        13,
+        23,
+        26
+      ]
+    },
+    {
+      "id": 23,
+      "type": "NODE",
+      "port": null,
+      "x": 1713,
+      "y": 2879,
+      "plane": 0,
+      "connections": [
+        22,
+        24,
+        27
+      ]
+    },
+    {
+      "id": 24,
+      "type": "NODE",
+      "port": null,
+      "x": 1743,
+      "y": 2879,
+      "plane": 0,
+      "connections": [
+        23,
+        29
+      ]
+    },
+    {
+      "id": 25,
+      "type": "NODE",
+      "port": null,
+      "x": 1705,
+      "y": 2755,
+      "plane": 0,
+      "connections": [
+        19,
+        26
+      ]
+    },
+    {
+      "id": 26,
+      "type": "NODE",
+      "port": null,
+      "x": 1817,
+      "y": 2755,
+      "plane": 0,
+      "connections": [
+        22,
+        25,
+        27,
+        89
+      ]
+    },
+    {
+      "id": 27,
+      "type": "NODE",
+      "port": null,
+      "x": 1837,
+      "y": 2755,
+      "plane": 0,
+      "connections": [
+        23,
+        26,
+        28
+      ]
+    },
+    {
+      "id": 28,
+      "type": "NODE",
+      "port": null,
+      "x": 1920,
+      "y": 2755,
+      "plane": 0,
+      "connections": [
+        -12,
+        27,
+        66
+      ]
+    },
+    {
+      "id": 29,
+      "type": "NODE",
+      "port": null,
+      "x": 1782,
+      "y": 2918,
+      "plane": 0,
+      "connections": [
+        24,
+        30,
+        72
+      ]
+    },
+    {
+      "id": 30,
+      "type": "NODE",
+      "port": null,
+      "x": 1799,
+      "y": 2935,
+      "plane": 0,
+      "connections": [
+        29,
+        31,
+        71
+      ]
+    },
+    {
+      "id": 31,
+      "type": "NODE",
+      "port": null,
+      "x": 1815,
+      "y": 2951,
+      "plane": 0,
+      "connections": [
+        30,
+        34,
+        71
+      ]
+    },
+    {
+      "id": 32,
+      "type": "NODE",
+      "port": null,
+      "x": 2010,
+      "y": 2935,
+      "plane": 0,
+      "connections": [
+        52,
+        54,
+        55,
+        84,
+        125
+      ]
+    },
+    {
+      "id": 33,
+      "type": "NODE",
+      "port": null,
+      "x": 2001,
+      "y": 2918,
+      "plane": 0,
+      "connections": [
+        52,
+        53,
+        55
+      ]
+    },
+    {
+      "id": 34,
+      "type": "NODE",
+      "port": null,
+      "x": 1815,
+      "y": 3005,
+      "plane": 0,
+      "connections": [
+        31,
+        277
+      ]
+    },
+    {
+      "id": 35,
+      "type": "NODE",
+      "port": null,
+      "x": 1892,
+      "y": 3082,
+      "plane": 0,
+      "connections": [
+        36,
+        265,
+        266,
+        267,
+        277
+      ]
+    },
+    {
+      "id": 36,
+      "type": "NODE",
+      "port": null,
+      "x": 1892,
+      "y": 3141,
+      "plane": 0,
+      "connections": [
+        35,
+        47,
+        257
+      ]
+    },
+    {
+      "id": 37,
+      "type": "NODE",
+      "port": null,
+      "x": 1831,
+      "y": 3202,
+      "plane": 0,
+      "connections": [
+        38,
+        41
+      ]
+    },
+    {
+      "id": 38,
+      "type": "NODE",
+      "port": null,
+      "x": 1772,
+      "y": 3202,
+      "plane": 0,
+      "connections": [
+        37,
+        39,
+        42,
+        60
+      ]
+    },
+    {
+      "id": 39,
+      "type": "NODE",
+      "port": null,
+      "x": 1762,
+      "y": 3192,
+      "plane": 0,
+      "connections": [
+        38,
+        40,
+        60
+      ]
+    },
+    {
+      "id": 40,
+      "type": "NODE",
+      "port": null,
+      "x": 1762,
+      "y": 3151,
+      "plane": 0,
+      "connections": [
+        -8,
+        39
+      ]
+    },
+    {
+      "id": 41,
+      "type": "NODE",
+      "port": null,
+      "x": 1858,
+      "y": 3175,
+      "plane": 0,
+      "connections": [
+        37,
+        42,
+        276
+      ]
+    },
+    {
+      "id": 42,
+      "type": "NODE",
+      "port": null,
+      "x": 1858,
+      "y": 3276,
+      "plane": 0,
+      "connections": [
+        -9,
+        38,
+        41,
+        43,
+        63
+      ]
+    },
+    {
+      "id": 43,
+      "type": "NODE",
+      "port": null,
+      "x": 1867,
+      "y": 3267,
+      "plane": 0,
+      "connections": [
+        42,
+        271
+      ]
+    },
+    {
+      "id": 44,
+      "type": "NODE",
+      "port": null,
+      "x": 1932,
+      "y": 3267,
+      "plane": 0,
+      "connections": [
+        45,
+        271,
+        275
+      ]
+    },
+    {
+      "id": 45,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3249,
+      "plane": 0,
+      "connections": [
+        44,
+        162,
+        256,
+        270,
+        275
+      ]
+    },
+    {
+      "id": 46,
+      "type": "NODE",
+      "port": null,
+      "x": 1959,
+      "y": 3241,
+      "plane": 0,
+      "connections": [
+        49,
+        162,
+        273
+      ]
+    },
+    {
+      "id": 47,
+      "type": "NODE",
+      "port": null,
+      "x": 1921,
+      "y": 3112,
+      "plane": 0,
+      "connections": [
+        36,
+        77,
+        266,
+        268
+      ]
+    },
+    {
+      "id": 48,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3142,
+      "plane": 0,
+      "connections": [
+        163,
+        255,
+        256,
+        268
+      ]
+    },
+    {
+      "id": 49,
+      "type": "NODE",
+      "port": null,
+      "x": 1959,
+      "y": 3169,
+      "plane": 0,
+      "connections": [
+        46,
+        164,
+        166,
+        167
+      ]
+    },
+    {
+      "id": 50,
+      "type": "NODE",
+      "port": null,
+      "x": 1959,
+      "y": 3134,
+      "plane": 0,
+      "connections": [
+        51,
+        163,
+        253
+      ]
+    },
+    {
+      "id": 51,
+      "type": "NODE",
+      "port": null,
+      "x": 2001,
+      "y": 3093,
+      "plane": 0,
+      "connections": [
+        50,
+        52,
+        97
+      ]
+    },
+    {
+      "id": 52,
+      "type": "NODE",
+      "port": null,
+      "x": 2001,
+      "y": 2942,
+      "plane": 0,
+      "connections": [
+        32,
+        33,
+        51,
+        54,
+        126
+      ]
+    },
+    {
+      "id": 53,
+      "type": "NODE",
+      "port": null,
+      "x": 1977,
+      "y": 2918,
+      "plane": 0,
+      "connections": [
+        33,
+        54,
+        75,
+        108
+      ]
+    },
+    {
+      "id": 54,
+      "type": "NODE",
+      "port": null,
+      "x": 1994,
+      "y": 2935,
+      "plane": 0,
+      "connections": [
+        32,
+        52,
+        53,
+        76
+      ]
+    },
+    {
+      "id": 55,
+      "type": "NODE",
+      "port": null,
+      "x": 2010,
+      "y": 2918,
+      "plane": 0,
+      "connections": [
+        32,
+        33,
+        56,
+        104,
+        109
+      ]
+    },
+    {
+      "id": 56,
+      "type": "NODE",
+      "port": null,
+      "x": 2057,
+      "y": 2872,
+      "plane": 0,
+      "connections": [
+        55,
+        109,
+        260
+      ]
+    },
+    {
+      "id": 57,
+      "type": "NODE",
+      "port": null,
+      "x": 2057,
+      "y": 2793,
+      "plane": 0,
+      "connections": [
+        58,
+        259,
+        260
+      ]
+    },
+    {
+      "id": 58,
+      "type": "NODE",
+      "port": null,
+      "x": 2067,
+      "y": 2782,
+      "plane": 0,
+      "connections": [
+        57,
+        86,
+        100
+      ]
+    },
+    {
+      "id": 59,
+      "type": "NODE",
+      "port": null,
+      "x": 2163,
+      "y": 2686,
+      "plane": 0,
+      "connections": [
+        86,
+        88,
+        278,
+        280
+      ]
+    },
+    {
+      "id": 60,
+      "type": "NODE",
+      "port": null,
+      "x": 1762,
+      "y": 3213,
+      "plane": 0,
+      "connections": [
+        38,
+        39,
+        386
+      ]
+    },
+    {
+      "id": 61,
+      "type": "NODE",
+      "port": null,
+      "x": 1762,
+      "y": 3318,
+      "plane": 0,
+      "connections": [
+        62,
+        64,
+        386
+      ]
+    },
+    {
+      "id": 62,
+      "type": "NODE",
+      "port": null,
+      "x": 1726,
+      "y": 3362,
+      "plane": 0,
+      "connections": [
+        61,
+        115
+      ]
+    },
+    {
+      "id": 63,
+      "type": "NODE",
+      "port": null,
+      "x": 1823,
+      "y": 3307,
+      "plane": 0,
+      "connections": [
+        -9,
+        42,
+        64,
+        110
+      ]
+    },
+    {
+      "id": 64,
+      "type": "NODE",
+      "port": null,
+      "x": 1771,
+      "y": 3307,
+      "plane": 0,
+      "connections": [
+        61,
+        63,
+        386
+      ]
+    },
+    {
+      "id": 65,
+      "type": "NODE",
+      "port": null,
+      "x": 1879,
+      "y": 2796,
+      "plane": 0,
+      "connections": [
+        66,
+        70
+      ]
+    },
+    {
+      "id": 66,
+      "type": "NODE",
+      "port": null,
+      "x": 1913,
+      "y": 2762,
+      "plane": 0,
+      "connections": [
+        -12,
+        28,
+        65,
+        67
+      ]
+    },
+    {
+      "id": 67,
+      "type": "NODE",
+      "port": null,
+      "x": 1913,
+      "y": 2838,
+      "plane": 0,
+      "connections": [
+        66,
+        68,
+        74,
+        107
+      ]
+    },
+    {
+      "id": 68,
+      "type": "NODE",
+      "port": null,
+      "x": 1913,
+      "y": 2886,
+      "plane": 0,
+      "connections": [
+        67,
+        69,
+        73
+      ]
+    },
+    {
+      "id": 69,
+      "type": "NODE",
+      "port": null,
+      "x": 1929,
+      "y": 2902,
+      "plane": 0,
+      "connections": [
+        68,
+        75,
+        80
+      ]
+    },
+    {
+      "id": 70,
+      "type": "NODE",
+      "port": null,
+      "x": 1879,
+      "y": 2889,
+      "plane": 0,
+      "connections": [
+        65,
+        72,
+        73,
+        81,
+        261
+      ]
+    },
+    {
+      "id": 71,
+      "type": "NODE",
+      "port": null,
+      "x": 1830,
+      "y": 2935,
+      "plane": 0,
+      "connections": [
+        30,
+        31,
+        72,
+        262
+      ]
+    },
+    {
+      "id": 72,
+      "type": "NODE",
+      "port": null,
+      "x": 1847,
+      "y": 2918,
+      "plane": 0,
+      "connections": [
+        29,
+        70,
+        71,
+        261
+      ]
+    },
+    {
+      "id": 73,
+      "type": "NODE",
+      "port": null,
+      "x": 1899,
+      "y": 2872,
+      "plane": 0,
+      "connections": [
+        68,
+        70,
+        74
+      ]
+    },
+    {
+      "id": 74,
+      "type": "NODE",
+      "port": null,
+      "x": 1899,
+      "y": 2855,
+      "plane": 0,
+      "connections": [
+        67,
+        73
+      ]
+    },
+    {
+      "id": 75,
+      "type": "NODE",
+      "port": null,
+      "x": 1929,
+      "y": 2918,
+      "plane": 0,
+      "connections": [
+        53,
+        69,
+        76,
+        261
+      ]
+    },
+    {
+      "id": 76,
+      "type": "NODE",
+      "port": null,
+      "x": 1929,
+      "y": 2935,
+      "plane": 0,
+      "connections": [
+        54,
+        75,
+        262,
+        264
+      ]
+    },
+    {
+      "id": 77,
+      "type": "NODE",
+      "port": null,
+      "x": 1929,
+      "y": 3104,
+      "plane": 0,
+      "connections": [
+        47,
+        264,
+        268
+      ]
+    },
+    {
+      "id": 78,
+      "type": "NODE",
+      "port": null,
+      "x": 1913,
+      "y": 2935,
+      "plane": 0,
+      "connections": [
+        81,
+        82
+      ]
+    },
+    {
+      "id": 79,
+      "type": "NODE",
+      "port": null,
+      "x": 1945,
+      "y": 2935,
+      "plane": 0,
+      "connections": [
+        80,
+        82
+      ]
+    },
+    {
+      "id": 80,
+      "type": "NODE",
+      "port": null,
+      "x": 1945,
+      "y": 2918,
+      "plane": 0,
+      "connections": [
+        69,
+        79,
+        107
+      ]
+    },
+    {
+      "id": 81,
+      "type": "NODE",
+      "port": null,
+      "x": 1913,
+      "y": 2918,
+      "plane": 0,
+      "connections": [
+        70,
+        78
+      ]
+    },
+    {
+      "id": 82,
+      "type": "NODE",
+      "port": null,
+      "x": 1929,
+      "y": 2951,
+      "plane": 0,
+      "connections": [
+        78,
+        79
+      ]
+    },
+    {
+      "id": 83,
+      "type": "NODE",
+      "port": null,
+      "x": 1993,
+      "y": 2918,
+      "plane": 0,
+      "connections": [
+        84,
+        108
+      ]
+    },
+    {
+      "id": 84,
+      "type": "NODE",
+      "port": null,
+      "x": 2001,
+      "y": 2926,
+      "plane": 0,
+      "connections": [
+        32,
+        83
+      ]
+    },
+    {
+      "id": 85,
+      "type": "NODE",
+      "port": null,
+      "x": 1928,
+      "y": 2747,
+      "plane": 0,
+      "connections": [
+        -12,
+        87,
+        258
+      ]
+    },
+    {
+      "id": 86,
+      "type": "NODE",
+      "port": null,
+      "x": 2102,
+      "y": 2747,
+      "plane": 0,
+      "connections": [
+        58,
+        59,
+        258
+      ]
+    },
+    {
+      "id": 87,
+      "type": "NODE",
+      "port": null,
+      "x": 1923,
+      "y": 2743,
+      "plane": 0,
+      "connections": [
+        -12,
+        85,
+        88
+      ]
+    },
+    {
+      "id": 88,
+      "type": "NODE",
+      "port": null,
+      "x": 1979,
+      "y": 2687,
+      "plane": 0,
+      "connections": [
+        59,
+        87,
+        89
+      ]
+    },
+    {
+      "id": 89,
+      "type": "NODE",
+      "port": null,
+      "x": 1885,
+      "y": 2687,
+      "plane": 0,
+      "connections": [
+        26,
+        88
+      ]
+    },
+    {
+      "id": 90,
+      "type": "NODE",
+      "port": null,
+      "x": 2141,
+      "y": 3050,
+      "plane": 0,
+      "connections": [
+        -13,
+        109
+      ]
+    },
+    {
+      "id": 91,
+      "type": "NODE",
+      "port": null,
+      "x": 2123,
+      "y": 3045,
+      "plane": 0,
+      "connections": [
+        92,
+        125
+      ]
+    },
+    {
+      "id": 92,
+      "type": "NODE",
+      "port": null,
+      "x": 2123,
+      "y": 3097,
+      "plane": 0,
+      "connections": [
+        -13,
+        91,
+        93,
+        94
+      ]
+    },
+    {
+      "id": 93,
+      "type": "NODE",
+      "port": null,
+      "x": 2108,
+      "y": 3115,
+      "plane": 0,
+      "connections": [
+        -13,
+        92,
+        95
+      ]
+    },
+    {
+      "id": 94,
+      "type": "NODE",
+      "port": null,
+      "x": 2141,
+      "y": 3077,
+      "plane": 0,
+      "connections": [
+        92
+      ]
+    },
+    {
+      "id": 95,
+      "type": "NODE",
+      "port": null,
+      "x": 2078,
+      "y": 3145,
+      "plane": 0,
+      "connections": [
+        93,
+        117,
+        124
+      ]
+    },
+    {
+      "id": 96,
+      "type": "NODE",
+      "port": null,
+      "x": 2001,
+      "y": 3145,
+      "plane": 0,
+      "connections": [
+        97,
+        98,
+        99,
+        129
+      ]
+    },
+    {
+      "id": 97,
+      "type": "NODE",
+      "port": null,
+      "x": 2001,
+      "y": 3127,
+      "plane": 0,
+      "connections": [
+        51,
+        96,
+        98,
+        99
+      ]
+    },
+    {
+      "id": 98,
+      "type": "NODE",
+      "port": null,
+      "x": 1983,
+      "y": 3145,
+      "plane": 0,
+      "connections": [
+        96,
+        97,
+        129,
+        167,
+        253
+      ]
+    },
+    {
+      "id": 99,
+      "type": "NODE",
+      "port": null,
+      "x": 2018,
+      "y": 3145,
+      "plane": 0,
+      "connections": [
+        96,
+        97,
+        124,
+        129
+      ]
+    },
+    {
+      "id": 100,
+      "type": "NODE",
+      "port": null,
+      "x": 2015,
+      "y": 2782,
+      "plane": 0,
+      "connections": [
+        58,
+        102,
+        258,
+        259
+      ]
+    },
+    {
+      "id": 102,
+      "type": "NODE",
+      "port": null,
+      "x": 1977,
+      "y": 2820,
+      "plane": 0,
+      "connections": [
+        100,
+        105,
+        106
+      ]
+    },
+    {
+      "id": 103,
+      "type": "NODE",
+      "port": null,
+      "x": 1913,
+      "y": 2820,
+      "plane": 0,
+      "connections": [
+        106
+      ]
+    },
+    {
+      "id": 104,
+      "type": "NODE",
+      "port": null,
+      "x": 1977,
+      "y": 2886,
+      "plane": 0,
+      "connections": [
+        55,
+        105,
+        107,
+        108
+      ]
+    },
+    {
+      "id": 105,
+      "type": "NODE",
+      "port": null,
+      "x": 1977,
+      "y": 2839,
+      "plane": 0,
+      "connections": [
+        102,
+        104,
+        106
+      ]
+    },
+    {
+      "id": 106,
+      "type": "NODE",
+      "port": null,
+      "x": 1957,
+      "y": 2820,
+      "plane": 0,
+      "connections": [
+        102,
+        103,
+        105
+      ]
+    },
+    {
+      "id": 107,
+      "type": "NODE",
+      "port": null,
+      "x": 1969,
+      "y": 2894,
+      "plane": 0,
+      "connections": [
+        67,
+        80,
+        104,
+        108
+      ]
+    },
+    {
+      "id": 108,
+      "type": "NODE",
+      "port": null,
+      "x": 1977,
+      "y": 2902,
+      "plane": 0,
+      "connections": [
+        53,
+        83,
+        104,
+        107
+      ]
+    },
+    {
+      "id": 109,
+      "type": "NODE",
+      "port": null,
+      "x": 2058,
+      "y": 2966,
+      "plane": 0,
+      "connections": [
+        55,
+        56,
+        90
+      ]
+    },
+    {
+      "id": 110,
+      "type": "NODE",
+      "port": null,
+      "x": 1858,
+      "y": 3339,
+      "plane": 0,
+      "connections": [
+        -9,
+        63,
+        111
+      ]
+    },
+    {
+      "id": 111,
+      "type": "NODE",
+      "port": null,
+      "x": 1908,
+      "y": 3389,
+      "plane": 0,
+      "connections": [
+        110,
+        113,
+        150,
+        155,
+        157
+      ]
+    },
+    {
+      "id": 112,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3431,
+      "plane": 0,
+      "connections": [
+        152,
+        153,
+        191
+      ]
+    },
+    {
+      "id": 113,
+      "type": "NODE",
+      "port": null,
+      "x": 1897,
+      "y": 3400,
+      "plane": 0,
+      "connections": [
+        111,
+        155,
+        156,
+        244
+      ]
+    },
+    {
+      "id": 114,
+      "type": "NODE",
+      "port": null,
+      "x": 1749,
+      "y": 3400,
+      "plane": 0,
+      "connections": [
+        115,
+        244
+      ]
+    },
+    {
+      "id": 115,
+      "type": "NODE",
+      "port": null,
+      "x": 1726,
+      "y": 3423,
+      "plane": 0,
+      "connections": [
+        -10,
+        62,
+        114
+      ]
+    },
+    {
+      "id": 116,
+      "type": "NODE",
+      "port": null,
+      "x": 2580,
+      "y": 2686,
+      "plane": 0,
+      "connections": [
+        278,
+        289,
+        290
+      ]
+    },
+    {
+      "id": 117,
+      "type": "NODE",
+      "port": null,
+      "x": 2054,
+      "y": 3171,
+      "plane": 0,
+      "connections": [
+        95,
+        124,
+        138,
+        272
+      ]
+    },
+    {
+      "id": 118,
+      "type": "NODE",
+      "port": null,
+      "x": 2133,
+      "y": 3123,
+      "plane": 0,
+      "connections": [
+        -13,
+        119
+      ]
+    },
+    {
+      "id": 119,
+      "type": "NODE",
+      "port": null,
+      "x": 2133,
+      "y": 3135,
+      "plane": 0,
+      "connections": [
+        118,
+        121
+      ]
+    },
+    {
+      "id": 120,
+      "type": "NODE",
+      "port": null,
+      "x": 2153,
+      "y": 3155,
+      "plane": 0,
+      "connections": [
+        121,
+        122,
+        140
+      ]
+    },
+    {
+      "id": 121,
+      "type": "NODE",
+      "port": null,
+      "x": 2141,
+      "y": 3143,
+      "plane": 0,
+      "connections": [
+        119,
+        120,
+        122
+      ]
+    },
+    {
+      "id": 122,
+      "type": "NODE",
+      "port": null,
+      "x": 2141,
+      "y": 3170,
+      "plane": 0,
+      "connections": [
+        120,
+        121,
+        139,
+        141
+      ]
+    },
+    {
+      "id": 123,
+      "type": "NODE",
+      "port": null,
+      "x": 2153,
+      "y": 3313,
+      "plane": 0,
+      "connections": [
+        -14,
+        137,
+        143
+      ]
+    },
+    {
+      "id": 124,
+      "type": "NODE",
+      "port": null,
+      "x": 2054,
+      "y": 3145,
+      "plane": 0,
+      "connections": [
+        95,
+        99,
+        117,
+        126
+      ]
+    },
+    {
+      "id": 125,
+      "type": "NODE",
+      "port": null,
+      "x": 2054,
+      "y": 2978,
+      "plane": 0,
+      "connections": [
+        32,
+        91,
+        126
+      ]
+    },
+    {
+      "id": 126,
+      "type": "NODE",
+      "port": null,
+      "x": 2054,
+      "y": 2994,
+      "plane": 0,
+      "connections": [
+        52,
+        124,
+        125
+      ]
+    },
+    {
+      "id": 127,
+      "type": "NODE",
+      "port": null,
+      "x": 2023,
+      "y": 3288,
+      "plane": 0,
+      "connections": [
+        128,
+        133,
+        139
+      ]
+    },
+    {
+      "id": 128,
+      "type": "NODE",
+      "port": null,
+      "x": 2001,
+      "y": 3272,
+      "plane": 0,
+      "connections": [
+        127,
+        272,
+        273
+      ]
+    },
+    {
+      "id": 129,
+      "type": "NODE",
+      "port": null,
+      "x": 2001,
+      "y": 3163,
+      "plane": 0,
+      "connections": [
+        96,
+        98,
+        99,
+        168
+      ]
+    },
+    {
+      "id": 130,
+      "type": "NODE",
+      "port": null,
+      "x": 2023,
+      "y": 3348,
+      "plane": 0,
+      "connections": [
+        132,
+        133,
+        134,
+        144,
+        151
+      ]
+    },
+    {
+      "id": 131,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3348,
+      "plane": 0,
+      "connections": [
+        149,
+        150,
+        161,
+        275
+      ]
+    },
+    {
+      "id": 132,
+      "type": "NODE",
+      "port": null,
+      "x": 1999,
+      "y": 3348,
+      "plane": 0,
+      "connections": [
+        130,
+        133,
+        148,
+        151
+      ]
+    },
+    {
+      "id": 133,
+      "type": "NODE",
+      "port": null,
+      "x": 2023,
+      "y": 3325,
+      "plane": 0,
+      "connections": [
+        127,
+        130,
+        132,
+        134
+      ]
+    },
+    {
+      "id": 134,
+      "type": "NODE",
+      "port": null,
+      "x": 2050,
+      "y": 3348,
+      "plane": 0,
+      "connections": [
+        130,
+        133,
+        144,
+        146
+      ]
+    },
+    {
+      "id": 135,
+      "type": "NODE",
+      "port": null,
+      "x": 2070,
+      "y": 3348,
+      "plane": 0,
+      "connections": [
+        136,
+        146,
+        147
+      ]
+    },
+    {
+      "id": 136,
+      "type": "NODE",
+      "port": null,
+      "x": 2099,
+      "y": 3319,
+      "plane": 0,
+      "connections": [
+        135,
+        137,
+        142
+      ]
+    },
+    {
+      "id": 137,
+      "type": "NODE",
+      "port": null,
+      "x": 2148,
+      "y": 3319,
+      "plane": 0,
+      "connections": [
+        -14,
+        123,
+        136
+      ]
+    },
+    {
+      "id": 138,
+      "type": "NODE",
+      "port": null,
+      "x": 2054,
+      "y": 3173,
+      "plane": 0,
+      "connections": [
+        117,
+        139
+      ]
+    },
+    {
+      "id": 139,
+      "type": "NODE",
+      "port": null,
+      "x": 2096,
+      "y": 3215,
+      "plane": 0,
+      "connections": [
+        122,
+        127,
+        138,
+        141
+      ]
+    },
+    {
+      "id": 140,
+      "type": "NODE",
+      "port": null,
+      "x": 2153,
+      "y": 3272,
+      "plane": 0,
+      "connections": [
+        120,
+        141,
+        142,
+        143
+      ]
+    },
+    {
+      "id": 141,
+      "type": "NODE",
+      "port": null,
+      "x": 2141,
+      "y": 3260,
+      "plane": 0,
+      "connections": [
+        122,
+        139,
+        140,
+        142
+      ]
+    },
+    {
+      "id": 142,
+      "type": "NODE",
+      "port": null,
+      "x": 2141,
+      "y": 3281,
+      "plane": 0,
+      "connections": [
+        136,
+        140,
+        141,
+        143
+      ]
+    },
+    {
+      "id": 143,
+      "type": "NODE",
+      "port": null,
+      "x": 2153,
+      "y": 3293,
+      "plane": 0,
+      "connections": [
+        123,
+        140,
+        142
+      ]
+    },
+    {
+      "id": 144,
+      "type": "NODE",
+      "port": null,
+      "x": 2023,
+      "y": 3375,
+      "plane": 0,
+      "connections": [
+        130,
+        134,
+        151,
+        232
+      ]
+    },
+    {
+      "id": 145,
+      "type": "NODE",
+      "port": null,
+      "x": 2065,
+      "y": 3417,
+      "plane": 0,
+      "connections": [
+        147,
+        232,
+        252
+      ]
+    },
+    {
+      "id": 146,
+      "type": "NODE",
+      "port": null,
+      "x": 2065,
+      "y": 3348,
+      "plane": 0,
+      "connections": [
+        134,
+        135,
+        147
+      ]
+    },
+    {
+      "id": 147,
+      "type": "NODE",
+      "port": null,
+      "x": 2065,
+      "y": 3353,
+      "plane": 0,
+      "connections": [
+        135,
+        145,
+        146,
+        232
+      ]
+    },
+    {
+      "id": 148,
+      "type": "NODE",
+      "port": null,
+      "x": 1960,
+      "y": 3348,
+      "plane": 0,
+      "connections": [
+        132,
+        160,
+        161
+      ]
+    },
+    {
+      "id": 149,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3358,
+      "plane": 0,
+      "connections": [
+        131,
+        150,
+        158,
+        160
+      ]
+    },
+    {
+      "id": 150,
+      "type": "NODE",
+      "port": null,
+      "x": 1940,
+      "y": 3358,
+      "plane": 0,
+      "connections": [
+        111,
+        131,
+        149
+      ]
+    },
+    {
+      "id": 151,
+      "type": "NODE",
+      "port": null,
+      "x": 2010,
+      "y": 3360,
+      "plane": 0,
+      "connections": [
+        130,
+        132,
+        144,
+        159,
+        192
+      ]
+    },
+    {
+      "id": 152,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3415,
+      "plane": 0,
+      "connections": [
+        112,
+        153,
+        158,
+        192
+      ]
+    },
+    {
+      "id": 153,
+      "type": "NODE",
+      "port": null,
+      "x": 1943,
+      "y": 3423,
+      "plane": 0,
+      "connections": [
+        112,
+        152,
+        154,
+        157
+      ]
+    },
+    {
+      "id": 154,
+      "type": "NODE",
+      "port": null,
+      "x": 1908,
+      "y": 3457,
+      "plane": 0,
+      "connections": [
+        153,
+        156,
+        245
+      ]
+    },
+    {
+      "id": 155,
+      "type": "NODE",
+      "port": null,
+      "x": 1908,
+      "y": 3400,
+      "plane": 0,
+      "connections": [
+        111,
+        113,
+        156,
+        157
+      ]
+    },
+    {
+      "id": 156,
+      "type": "NODE",
+      "port": null,
+      "x": 1908,
+      "y": 3411,
+      "plane": 0,
+      "connections": [
+        113,
+        154,
+        155,
+        157
+      ]
+    },
+    {
+      "id": 157,
+      "type": "NODE",
+      "port": null,
+      "x": 1919,
+      "y": 3400,
+      "plane": 0,
+      "connections": [
+        111,
+        153,
+        155,
+        156,
+        158
+      ]
+    },
+    {
+      "id": 158,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3368,
+      "plane": 0,
+      "connections": [
+        149,
+        152,
+        157,
+        159
+      ]
+    },
+    {
+      "id": 159,
+      "type": "NODE",
+      "port": null,
+      "x": 1958,
+      "y": 3360,
+      "plane": 0,
+      "connections": [
+        151,
+        158,
+        160
+      ]
+    },
+    {
+      "id": 160,
+      "type": "NODE",
+      "port": null,
+      "x": 1958,
+      "y": 3350,
+      "plane": 0,
+      "connections": [
+        148,
+        149,
+        159,
+        161
+      ]
+    },
+    {
+      "id": 161,
+      "type": "NODE",
+      "port": null,
+      "x": 1958,
+      "y": 3348,
+      "plane": 0,
+      "connections": [
+        131,
+        148,
+        160,
+        274
+      ]
+    },
+    {
+      "id": 162,
+      "type": "NODE",
+      "port": null,
+      "x": 1958,
+      "y": 3242,
+      "plane": 0,
+      "connections": [
+        45,
+        46,
+        164,
+        274
+      ]
+    },
+    {
+      "id": 163,
+      "type": "NODE",
+      "port": null,
+      "x": 1958,
+      "y": 3135,
+      "plane": 0,
+      "connections": [
+        48,
+        50,
+        254
+      ]
+    },
+    {
+      "id": 164,
+      "type": "NODE",
+      "port": null,
+      "x": 1958,
+      "y": 3170,
+      "plane": 0,
+      "connections": [
+        49,
+        162,
+        165
+      ]
+    },
+    {
+      "id": 165,
+      "type": "NODE",
+      "port": null,
+      "x": 1958,
+      "y": 3149,
+      "plane": 0,
+      "connections": [
+        164,
+        166,
+        254,
+        255
+      ]
+    },
+    {
+      "id": 166,
+      "type": "NODE",
+      "port": null,
+      "x": 1959,
+      "y": 3150,
+      "plane": 0,
+      "connections": [
+        49,
+        165,
+        167,
+        253
+      ]
+    },
+    {
+      "id": 167,
+      "type": "NODE",
+      "port": null,
+      "x": 1969,
+      "y": 3159,
+      "plane": 0,
+      "connections": [
+        49,
+        98,
+        166,
+        168
+      ]
+    },
+    {
+      "id": 168,
+      "type": "NODE",
+      "port": null,
+      "x": 2001,
+      "y": 3188,
+      "plane": 0,
+      "connections": [
+        129,
+        167,
+        272
+      ]
+    },
+    {
+      "id": 169,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3552,
+      "plane": 0,
+      "connections": [
+        186,
+        187,
+        188,
+        247
+      ]
+    },
+    {
+      "id": 170,
+      "type": "NODE",
+      "port": null,
+      "x": 1908,
+      "y": 3595,
+      "plane": 0,
+      "connections": [
+        171,
+        187,
+        234,
+        241
+      ]
+    },
+    {
+      "id": 171,
+      "type": "NODE",
+      "port": null,
+      "x": 1908,
+      "y": 3618,
+      "plane": 0,
+      "connections": [
+        170,
+        185,
+        382
+      ]
+    },
+    {
+      "id": 172,
+      "type": "NODE",
+      "port": null,
+      "x": 1852,
+      "y": 3681,
+      "plane": 0,
+      "connections": [
+        -11,
+        173,
+        174
+      ]
+    },
+    {
+      "id": 173,
+      "type": "NODE",
+      "port": null,
+      "x": 1849,
+      "y": 3677,
+      "plane": 0,
+      "connections": [
+        -11,
+        172,
+        243,
+        381
+      ]
+    },
+    {
+      "id": 174,
+      "type": "NODE",
+      "port": null,
+      "x": 1865,
+      "y": 3694,
+      "plane": 0,
+      "connections": [
+        172,
+        380
+      ]
+    },
+    {
+      "id": 175,
+      "type": "NODE",
+      "port": null,
+      "x": 1865,
+      "y": 3769,
+      "plane": 0,
+      "connections": [
+        223,
+        226
+      ]
+    },
+    {
+      "id": 176,
+      "type": "NODE",
+      "port": null,
+      "x": 1934,
+      "y": 3838,
+      "plane": 0,
+      "connections": [
+        226,
+        230
+      ]
+    },
+    {
+      "id": 177,
+      "type": "NODE",
+      "port": null,
+      "x": 2153,
+      "y": 3838,
+      "plane": 0,
+      "connections": [
+        178,
+        203,
+        230
+      ]
+    },
+    {
+      "id": 178,
+      "type": "NODE",
+      "port": null,
+      "x": 2172,
+      "y": 3857,
+      "plane": 0,
+      "connections": [
+        177,
+        179,
+        203
+      ]
+    },
+    {
+      "id": 179,
+      "type": "NODE",
+      "port": null,
+      "x": 2172,
+      "y": 3868,
+      "plane": 0,
+      "connections": [
+        178,
+        180,
+        201
+      ]
+    },
+    {
+      "id": 180,
+      "type": "NODE",
+      "port": null,
+      "x": 2159,
+      "y": 3881,
+      "plane": 0,
+      "connections": [
+        -16,
+        179
+      ]
+    },
+    {
+      "id": 181,
+      "type": "NODE",
+      "port": null,
+      "x": 2007,
+      "y": 3608,
+      "plane": 0,
+      "connections": [
+        186,
+        190
+      ]
+    },
+    {
+      "id": 182,
+      "type": "NODE",
+      "port": null,
+      "x": 2182,
+      "y": 3608,
+      "plane": 0,
+      "connections": [
+        190,
+        208
+      ]
+    },
+    {
+      "id": 183,
+      "type": "NODE",
+      "port": null,
+      "x": 2241,
+      "y": 3667,
+      "plane": 0,
+      "connections": [
+        184,
+        208,
+        373
+      ]
+    },
+    {
+      "id": 184,
+      "type": "NODE",
+      "port": null,
+      "x": 2278,
+      "y": 3667,
+      "plane": 0,
+      "connections": [
+        -15,
+        183
+      ]
+    },
+    {
+      "id": 185,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3575,
+      "plane": 0,
+      "connections": [
+        171,
+        186,
+        187,
+        188,
+        227
+      ]
+    },
+    {
+      "id": 186,
+      "type": "NODE",
+      "port": null,
+      "x": 1963,
+      "y": 3564,
+      "plane": 0,
+      "connections": [
+        169,
+        181,
+        185,
+        188
+      ]
+    },
+    {
+      "id": 187,
+      "type": "NODE",
+      "port": null,
+      "x": 1939,
+      "y": 3564,
+      "plane": 0,
+      "connections": [
+        169,
+        170,
+        185,
+        188
+      ]
+    },
+    {
+      "id": 188,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3564,
+      "plane": 0,
+      "connections": [
+        169,
+        185,
+        186,
+        187
+      ]
+    },
+    {
+      "id": 189,
+      "type": "NODE",
+      "port": null,
+      "x": 1960,
+      "y": 3450,
+      "plane": 0,
+      "connections": [
+        191,
+        192,
+        232,
+        233,
+        248
+      ]
+    },
+    {
+      "id": 190,
+      "type": "NODE",
+      "port": null,
+      "x": 2118,
+      "y": 3608,
+      "plane": 0,
+      "connections": [
+        181,
+        182,
+        193,
+        207
+      ]
+    },
+    {
+      "id": 191,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3441,
+      "plane": 0,
+      "connections": [
+        112,
+        189,
+        233
+      ]
+    },
+    {
+      "id": 192,
+      "type": "NODE",
+      "port": null,
+      "x": 1960,
+      "y": 3407,
+      "plane": 0,
+      "connections": [
+        151,
+        152,
+        189
+      ]
+    },
+    {
+      "id": 193,
+      "type": "NODE",
+      "port": null,
+      "x": 2065,
+      "y": 3555,
+      "plane": 0,
+      "connections": [
+        190,
+        248,
+        250
+      ]
+    },
+    {
+      "id": 194,
+      "type": "NODE",
+      "port": null,
+      "x": 2510,
+      "y": 3711,
+      "plane": 0,
+      "connections": [
+        196,
+        214,
+        384
+      ]
+    },
+    {
+      "id": 195,
+      "type": "NODE",
+      "port": null,
+      "x": 2307,
+      "y": 3711,
+      "plane": 0,
+      "connections": [
+        197,
+        198,
+        214
+      ]
+    },
+    {
+      "id": 196,
+      "type": "NODE",
+      "port": null,
+      "x": 2512,
+      "y": 3709,
+      "plane": 0,
+      "connections": [
+        -17,
+        194
+      ]
+    },
+    {
+      "id": 197,
+      "type": "NODE",
+      "port": null,
+      "x": 2300,
+      "y": 3704,
+      "plane": 0,
+      "connections": [
+        -15,
+        195,
+        198
+      ]
+    },
+    {
+      "id": 198,
+      "type": "NODE",
+      "port": null,
+      "x": 2300,
+      "y": 3711,
+      "plane": 0,
+      "connections": [
+        195,
+        197,
+        217
+      ]
+    },
+    {
+      "id": 199,
+      "type": "NODE",
+      "port": null,
+      "x": 2300,
+      "y": 3770,
+      "plane": 0,
+      "connections": [
+        200,
+        215,
+        216,
+        218
+      ]
+    },
+    {
+      "id": 200,
+      "type": "NODE",
+      "port": null,
+      "x": 2219,
+      "y": 3851,
+      "plane": 0,
+      "connections": [
+        199,
+        201
+      ]
+    },
+    {
+      "id": 201,
+      "type": "NODE",
+      "port": null,
+      "x": 2189,
+      "y": 3851,
+      "plane": 0,
+      "connections": [
+        179,
+        200
+      ]
+    },
+    {
+      "id": 202,
+      "type": "NODE",
+      "port": null,
+      "x": 2172,
+      "y": 3801,
+      "plane": 0,
+      "connections": [
+        203,
+        206
+      ]
+    },
+    {
+      "id": 203,
+      "type": "NODE",
+      "port": null,
+      "x": 2172,
+      "y": 3817,
+      "plane": 0,
+      "connections": [
+        177,
+        178,
+        202
+      ]
+    },
+    {
+      "id": 204,
+      "type": "NODE",
+      "port": null,
+      "x": 2155,
+      "y": 3687,
+      "plane": 0,
+      "connections": [
+        207,
+        374
+      ]
+    },
+    {
+      "id": 205,
+      "type": "NODE",
+      "port": null,
+      "x": 2155,
+      "y": 3772,
+      "plane": 0,
+      "connections": [
+        206,
+        219,
+        221
+      ]
+    },
+    {
+      "id": 206,
+      "type": "NODE",
+      "port": null,
+      "x": 2172,
+      "y": 3794,
+      "plane": 0,
+      "connections": [
+        202,
+        205,
+        231
+      ]
+    },
+    {
+      "id": 207,
+      "type": "NODE",
+      "port": null,
+      "x": 2155,
+      "y": 3643,
+      "plane": 0,
+      "connections": [
+        190,
+        204,
+        208
+      ]
+    },
+    {
+      "id": 208,
+      "type": "NODE",
+      "port": null,
+      "x": 2217,
+      "y": 3643,
+      "plane": 0,
+      "connections": [
+        182,
+        183,
+        207
+      ]
+    },
+    {
+      "id": 209,
+      "type": "NODE",
+      "port": null,
+      "x": 2631,
+      "y": 3815,
+      "plane": 0,
+      "connections": [
+        -18,
+        -17
+      ]
+    },
+    {
+      "id": 210,
+      "type": "NODE",
+      "port": null,
+      "x": 2549,
+      "y": 3773,
+      "plane": 0,
+      "connections": [
+        -18,
+        211
+      ]
+    },
+    {
+      "id": 211,
+      "type": "NODE",
+      "port": null,
+      "x": 2449,
+      "y": 3773,
+      "plane": 0,
+      "connections": [
+        210,
+        212
+      ]
+    },
+    {
+      "id": 212,
+      "type": "NODE",
+      "port": null,
+      "x": 2446,
+      "y": 3770,
+      "plane": 0,
+      "connections": [
+        211,
+        213,
+        218
+      ]
+    },
+    {
+      "id": 213,
+      "type": "NODE",
+      "port": null,
+      "x": 2429,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        212,
+        214,
+        384,
+        385
+      ]
+    },
+    {
+      "id": 214,
+      "type": "NODE",
+      "port": null,
+      "x": 2385,
+      "y": 3711,
+      "plane": 0,
+      "connections": [
+        194,
+        195,
+        213
+      ]
+    },
+    {
+      "id": 215,
+      "type": "NODE",
+      "port": null,
+      "x": 2300,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        199,
+        216,
+        217,
+        231
+      ]
+    },
+    {
+      "id": 216,
+      "type": "NODE",
+      "port": null,
+      "x": 2316,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        199,
+        215,
+        217,
+        218,
+        385
+      ]
+    },
+    {
+      "id": 217,
+      "type": "NODE",
+      "port": null,
+      "x": 2300,
+      "y": 3738,
+      "plane": 0,
+      "connections": [
+        198,
+        215,
+        216
+      ]
+    },
+    {
+      "id": 218,
+      "type": "NODE",
+      "port": null,
+      "x": 2334,
+      "y": 3770,
+      "plane": 0,
+      "connections": [
+        199,
+        212,
+        216,
+        385
+      ]
+    },
+    {
+      "id": 219,
+      "type": "NODE",
+      "port": null,
+      "x": 2141,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        205,
+        221,
+        222,
+        228
+      ]
+    },
+    {
+      "id": 221,
+      "type": "NODE",
+      "port": null,
+      "x": 2155,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        205,
+        219,
+        222,
+        231
+      ]
+    },
+    {
+      "id": 222,
+      "type": "NODE",
+      "port": null,
+      "x": 2155,
+      "y": 3740,
+      "plane": 0,
+      "connections": [
+        219,
+        221,
+        372,
+        374
+      ]
+    },
+    {
+      "id": 223,
+      "type": "NODE",
+      "port": null,
+      "x": 1865,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        175,
+        224,
+        225
+      ]
+    },
+    {
+      "id": 224,
+      "type": "NODE",
+      "port": null,
+      "x": 1865,
+      "y": 3729,
+      "plane": 0,
+      "connections": [
+        223,
+        225,
+        378
+      ]
+    },
+    {
+      "id": 225,
+      "type": "NODE",
+      "port": null,
+      "x": 1890,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        223,
+        224,
+        226,
+        229,
+        377
+      ]
+    },
+    {
+      "id": 226,
+      "type": "NODE",
+      "port": null,
+      "x": 1890,
+      "y": 3794,
+      "plane": 0,
+      "connections": [
+        175,
+        176,
+        225
+      ]
+    },
+    {
+      "id": 227,
+      "type": "NODE",
+      "port": null,
+      "x": 1952,
+      "y": 3680,
+      "plane": 0,
+      "connections": [
+        185,
+        375,
+        376,
+        377,
+        382
+      ]
+    },
+    {
+      "id": 228,
+      "type": "NODE",
+      "port": null,
+      "x": 2026,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        219,
+        229,
+        230,
+        375
+      ]
+    },
+    {
+      "id": 229,
+      "type": "NODE",
+      "port": null,
+      "x": 1952,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        225,
+        228,
+        230,
+        376
+      ]
+    },
+    {
+      "id": 230,
+      "type": "NODE",
+      "port": null,
+      "x": 1952,
+      "y": 3838,
+      "plane": 0,
+      "connections": [
+        176,
+        177,
+        228,
+        229
+      ]
+    },
+    {
+      "id": 231,
+      "type": "NODE",
+      "port": null,
+      "x": 2214,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        206,
+        215,
+        221,
+        373
+      ]
+    },
+    {
+      "id": 232,
+      "type": "NODE",
+      "port": null,
+      "x": 2032,
+      "y": 3384,
+      "plane": 0,
+      "connections": [
+        144,
+        145,
+        147,
+        189
+      ]
+    },
+    {
+      "id": 233,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3459,
+      "plane": 0,
+      "connections": [
+        189,
+        191,
+        246,
+        247
+      ]
+    },
+    {
+      "id": 234,
+      "type": "NODE",
+      "port": null,
+      "x": 1908,
+      "y": 3499,
+      "plane": 0,
+      "connections": [
+        170,
+        245,
+        246
+      ]
+    },
+    {
+      "id": 235,
+      "type": "NODE",
+      "port": null,
+      "x": 1749,
+      "y": 3447,
+      "plane": 0,
+      "connections": [
+        -10,
+        236
+      ]
+    },
+    {
+      "id": 236,
+      "type": "NODE",
+      "port": null,
+      "x": 1753,
+      "y": 3451,
+      "plane": 0,
+      "connections": [
+        235,
+        237
+      ]
+    },
+    {
+      "id": 237,
+      "type": "NODE",
+      "port": null,
+      "x": 1779,
+      "y": 3451,
+      "plane": 0,
+      "connections": [
+        236,
+        238
+      ]
+    },
+    {
+      "id": 238,
+      "type": "NODE",
+      "port": null,
+      "x": 1800,
+      "y": 3430,
+      "plane": 0,
+      "connections": [
+        237,
+        239,
+        244
+      ]
+    },
+    {
+      "id": 239,
+      "type": "NODE",
+      "port": null,
+      "x": 1862,
+      "y": 3430,
+      "plane": 0,
+      "connections": [
+        238,
+        240
+      ]
+    },
+    {
+      "id": 240,
+      "type": "NODE",
+      "port": null,
+      "x": 1892,
+      "y": 3460,
+      "plane": 0,
+      "connections": [
+        239,
+        241,
+        245
+      ]
+    },
+    {
+      "id": 241,
+      "type": "NODE",
+      "port": null,
+      "x": 1892,
+      "y": 3611,
+      "plane": 0,
+      "connections": [
+        170,
+        240,
+        242,
+        383
+      ]
+    },
+    {
+      "id": 242,
+      "type": "NODE",
+      "port": null,
+      "x": 1845,
+      "y": 3658,
+      "plane": 0,
+      "connections": [
+        241,
+        381
+      ]
+    },
+    {
+      "id": 243,
+      "type": "NODE",
+      "port": null,
+      "x": 1892,
+      "y": 3634,
+      "plane": 0,
+      "connections": [
+        173,
+        382,
+        383
+      ]
+    },
+    {
+      "id": 244,
+      "type": "NODE",
+      "port": null,
+      "x": 1830,
+      "y": 3400,
+      "plane": 0,
+      "connections": [
+        113,
+        114,
+        238
+      ]
+    },
+    {
+      "id": 245,
+      "type": "NODE",
+      "port": null,
+      "x": 1908,
+      "y": 3476,
+      "plane": 0,
+      "connections": [
+        154,
+        234,
+        240,
+        246
+      ]
+    },
+    {
+      "id": 246,
+      "type": "NODE",
+      "port": null,
+      "x": 1920,
+      "y": 3488,
+      "plane": 0,
+      "connections": [
+        233,
+        234,
+        245,
+        247
+      ]
+    },
+    {
+      "id": 247,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3488,
+      "plane": 0,
+      "connections": [
+        169,
+        233,
+        246,
+        248
+      ]
+    },
+    {
+      "id": 248,
+      "type": "NODE",
+      "port": null,
+      "x": 1998,
+      "y": 3488,
+      "plane": 0,
+      "connections": [
+        189,
+        193,
+        247,
+        251
+      ]
+    },
+    {
+      "id": 249,
+      "type": "NODE",
+      "port": null,
+      "x": 2065,
+      "y": 3488,
+      "plane": 0,
+      "connections": [
+        250,
+        251,
+        252
+      ]
+    },
+    {
+      "id": 250,
+      "type": "NODE",
+      "port": null,
+      "x": 2065,
+      "y": 3513,
+      "plane": 0,
+      "connections": [
+        193,
+        249,
+        251
+      ]
+    },
+    {
+      "id": 251,
+      "type": "NODE",
+      "port": null,
+      "x": 2042,
+      "y": 3488,
+      "plane": 0,
+      "connections": [
+        248,
+        249,
+        250,
+        252
+      ]
+    },
+    {
+      "id": 252,
+      "type": "NODE",
+      "port": null,
+      "x": 2065,
+      "y": 3463,
+      "plane": 0,
+      "connections": [
+        145,
+        249,
+        251
+      ]
+    },
+    {
+      "id": 253,
+      "type": "NODE",
+      "port": null,
+      "x": 1959,
+      "y": 3145,
+      "plane": 0,
+      "connections": [
+        50,
+        98,
+        166,
+        254
+      ]
+    },
+    {
+      "id": 254,
+      "type": "NODE",
+      "port": null,
+      "x": 1958,
+      "y": 3145,
+      "plane": 0,
+      "connections": [
+        163,
+        165,
+        253,
+        255
+      ]
+    },
+    {
+      "id": 255,
+      "type": "NODE",
+      "port": null,
+      "x": 1954,
+      "y": 3145,
+      "plane": 0,
+      "connections": [
+        48,
+        165,
+        254,
+        256
+      ]
+    },
+    {
+      "id": 256,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3145,
+      "plane": 0,
+      "connections": [
+        45,
+        48,
+        255,
+        269
+      ]
+    },
+    {
+      "id": 257,
+      "type": "NODE",
+      "port": null,
+      "x": 1888,
+      "y": 3145,
+      "plane": 0,
+      "connections": [
+        36,
+        269,
+        276
+      ]
+    },
+    {
+      "id": 258,
+      "type": "NODE",
+      "port": null,
+      "x": 1980,
+      "y": 2747,
+      "plane": 0,
+      "connections": [
+        85,
+        86,
+        100
+      ]
+    },
+    {
+      "id": 259,
+      "type": "NODE",
+      "port": null,
+      "x": 2026,
+      "y": 2793,
+      "plane": 0,
+      "connections": [
+        57,
+        100,
+        260
+      ]
+    },
+    {
+      "id": 260,
+      "type": "NODE",
+      "port": null,
+      "x": 2057,
+      "y": 2826,
+      "plane": 0,
+      "connections": [
+        56,
+        57,
+        259
+      ]
+    },
+    {
+      "id": 261,
+      "type": "NODE",
+      "port": null,
+      "x": 1879,
+      "y": 2918,
+      "plane": 0,
+      "connections": [
+        70,
+        72,
+        75,
+        262
+      ]
+    },
+    {
+      "id": 262,
+      "type": "NODE",
+      "port": null,
+      "x": 1879,
+      "y": 2935,
+      "plane": 0,
+      "connections": [
+        71,
+        76,
+        261,
+        263
+      ]
+    },
+    {
+      "id": 263,
+      "type": "NODE",
+      "port": null,
+      "x": 1913,
+      "y": 2969,
+      "plane": 0,
+      "connections": [
+        262,
+        264,
+        267
+      ]
+    },
+    {
+      "id": 264,
+      "type": "NODE",
+      "port": null,
+      "x": 1929,
+      "y": 2985,
+      "plane": 0,
+      "connections": [
+        76,
+        77,
+        263
+      ]
+    },
+    {
+      "id": 265,
+      "type": "NODE",
+      "port": null,
+      "x": 1912,
+      "y": 3082,
+      "plane": 0,
+      "connections": [
+        35,
+        266,
+        267
+      ]
+    },
+    {
+      "id": 266,
+      "type": "NODE",
+      "port": null,
+      "x": 1912,
+      "y": 3103,
+      "plane": 0,
+      "connections": [
+        35,
+        47,
+        265
+      ]
+    },
+    {
+      "id": 267,
+      "type": "NODE",
+      "port": null,
+      "x": 1912,
+      "y": 3062,
+      "plane": 0,
+      "connections": [
+        35,
+        263,
+        265
+      ]
+    },
+    {
+      "id": 268,
+      "type": "NODE",
+      "port": null,
+      "x": 1929,
+      "y": 3120,
+      "plane": 0,
+      "connections": [
+        47,
+        48,
+        77,
+        269
+      ]
+    },
+    {
+      "id": 269,
+      "type": "NODE",
+      "port": null,
+      "x": 1929,
+      "y": 3145,
+      "plane": 0,
+      "connections": [
+        256,
+        257,
+        268,
+        270
+      ]
+    },
+    {
+      "id": 270,
+      "type": "NODE",
+      "port": null,
+      "x": 1929,
+      "y": 3249,
+      "plane": 0,
+      "connections": [
+        45,
+        269,
+        271
+      ]
+    },
+    {
+      "id": 271,
+      "type": "NODE",
+      "port": null,
+      "x": 1910,
+      "y": 3267,
+      "plane": 0,
+      "connections": [
+        43,
+        44,
+        270
+      ]
+    },
+    {
+      "id": 272,
+      "type": "NODE",
+      "port": null,
+      "x": 2001,
+      "y": 3222,
+      "plane": 0,
+      "connections": [
+        117,
+        128,
+        168,
+        273
+      ]
+    },
+    {
+      "id": 273,
+      "type": "NODE",
+      "port": null,
+      "x": 1973,
+      "y": 3252,
+      "plane": 0,
+      "connections": [
+        46,
+        128,
+        272,
+        274
+      ]
+    },
+    {
+      "id": 274,
+      "type": "NODE",
+      "port": null,
+      "x": 1958,
+      "y": 3267,
+      "plane": 0,
+      "connections": [
+        161,
+        162,
+        273,
+        275
+      ]
+    },
+    {
+      "id": 275,
+      "type": "NODE",
+      "port": null,
+      "x": 1951,
+      "y": 3267,
+      "plane": 0,
+      "connections": [
+        44,
+        45,
+        131,
+        274
+      ]
+    },
+    {
+      "id": 276,
+      "type": "NODE",
+      "port": null,
+      "x": 1883,
+      "y": 3150,
+      "plane": 0,
+      "connections": [
+        41,
+        257,
+        277
+      ]
+    },
+    {
+      "id": 277,
+      "type": "NODE",
+      "port": null,
+      "x": 1883,
+      "y": 3073,
+      "plane": 0,
+      "connections": [
+        34,
+        35,
+        276
+      ]
+    },
+    {
+      "id": 278,
+      "type": "NODE",
+      "port": null,
+      "x": 2351,
+      "y": 2686,
+      "plane": 0,
+      "connections": [
+        59,
+        116,
+        279
+      ]
+    },
+    {
+      "id": 279,
+      "type": "NODE",
+      "port": null,
+      "x": 2422,
+      "y": 2615,
+      "plane": 0,
+      "connections": [
+        278,
+        280,
+        281
+      ]
+    },
+    {
+      "id": 280,
+      "type": "NODE",
+      "port": null,
+      "x": 2236,
+      "y": 2615,
+      "plane": 0,
+      "connections": [
+        59,
+        279
+      ]
+    },
+    {
+      "id": 281,
+      "type": "NODE",
+      "port": null,
+      "x": 2513,
+      "y": 2615,
+      "plane": 0,
+      "connections": [
+        279,
+        282
+      ]
+    },
+    {
+      "id": 282,
+      "type": "NODE",
+      "port": null,
+      "x": 2644,
+      "y": 2484,
+      "plane": 0,
+      "connections": [
+        281,
+        283
+      ]
+    },
+    {
+      "id": 283,
+      "type": "NODE",
+      "port": null,
+      "x": 2899,
+      "y": 2484,
+      "plane": 0,
+      "connections": [
+        282,
+        326
+      ]
+    },
+    {
+      "id": 284,
+      "type": "NODE",
+      "port": null,
+      "x": 3016,
+      "y": 2367,
+      "plane": 0,
+      "connections": [
+        300,
+        326
+      ]
+    },
+    {
+      "id": 285,
+      "type": "NODE",
+      "port": null,
+      "x": 2726,
+      "y": 2833,
+      "plane": 0,
+      "connections": [
+        289,
+        370,
+        371
+      ]
+    },
+    {
+      "id": 286,
+      "type": "NODE",
+      "port": null,
+      "x": 2770,
+      "y": 2877,
+      "plane": 0,
+      "connections": [
+        287,
+        323,
+        371
+      ]
+    },
+    {
+      "id": 287,
+      "type": "NODE",
+      "port": null,
+      "x": 2726,
+      "y": 2877,
+      "plane": 0,
+      "connections": [
+        286,
+        367,
+        369,
+        370
+      ]
+    },
+    {
+      "id": 288,
+      "type": "NODE",
+      "port": null,
+      "x": 2648,
+      "y": 2799,
+      "plane": 0,
+      "connections": [
+        289,
+        369
+      ]
+    },
+    {
+      "id": 289,
+      "type": "NODE",
+      "port": null,
+      "x": 2648,
+      "y": 2755,
+      "plane": 0,
+      "connections": [
+        116,
+        285,
+        288
+      ]
+    },
+    {
+      "id": 290,
+      "type": "NODE",
+      "port": null,
+      "x": 2748,
+      "y": 2686,
+      "plane": 0,
+      "connections": [
+        116,
+        291,
+        292
+      ]
+    },
+    {
+      "id": 291,
+      "type": "NODE",
+      "port": null,
+      "x": 2837,
+      "y": 2597,
+      "plane": 0,
+      "connections": [
+        290,
+        295
+      ]
+    },
+    {
+      "id": 292,
+      "type": "NODE",
+      "port": null,
+      "x": 2867,
+      "y": 2686,
+      "plane": 0,
+      "connections": [
+        290,
+        293
+      ]
+    },
+    {
+      "id": 293,
+      "type": "NODE",
+      "port": null,
+      "x": 2936,
+      "y": 2617,
+      "plane": 0,
+      "connections": [
+        292,
+        294,
+        295,
+        302
+      ]
+    },
+    {
+      "id": 294,
+      "type": "NODE",
+      "port": null,
+      "x": 2936,
+      "y": 2597,
+      "plane": 0,
+      "connections": [
+        293,
+        295,
+        296,
+        298
+      ]
+    },
+    {
+      "id": 295,
+      "type": "NODE",
+      "port": null,
+      "x": 2917,
+      "y": 2597,
+      "plane": 0,
+      "connections": [
+        291,
+        293,
+        294,
+        296
+      ]
+    },
+    {
+      "id": 296,
+      "type": "NODE",
+      "port": null,
+      "x": 2936,
+      "y": 2574,
+      "plane": 0,
+      "connections": [
+        294,
+        295,
+        297
+      ]
+    },
+    {
+      "id": 297,
+      "type": "NODE",
+      "port": null,
+      "x": 3067,
+      "y": 2443,
+      "plane": 0,
+      "connections": [
+        296,
+        324,
+        327,
+        328
+      ]
+    },
+    {
+      "id": 298,
+      "type": "NODE",
+      "port": null,
+      "x": 3068,
+      "y": 2597,
+      "plane": 0,
+      "connections": [
+        294,
+        304,
+        307,
+        328
+      ]
+    },
+    {
+      "id": 299,
+      "type": "NODE",
+      "port": null,
+      "x": 3067,
+      "y": 2398,
+      "plane": 0,
+      "connections": [
+        300,
+        301,
+        324
+      ]
+    },
+    {
+      "id": 300,
+      "type": "NODE",
+      "port": null,
+      "x": 3067,
+      "y": 2367,
+      "plane": 0,
+      "connections": [
+        284,
+        299,
+        301
+      ]
+    },
+    {
+      "id": 301,
+      "type": "NODE",
+      "port": null,
+      "x": 3098,
+      "y": 2367,
+      "plane": 0,
+      "connections": [
+        299,
+        300,
+        325
+      ]
+    },
+    {
+      "id": 302,
+      "type": "NODE",
+      "port": null,
+      "x": 2985,
+      "y": 2672,
+      "plane": 0,
+      "connections": [
+        293,
+        313
+      ]
+    },
+    {
+      "id": 303,
+      "type": "NODE",
+      "port": null,
+      "x": 3022,
+      "y": 2714,
+      "plane": 0,
+      "connections": [
+        312,
+        313,
+        320
+      ]
+    },
+    {
+      "id": 304,
+      "type": "NODE",
+      "port": null,
+      "x": 3068,
+      "y": 2668,
+      "plane": 0,
+      "connections": [
+        298,
+        312,
+        344
+      ]
+    },
+    {
+      "id": 305,
+      "type": "NODE",
+      "port": null,
+      "x": 3145,
+      "y": 2668,
+      "plane": 0,
+      "connections": [
+        306,
+        308,
+        344
+      ]
+    },
+    {
+      "id": 306,
+      "type": "NODE",
+      "port": null,
+      "x": 3145,
+      "y": 2656,
+      "plane": 0,
+      "connections": [
+        305,
+        307
+      ]
+    },
+    {
+      "id": 307,
+      "type": "NODE",
+      "port": null,
+      "x": 3086,
+      "y": 2597,
+      "plane": 0,
+      "connections": [
+        298,
+        306,
+        328
+      ]
+    },
+    {
+      "id": 308,
+      "type": "NODE",
+      "port": null,
+      "x": 3145,
+      "y": 2702,
+      "plane": 0,
+      "connections": [
+        305,
+        309
+      ]
+    },
+    {
+      "id": 309,
+      "type": "NODE",
+      "port": null,
+      "x": 3137,
+      "y": 2710,
+      "plane": 0,
+      "connections": [
+        308,
+        310,
+        314
+      ]
+    },
+    {
+      "id": 310,
+      "type": "NODE",
+      "port": null,
+      "x": 3126,
+      "y": 2710,
+      "plane": 0,
+      "connections": [
+        309,
+        311,
+        314
+      ]
+    },
+    {
+      "id": 311,
+      "type": "NODE",
+      "port": null,
+      "x": 3119,
+      "y": 2703,
+      "plane": 0,
+      "connections": [
+        310,
+        343
+      ]
+    },
+    {
+      "id": 312,
+      "type": "NODE",
+      "port": null,
+      "x": 3033,
+      "y": 2703,
+      "plane": 0,
+      "connections": [
+        303,
+        304,
+        313,
+        343
+      ]
+    },
+    {
+      "id": 313,
+      "type": "NODE",
+      "port": null,
+      "x": 3012,
+      "y": 2703,
+      "plane": 0,
+      "connections": [
+        302,
+        303,
+        312
+      ]
+    },
+    {
+      "id": 314,
+      "type": "NODE",
+      "port": null,
+      "x": 3137,
+      "y": 2722,
+      "plane": 0,
+      "connections": [
+        309,
+        310,
+        315
+      ]
+    },
+    {
+      "id": 315,
+      "type": "NODE",
+      "port": null,
+      "x": 3137,
+      "y": 2746,
+      "plane": 0,
+      "connections": [
+        314,
+        316
+      ]
+    },
+    {
+      "id": 316,
+      "type": "NODE",
+      "port": null,
+      "x": 3137,
+      "y": 2818,
+      "plane": 0,
+      "connections": [
+        -4,
+        315,
+        317,
+        319
+      ]
+    },
+    {
+      "id": 317,
+      "type": "NODE",
+      "port": null,
+      "x": 3137,
+      "y": 2824,
+      "plane": 0,
+      "connections": [
+        -4,
+        316,
+        319
+      ]
+    },
+    {
+      "id": 318,
+      "type": "NODE",
+      "port": null,
+      "x": 3123,
+      "y": 2824,
+      "plane": 0,
+      "connections": [
+        319,
+        331
+      ]
+    },
+    {
+      "id": 319,
+      "type": "NODE",
+      "port": null,
+      "x": 3131,
+      "y": 2824,
+      "plane": 0,
+      "connections": [
+        316,
+        317,
+        318,
+        331
+      ]
+    },
+    {
+      "id": 320,
+      "type": "NODE",
+      "port": null,
+      "x": 3022,
+      "y": 2783,
+      "plane": 0,
+      "connections": [
+        303,
+        321
+      ]
+    },
+    {
+      "id": 321,
+      "type": "NODE",
+      "port": null,
+      "x": 2982,
+      "y": 2823,
+      "plane": 0,
+      "connections": [
+        320,
+        322
+      ]
+    },
+    {
+      "id": 322,
+      "type": "NODE",
+      "port": null,
+      "x": 2982,
+      "y": 2869,
+      "plane": 0,
+      "connections": [
+        321,
+        323
+      ]
+    },
+    {
+      "id": 323,
+      "type": "NODE",
+      "port": null,
+      "x": 2990,
+      "y": 2877,
+      "plane": 0,
+      "connections": [
+        286,
+        322,
+        333
+      ]
+    },
+    {
+      "id": 324,
+      "type": "NODE",
+      "port": null,
+      "x": 3067,
+      "y": 2417,
+      "plane": 0,
+      "connections": [
+        297,
+        299,
+        325,
+        327
+      ]
+    },
+    {
+      "id": 325,
+      "type": "NODE",
+      "port": null,
+      "x": 3117,
+      "y": 2367,
+      "plane": 0,
+      "connections": [
+        -5,
+        301,
+        324
+      ]
+    },
+    {
+      "id": 326,
+      "type": "NODE",
+      "port": null,
+      "x": 2966,
+      "y": 2417,
+      "plane": 0,
+      "connections": [
+        283,
+        284,
+        327
+      ]
+    },
+    {
+      "id": 327,
+      "type": "NODE",
+      "port": null,
+      "x": 3036,
+      "y": 2417,
+      "plane": 0,
+      "connections": [
+        297,
+        324,
+        326
+      ]
+    },
+    {
+      "id": 328,
+      "type": "NODE",
+      "port": null,
+      "x": 3068,
+      "y": 2579,
+      "plane": 0,
+      "connections": [
+        297,
+        298,
+        307
+      ]
+    },
+    {
+      "id": 329,
+      "type": "NODE",
+      "port": null,
+      "x": 3078,
+      "y": 2966,
+      "plane": 0,
+      "connections": [
+        -3,
+        347,
+        348,
+        349
+      ]
+    },
+    {
+      "id": 330,
+      "type": "NODE",
+      "port": null,
+      "x": 3123,
+      "y": 2920,
+      "plane": 0,
+      "connections": [
+        331,
+        332,
+        349
+      ]
+    },
+    {
+      "id": 331,
+      "type": "NODE",
+      "port": null,
+      "x": 3123,
+      "y": 2832,
+      "plane": 0,
+      "connections": [
+        318,
+        319,
+        330
+      ]
+    },
+    {
+      "id": 332,
+      "type": "NODE",
+      "port": null,
+      "x": 3123,
+      "y": 2942,
+      "plane": 0,
+      "connections": [
+        330,
+        336,
+        350
+      ]
+    },
+    {
+      "id": 333,
+      "type": "NODE",
+      "port": null,
+      "x": 3007,
+      "y": 2894,
+      "plane": 0,
+      "connections": [
+        323,
+        334,
+        347
+      ]
+    },
+    {
+      "id": 334,
+      "type": "NODE",
+      "port": null,
+      "x": 3007,
+      "y": 3074,
+      "plane": 0,
+      "connections": [
+        333,
+        340,
+        356,
+        357
+      ]
+    },
+    {
+      "id": 335,
+      "type": "NODE",
+      "port": null,
+      "x": 3078,
+      "y": 3003,
+      "plane": 0,
+      "connections": [
+        -3,
+        351,
+        357
+      ]
+    },
+    {
+      "id": 336,
+      "type": "NODE",
+      "port": null,
+      "x": 3123,
+      "y": 2958,
+      "plane": 0,
+      "connections": [
+        332,
+        351
+      ]
+    },
+    {
+      "id": 337,
+      "type": "NODE",
+      "port": null,
+      "x": 2975,
+      "y": 3106,
+      "plane": 0,
+      "connections": [
+        338,
+        340
+      ]
+    },
+    {
+      "id": 338,
+      "type": "NODE",
+      "port": null,
+      "x": 2975,
+      "y": 3141,
+      "plane": 0,
+      "connections": [
+        337,
+        339
+      ]
+    },
+    {
+      "id": 339,
+      "type": "NODE",
+      "port": null,
+      "x": 2970,
+      "y": 3146,
+      "plane": 0,
+      "connections": [
+        338,
+        358,
+        359
+      ]
+    },
+    {
+      "id": 340,
+      "type": "NODE",
+      "port": null,
+      "x": 2979,
+      "y": 3102,
+      "plane": 0,
+      "connections": [
+        334,
+        337,
+        341
+      ]
+    },
+    {
+      "id": 341,
+      "type": "NODE",
+      "port": null,
+      "x": 3007,
+      "y": 3102,
+      "plane": 0,
+      "connections": [
+        340,
+        355,
+        356
+      ]
+    },
+    {
+      "id": 342,
+      "type": "NODE",
+      "port": null,
+      "x": 3035,
+      "y": 2770,
+      "plane": 0,
+      "connections": [
+        343,
+        345
+      ]
+    },
+    {
+      "id": 343,
+      "type": "NODE",
+      "port": null,
+      "x": 3035,
+      "y": 2703,
+      "plane": 0,
+      "connections": [
+        311,
+        312,
+        342,
+        344
+      ]
+    },
+    {
+      "id": 344,
+      "type": "NODE",
+      "port": null,
+      "x": 3070,
+      "y": 2668,
+      "plane": 0,
+      "connections": [
+        304,
+        305,
+        343
+      ]
+    },
+    {
+      "id": 345,
+      "type": "NODE",
+      "port": null,
+      "x": 3065,
+      "y": 2800,
+      "plane": 0,
+      "connections": [
+        342,
+        346
+      ]
+    },
+    {
+      "id": 346,
+      "type": "NODE",
+      "port": null,
+      "x": 3065,
+      "y": 2939,
+      "plane": 0,
+      "connections": [
+        345,
+        347,
+        348
+      ]
+    },
+    {
+      "id": 347,
+      "type": "NODE",
+      "port": null,
+      "x": 3065,
+      "y": 2952,
+      "plane": 0,
+      "connections": [
+        329,
+        333,
+        346
+      ]
+    },
+    {
+      "id": 348,
+      "type": "NODE",
+      "port": null,
+      "x": 3078,
+      "y": 2952,
+      "plane": 0,
+      "connections": [
+        329,
+        346,
+        349
+      ]
+    },
+    {
+      "id": 349,
+      "type": "NODE",
+      "port": null,
+      "x": 3085,
+      "y": 2959,
+      "plane": 0,
+      "connections": [
+        329,
+        330,
+        348,
+        350
+      ]
+    },
+    {
+      "id": 350,
+      "type": "NODE",
+      "port": null,
+      "x": 3096,
+      "y": 2969,
+      "plane": 0,
+      "connections": [
+        -3,
+        332,
+        349,
+        351
+      ]
+    },
+    {
+      "id": 351,
+      "type": "NODE",
+      "port": null,
+      "x": 3104,
+      "y": 2977,
+      "plane": 0,
+      "connections": [
+        335,
+        336,
+        350
+      ]
+    },
+    {
+      "id": 352,
+      "type": "NODE",
+      "port": null,
+      "x": 3056,
+      "y": 3151,
+      "plane": 0,
+      "connections": [
+        -2,
+        353,
+        355
+      ]
+    },
+    {
+      "id": 353,
+      "type": "NODE",
+      "port": null,
+      "x": 3056,
+      "y": 3137,
+      "plane": 0,
+      "connections": [
+        352,
+        354
+      ]
+    },
+    {
+      "id": 354,
+      "type": "NODE",
+      "port": null,
+      "x": 3034,
+      "y": 3115,
+      "plane": 0,
+      "connections": [
+        353,
+        355,
+        356,
+        357
+      ]
+    },
+    {
+      "id": 355,
+      "type": "NODE",
+      "port": null,
+      "x": 3034,
+      "y": 3129,
+      "plane": 0,
+      "connections": [
+        341,
+        352,
+        354
+      ]
+    },
+    {
+      "id": 356,
+      "type": "NODE",
+      "port": null,
+      "x": 3007,
+      "y": 3088,
+      "plane": 0,
+      "connections": [
+        334,
+        341,
+        354
+      ]
+    },
+    {
+      "id": 357,
+      "type": "NODE",
+      "port": null,
+      "x": 3034,
+      "y": 3047,
+      "plane": 0,
+      "connections": [
+        334,
+        335,
+        354
+      ]
+    },
+    {
+      "id": 358,
+      "type": "NODE",
+      "port": null,
+      "x": 2968,
+      "y": 3146,
+      "plane": 0,
+      "connections": [
+        -1,
+        339
+      ]
+    },
+    {
+      "id": 359,
+      "type": "NODE",
+      "port": null,
+      "x": 2968,
+      "y": 3148,
+      "plane": 0,
+      "connections": [
+        -1,
+        339,
+        360
+      ]
+    },
+    {
+      "id": 360,
+      "type": "NODE",
+      "port": null,
+      "x": 2968,
+      "y": 3154,
+      "plane": 0,
+      "connections": [
+        359,
+        361
+      ]
+    },
+    {
+      "id": 361,
+      "type": "NODE",
+      "port": null,
+      "x": 2906,
+      "y": 3216,
+      "plane": 0,
+      "connections": [
+        360,
+        362
+      ]
+    },
+    {
+      "id": 362,
+      "type": "NODE",
+      "port": null,
+      "x": 2817,
+      "y": 3216,
+      "plane": 0,
+      "connections": [
+        361,
+        363
+      ]
+    },
+    {
+      "id": 363,
+      "type": "NODE",
+      "port": null,
+      "x": 2782,
+      "y": 3251,
+      "plane": 0,
+      "connections": [
+        362,
+        364
+      ]
+    },
+    {
+      "id": 364,
+      "type": "NODE",
+      "port": null,
+      "x": 2719,
+      "y": 3251,
+      "plane": 0,
+      "connections": [
+        363,
+        365
+      ]
+    },
+    {
+      "id": 365,
+      "type": "NODE",
+      "port": null,
+      "x": 2688,
+      "y": 3220,
+      "plane": 0,
+      "connections": [
+        364,
+        366
+      ]
+    },
+    {
+      "id": 366,
+      "type": "NODE",
+      "port": null,
+      "x": 2688,
+      "y": 3148,
+      "plane": 0,
+      "connections": [
+        365,
+        368
+      ]
+    },
+    {
+      "id": 367,
+      "type": "NODE",
+      "port": null,
+      "x": 2726,
+      "y": 3110,
+      "plane": 0,
+      "connections": [
+        287,
+        368
+      ]
+    },
+    {
+      "id": 368,
+      "type": "NODE",
+      "port": null,
+      "x": 2710,
+      "y": 3126,
+      "plane": 0,
+      "connections": [
+        366,
+        367,
+        369
+      ]
+    },
+    {
+      "id": 369,
+      "type": "NODE",
+      "port": null,
+      "x": 2711,
+      "y": 2862,
+      "plane": 0,
+      "connections": [
+        287,
+        288,
+        368,
+        370
+      ]
+    },
+    {
+      "id": 370,
+      "type": "NODE",
+      "port": null,
+      "x": 2726,
+      "y": 2862,
+      "plane": 0,
+      "connections": [
+        285,
+        287,
+        369,
+        371
+      ]
+    },
+    {
+      "id": 371,
+      "type": "NODE",
+      "port": null,
+      "x": 2755,
+      "y": 2862,
+      "plane": 0,
+      "connections": [
+        285,
+        286,
+        370
+      ]
+    },
+    {
+      "id": 372,
+      "type": "NODE",
+      "port": null,
+      "x": 2175,
+      "y": 3723,
+      "plane": 0,
+      "connections": [
+        222,
+        373
+      ]
+    },
+    {
+      "id": 373,
+      "type": "NODE",
+      "port": null,
+      "x": 2180,
+      "y": 3719,
+      "plane": 0,
+      "connections": [
+        183,
+        231,
+        372,
+        374
+      ]
+    },
+    {
+      "id": 374,
+      "type": "NODE",
+      "port": null,
+      "x": 2155,
+      "y": 3719,
+      "plane": 0,
+      "connections": [
+        204,
+        222,
+        373,
+        375
+      ]
+    },
+    {
+      "id": 375,
+      "type": "NODE",
+      "port": null,
+      "x": 1992,
+      "y": 3719,
+      "plane": 0,
+      "connections": [
+        227,
+        228,
+        374,
+        376
+      ]
+    },
+    {
+      "id": 376,
+      "type": "NODE",
+      "port": null,
+      "x": 1952,
+      "y": 3719,
+      "plane": 0,
+      "connections": [
+        227,
+        229,
+        375,
+        377
+      ]
+    },
+    {
+      "id": 377,
+      "type": "NODE",
+      "port": null,
+      "x": 1919,
+      "y": 3719,
+      "plane": 0,
+      "connections": [
+        225,
+        227,
+        376,
+        379
+      ]
+    },
+    {
+      "id": 378,
+      "type": "NODE",
+      "port": null,
+      "x": 1865,
+      "y": 3719,
+      "plane": 0,
+      "connections": [
+        224,
+        379,
+        380
+      ]
+    },
+    {
+      "id": 379,
+      "type": "NODE",
+      "port": null,
+      "x": 1885,
+      "y": 3719,
+      "plane": 0,
+      "connections": [
+        377,
+        378,
+        380
+      ]
+    },
+    {
+      "id": 380,
+      "type": "NODE",
+      "port": null,
+      "x": 1865,
+      "y": 3700,
+      "plane": 0,
+      "connections": [
+        -11,
+        174,
+        378,
+        379
+      ]
+    },
+    {
+      "id": 381,
+      "type": "NODE",
+      "port": null,
+      "x": 1845,
+      "y": 3673,
+      "plane": 0,
+      "connections": [
+        -11,
+        173,
+        242
+      ]
+    },
+    {
+      "id": 382,
+      "type": "NODE",
+      "port": null,
+      "x": 1899,
+      "y": 3627,
+      "plane": 0,
+      "connections": [
+        171,
+        227,
+        243,
+        383
+      ]
+    },
+    {
+      "id": 383,
+      "type": "NODE",
+      "port": null,
+      "x": 1892,
+      "y": 3620,
+      "plane": 0,
+      "connections": [
+        241,
+        243,
+        382
+      ]
+    },
+    {
+      "id": 384,
+      "type": "NODE",
+      "port": null,
+      "x": 2468,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        194,
+        213
+      ]
+    },
+    {
+      "id": 385,
+      "type": "NODE",
+      "port": null,
+      "x": 2354,
+      "y": 3753,
+      "plane": 0,
+      "connections": [
+        213,
+        216,
+        218
+      ]
+    },
+    {
+      "id": 386,
+      "type": "NODE",
+      "port": null,
+      "x": 1762,
+      "y": 3298,
+      "plane": 0,
+      "connections": [
+        60,
+        61,
+        64
+      ]
+    }
+  ]
+}
