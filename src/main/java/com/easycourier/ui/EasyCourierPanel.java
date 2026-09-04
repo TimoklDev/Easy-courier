@@ -97,7 +97,7 @@ public final class EasyCourierPanel extends PluginPanel
 		JComboBox<RoutePreset> routes = new JComboBox<>(RoutePreset.values());
 		routes.setSelectedItem(plugin.getSelectedRoute());
 		routes.setFocusable(false);
-		routes.setEnabled(plugin.getPhase() == RoutePhase.IDLE || plugin.getPhase() == RoutePhase.COMPLETE);
+		routes.setEnabled(plugin.getPhase() != RoutePhase.DELIVERY);
 		routes.addActionListener(event -> plugin.selectRoute((RoutePreset) routes.getSelectedItem()));
 		JPanel details = basePanel(new BorderLayout(0, 2));
 		details.setOpaque(false);
@@ -167,21 +167,14 @@ public final class EasyCourierPanel extends PluginPanel
 	private JPanel actions()
 	{
 		JPanel panel = basePanel(new GridLayout(0, 1, 0, 5));
-		if (plugin.getPhase() == RoutePhase.IDLE || plugin.getPhase() == RoutePhase.COMPLETE)
+		if (plugin.getPhase() == RoutePhase.COLLECTION)
 		{
-			panel.add(button("Start collection", SEA, plugin::beginCollection));
+			JButton delivery = button("Move to delivery phase", CARGO, plugin::moveToDelivery);
+			delivery.setEnabled(!plugin.getActiveTasks().isEmpty());
+			panel.add(delivery);
 		}
-		else
-		{
-			if (plugin.getPhase() == RoutePhase.COLLECTION)
-			{
-				JButton delivery = button("Move to delivery phase", CARGO, plugin::moveToDelivery);
-				delivery.setEnabled(!plugin.getActiveTasks().isEmpty());
-				panel.add(delivery);
-			}
-			panel.add(button("Skip current step", new Color(71, 86, 96), plugin::skipStep));
-			panel.add(button("Reset route", new Color(71, 86, 96), plugin::resetRoute));
-		}
+		panel.add(button("Skip current step", new Color(71, 86, 96), plugin::skipStep));
+		panel.add(button("Reset route", new Color(71, 86, 96), plugin::resetRoute));
 		return panel;
 	}
 
@@ -310,11 +303,11 @@ public final class EasyCourierPanel extends PluginPanel
 		RoutePhase phase = plugin.getPhase();
 		if (phase == RoutePhase.IDLE)
 		{
-			return "Choose a route, check the requirement, then start the collection phase.";
+			return "Preparing the collection route.";
 		}
 		if (phase == RoutePhase.COMPLETE)
 		{
-			return "The route is complete. Claim any remaining rewards, then begin another lap.";
+			return "The route is complete. Starting the next collection lap.";
 		}
 		if (phase == RoutePhase.COLLECTION)
 		{

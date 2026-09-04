@@ -462,8 +462,19 @@ public class EasyCourierPlugin extends Plugin
 		{
 			return;
 		}
+		if (sailingLevel < route.getMinimumLevel())
+		{
+			sendMessage("This route requires Sailing level " + route.getMinimumLevel() + ".");
+			refreshPanel();
+			return;
+		}
 		selectedRoute = route;
 		configManager.setConfiguration(EasyCourierConfig.GROUP, "defaultRoute", route);
+		if (phase == RoutePhase.IDLE || phase == RoutePhase.COLLECTION || phase == RoutePhase.COMPLETE)
+		{
+			beginCollection();
+			return;
+		}
 		refreshPanel();
 	}
 
@@ -479,6 +490,7 @@ public class EasyCourierPlugin extends Plugin
 		deliverySkipCount = 0;
 		routePlan = null;
 		collectionRoutePlan = null;
+		boardOffers.clear();
 		deliveryBoardsChecked.clear();
 		forcedDeliveryStart = Port.UNKNOWN;
 		skipUnavailableCollectionStops();
@@ -537,16 +549,7 @@ public class EasyCourierPlugin extends Plugin
 
 	public void resetRoute()
 	{
-		phase = RoutePhase.IDLE;
-		collectionIndex = 0;
-		deliverySkipCount = 0;
-		routePlan = null;
-		collectionRoutePlan = null;
-		clearCollectionHandoff();
-		forcedDeliveryStart = Port.UNKNOWN;
-		boardOffers.clear();
-		deliveryBoardsChecked.clear();
-		refreshPanel();
+		beginCollection();
 	}
 
 	private void loadGameData()
@@ -589,6 +592,10 @@ public class EasyCourierPlugin extends Plugin
 			rebuildRoutePlan();
 			refreshBoardAdvice();
 			refreshPanel();
+		}
+		else if (phase == RoutePhase.IDLE)
+		{
+			beginCollection();
 		}
 	}
 
@@ -982,7 +989,7 @@ public class EasyCourierPlugin extends Plugin
 		if (activeTasks.stream().allMatch(ActiveTask::isComplete)
 			&& currentPort == selectedRoute.getFinish())
 		{
-			phase = RoutePhase.COMPLETE;
+			beginCollection();
 		}
 	}
 
@@ -1493,11 +1500,11 @@ public class EasyCourierPlugin extends Plugin
 	{
 		if (phase == RoutePhase.IDLE)
 		{
-			return "Start collection";
+			return "Preparing collection";
 		}
 		if (phase == RoutePhase.COMPLETE)
 		{
-			return "Route complete";
+			return "Starting next collection";
 		}
 		if (phase == RoutePhase.COLLECTION)
 		{

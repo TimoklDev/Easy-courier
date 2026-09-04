@@ -16,15 +16,14 @@ Easy Courier splits each lap into two clear phases.
 ### 1. Collection phase
 
 1. Select a route.
-2. Press **Start collection**.
-3. Follow the current instruction to the next port.
-4. Open the notice board.
-5. Green tasks are the best choices. Amber tasks are useful alternatives.
-6. Blue LATER tasks are valid short hops that are better left until the delivery phase.
-7. Accepted tasks use only the game's ACCEPTED stamp and no longer receive another plugin highlight.
-8. Tasks above your Sailing level, bounty tasks, backward tasks, and tasks that would consume a reserved slot are dimmed.
-9. Pick the tasks you want and close the board.
-10. The assistant moves to the next collection stop.
+2. Follow the current instruction to the next port.
+3. Open the notice board.
+4. Green tasks are the best choices. Amber tasks are useful alternatives.
+5. Blue LATER tasks are valid short hops that are better left until the delivery phase.
+6. Accepted tasks use only the game's ACCEPTED stamp and no longer receive another plugin highlight.
+7. Tasks above your Sailing level, bounty tasks, backward tasks, and tasks that would consume a reserved slot are dimmed.
+8. Pick the tasks you want and close the board.
+9. The assistant moves to the next collection stop.
 
 When the task list becomes full, the remaining collection stops are skipped. Easy Courier chooses the available shipwright closest to the first location in the optimized delivery route. The shipwright is highlighted, along with the first cargo ledger when both are at the same port. Taking that cargo or boarding the recovered boat starts the delivery phase automatically.
 
@@ -45,6 +44,8 @@ Only the Prifddinas route keeps one slot reserved for Aldarin to Prifddinas unti
 9. Closing that board completes its checklist step, even when no suitable task was available.
 
 The side panel shows the current instruction, task progress, XP per task, total route XP, and the complete ordered checklist. Every phase also has a **Skip current step** button.
+
+After the delivery route reaches its finish and every task is complete, Easy Courier starts the next collection lap automatically. The collection phase also starts automatically when the plugin opens without active courier tasks.
 
 The optional **Show info panel** setting adds a compact top-left display with the current step, route XP, Sailing XP gained this plugin session, and XP per hour. The XP baseline resets with the client session, and the timer begins when the first Sailing XP is gained.
 
