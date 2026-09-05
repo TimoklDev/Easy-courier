@@ -90,6 +90,18 @@ public class RoutePlannerTest
 	}
 
 	@Test
+	public void startsAtSharedPortRobertsPickupAfterCollection()
+	{
+		List<ActiveTask> tasks = Arrays.asList(
+			active(7, Port.PORT_ROBERTS, Port.RELLEKKA, 4, 5277),
+			active(8, Port.PORT_ROBERTS, Port.ETCETERIA, 5, 6005));
+		RoutePlan best = planner.planFromBestTaskStart(RoutePreset.RELLEKKA, tasks, 4);
+		assertEquals(Port.PORT_ROBERTS, best.getPortOrder().get(0));
+		assertEquals(StepKind.PICKUP, best.getSteps().get(0).getKind());
+		assertEquals(Port.PORT_ROBERTS, best.getSteps().get(0).getPort());
+	}
+
+	@Test
 	public void preservesSelectedFirstPickupAfterBoatRecovery()
 	{
 		ActiveTask task = active(2, Port.SUNSET_COAST, Port.RELLEKKA, 5, 5000);
