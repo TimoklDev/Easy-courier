@@ -47,6 +47,24 @@ public final class RoutePlan
 		return distance;
 	}
 
+	public boolean isSegmentOnLeg(int segmentIndex, Port destination)
+	{
+		if (segmentIndex < 0 || segmentIndex >= seaPath.size() - 1
+			|| destination == null || destination == Port.UNKNOWN)
+		{
+			return false;
+		}
+		int destinationIndex = portOrder.indexOf(destination);
+		if (destinationIndex <= 0)
+		{
+			return false;
+		}
+		int startIndex = seaPath.indexOf(portOrder.get(destinationIndex - 1).getMapPoint());
+		int finishIndex = seaPath.indexOf(destination.getMapPoint());
+		return startIndex >= 0 && finishIndex > startIndex
+			&& segmentIndex >= startIndex && segmentIndex < finishIndex;
+	}
+
 	public Port nextPort(Port current)
 	{
 		for (Port port : portOrder)

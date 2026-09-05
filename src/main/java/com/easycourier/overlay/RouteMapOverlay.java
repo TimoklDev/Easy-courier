@@ -56,26 +56,40 @@ public final class RouteMapOverlay extends Overlay
 		Shape oldClip = copy.getClip();
 		copy.clip(bounds);
 		copy.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		Color color = plugin.getConfig().routeColor();
-		copy.setColor(color);
-		copy.setStroke(new BasicStroke(4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-		List<WorldPoint> path = plan.getSeaPath();
-		for (int index = 0; index < path.size() - 1; index++)
-		{
-			Point first = toMapPoint(path.get(index), bounds);
-			Point second = toMapPoint(path.get(index + 1), bounds);
-			if (first != null && second != null)
-			{
-				copy.drawLine(first.getX(), first.getY(), second.getX(), second.getY());
-			}
-		}
+		Color routeColor = plugin.getConfig().routeColor();
+		Color activeColor = plugin.getConfig().activeLegColor();
+		Port activeDestination = plugin.getCurrentTravelDestination();
+		drawSegments(copy, bounds, plan, activeDestination, false, routeColor, 4f);
+		drawSegments(copy, bounds, plan, activeDestination, true, activeColor, 5f);
 		for (int index = 0; index < plan.getPortOrder().size(); index++)
 		{
-			drawStop(copy, bounds, plan.getPortOrder().get(index), index + 1, color);
+			Port port = plan.getPortOrder().get(index);
+			drawStop(copy, bounds, port, index + 1, port == activeDestination ? activeColor : routeColor);
 		}
 		copy.setClip(oldClip);
 		copy.dispose();
 		return null;
+	}
+
+	private void drawSegments(Graphics2D graphics, Rectangle bounds, RoutePlan plan, Port activeDestination,
+		boolean active, Color color, float width)
+	{
+		graphics.setColor(color);
+		graphics.setStroke(new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		List<WorldPoint> path = plan.getSeaPath();
+		for (int index = 0; index < path.size() - 1; index++)
+		{
+			if (plan.isSegmentOnLeg(index, activeDestination) != active)
+			{
+				continue;
+			}
+			Point first = toMapPoint(path.get(index), bounds);
+			Point second = toMapPoint(path.get(index + 1), bounds);
+			if (first != null && second != null)
+			{
+				graphics.drawLine(first.getX(), first.getY(), second.getX(), second.getY());
+			}
+		}
 	}
 
 	private void drawStop(Graphics2D graphics, Rectangle bounds, Port port, int number, Color color)

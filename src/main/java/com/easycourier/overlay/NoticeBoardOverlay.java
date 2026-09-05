@@ -53,8 +53,8 @@ public final class NoticeBoardOverlay extends Overlay
 			if (!tooltipShown && isHovered(offer))
 			{
 				int experience = offer.getTask().getExperience();
-				tooltipManager.add(new Tooltip("<col=e2af4b>" + String.format("%,d XP", experience)
-					+ "</col><br>Task reward"));
+				String reward = experience > 0 ? String.format("%,d XP", experience) : "XP unavailable";
+				tooltipManager.add(new Tooltip("<col=e2af4b>" + reward + "</col><br>Task reward"));
 				tooltipShown = true;
 			}
 		}
@@ -74,16 +74,20 @@ public final class NoticeBoardOverlay extends Overlay
 
 	private boolean isHovered(BoardOffer offer)
 	{
-		if (offer.getTask() == null || offer.getTask().getExperience() <= 0
-			|| (offer.getStatus() != OfferStatus.PRIORITY && offer.getStatus() != OfferStatus.USEFUL
-				&& offer.getStatus() != OfferStatus.DEFERRED))
+		if (offer.getTask() == null)
 		{
 			return false;
 		}
 		Widget widget = offer.getWidget();
 		Point mouse = client.getMouseCanvasPosition();
 		Rectangle bounds = widget == null ? null : widget.getBounds();
-		return bounds != null && mouse != null && bounds.contains(mouse.getX(), mouse.getY());
+		if (bounds == null || mouse == null)
+		{
+			return false;
+		}
+		Rectangle hoverBounds = new Rectangle(bounds);
+		hoverBounds.grow(4, 4);
+		return hoverBounds.contains(mouse.getX(), mouse.getY());
 	}
 
 	private void renderOffer(Graphics2D graphics, BoardOffer offer)

@@ -58,17 +58,21 @@ public final class TaskCatalog
 		{
 			return null;
 		}
+		Port noticeBoard = Port.fromDatabaseRow(boardRow);
+		Port pickup = Port.fromDatabaseRow(pickupRow);
+		Port delivery = Port.fromDatabaseRow(deliveryRow);
+		int amount = cargoAmount == null ? 0 : cargoAmount;
 		return new TaskDefinition(
 			databaseRow,
 			taskId,
 			level,
-			Port.fromDatabaseRow(boardRow),
-			Port.fromDatabaseRow(pickupRow),
-			Port.fromDatabaseRow(deliveryRow),
+			noticeBoard,
+			pickup,
+			delivery,
 			name,
 			cargoItem == null ? -1 : cargoItem,
-			cargoAmount == null ? 0 : cargoAmount,
-			ExperienceTable.forDatabaseRow(databaseRow));
+			amount,
+			ExperienceTable.forTask(databaseRow, level, noticeBoard, pickup, delivery, amount));
 	}
 
 	private Integer integer(Client client, int row, int column, int tuple, int index)

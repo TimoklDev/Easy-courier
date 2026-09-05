@@ -116,14 +116,35 @@ public final class RouteAdvisor
 			usableSlots = Math.max(0, freeSlots - 1);
 		}
 		Set<BoardOffer> keep = new HashSet<>();
-		decisions.stream()
-			.filter(offer -> offer.getStatus() == OfferStatus.PRIORITY || offer.getStatus() == OfferStatus.USEFUL)
-			.sorted(Comparator.comparingInt(BoardOffer::getScore).reversed())
-			.limit(usableSlots)
-			.forEach(keep::add);
+		boolean boardReservationRequired = reservationRequired && !alreadyHasPreferred && boardHasPreferred;
+		BoardOffer bestExperience = usableSlots == 1 && !boardReservationRequired
+			? decisions.stream()
+				.filter(this::isActionable)
+				.filter(offer -> offer.getTask() != null)
+				.max(Comparator.comparingInt(offer -> offer.getTask().getExperience()))
+				.orElse(null)
+			: null;
+		if (bestExperience != null)
+		{
+			keep.add(bestExperience);
+		}
+		else
+		{
+			decisions.stream()
+				.filter(this::isActionable)
+				.sorted(Comparator.comparingInt(BoardOffer::getScore).reversed())
+				.limit(usableSlots)
+				.forEach(keep::add);
+		}
 		for (int index = 0; index < decisions.size(); index++)
 		{
 			BoardOffer offer = decisions.get(index);
+			if (offer == bestExperience)
+			{
+				decisions.set(index, new BoardOffer(offer.getWidget(), offer.getTask(), OfferStatus.PRIORITY,
+					offer.getTask().getExperience(), "Best XP for the available slot"));
+				continue;
+			}
 			if (offer.getStatus() == OfferStatus.DEFERRED && usableSlots == 0)
 			{
 				decisions.set(index, new BoardOffer(offer.getWidget(), offer.getTask(), OfferStatus.OFF_ROUTE, 0,

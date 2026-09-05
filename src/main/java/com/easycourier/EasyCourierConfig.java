@@ -136,4 +136,16 @@ public interface EasyCourierConfig extends Config
 	{
 		return new Color(70, 181, 165, 255);
 	}
+
+	@Alpha
+	@ConfigItem(
+		keyName = "activeLegColor",
+		name = "Current sea leg color",
+		description = "Color used for the sea route to the next port",
+		position = 11
+	)
+	default Color activeLegColor()
+	{
+		return new Color(72, 142, 86, 255);
+	}
 }

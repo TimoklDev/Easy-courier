@@ -1347,6 +1347,12 @@ public class EasyCourierPlugin extends Plugin
 		return step != null && step.getKind() == StepKind.TRAVEL;
 	}
 
+	public Port getCurrentTravelDestination()
+	{
+		RouteStep step = getCurrentTravelStep();
+		return step != null && step.getKind() == StepKind.TRAVEL ? step.getPort() : Port.UNKNOWN;
+	}
+
 	public RoutePlan getNavigationRoutePlan()
 	{
 		return phase == RoutePhase.COLLECTION ? collectionRoutePlan : routePlan;

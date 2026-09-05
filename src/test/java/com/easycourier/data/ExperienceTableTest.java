@@ -1,5 +1,6 @@
 package com.easycourier.data;
 
+import com.easycourier.model.Port;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -17,6 +18,15 @@ public class ExperienceTableTest
 		assertEquals(3151, ExperienceTable.forDatabaseRow(9085));
 		assertEquals(7082, ExperienceTable.forDatabaseRow(9037));
 		assertEquals(4721, ExperienceTable.forDatabaseRow(9035));
+	}
+
+	@Test
+	public void fillsMissingCivitasTaskRewards()
+	{
+		assertEquals(436, ExperienceTable.forTask(0, 38, Port.CIVITAS_ILLA_FORTIS,
+			Port.CIVITAS_ILLA_FORTIS, Port.PORT_PISCARILIUS, 2));
+		assertEquals(453, ExperienceTable.forTask(0, 38, Port.CIVITAS_ILLA_FORTIS,
+			Port.CIVITAS_ILLA_FORTIS, Port.PORT_PISCARILIUS, 3));
 	}
 }
 

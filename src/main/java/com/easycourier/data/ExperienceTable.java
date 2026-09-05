@@ -1,5 +1,6 @@
 package com.easycourier.data;
 
+import com.easycourier.model.Port;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -235,5 +236,21 @@ public final class ExperienceTable
 	public static int forDatabaseRow(int databaseRow)
 	{
 		return EXPERIENCE.getOrDefault(databaseRow, 0);
+	}
+
+	public static int forTask(int databaseRow, int level, Port noticeBoard, Port pickup, Port delivery,
+		int cargoAmount)
+	{
+		int experience = forDatabaseRow(databaseRow);
+		if (experience > 0)
+		{
+			return experience;
+		}
+		if (level == 38 && noticeBoard == Port.CIVITAS_ILLA_FORTIS
+			&& pickup == Port.CIVITAS_ILLA_FORTIS && delivery == Port.PORT_PISCARILIUS)
+		{
+			return cargoAmount == 3 ? 453 : 436;
+		}
+		return 0;
 	}
 }

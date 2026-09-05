@@ -59,30 +59,45 @@ public final class RouteWorldOverlay extends Overlay
 		copy.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		Color configured = plugin.getConfig().routeColor();
 		Color route = new Color(configured.getRed(), configured.getGreen(), configured.getBlue(), 215);
-		copy.setColor(route);
-		copy.setStroke(new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		Color activeConfigured = plugin.getConfig().activeLegColor();
+		Color activeRoute = new Color(activeConfigured.getRed(), activeConfigured.getGreen(),
+			activeConfigured.getBlue(), 235);
 		ProjectionFrame frame = new ProjectionFrame(client);
-		List<WorldPoint> points = plan.getSeaPath();
-		for (int index = 0; index < points.size() - 1; index++)
-		{
-			WorldPoint first = points.get(index);
-			WorldPoint second = points.get(index + 1);
-			if (Math.min(anchor.world.distanceTo2D(first), anchor.world.distanceTo2D(second)) > DRAW_DISTANCE)
-			{
-				continue;
-			}
-			drawSegment(copy, frame, anchor, first, second);
-		}
+		Port activeDestination = plugin.getCurrentTravelDestination();
+		drawSegments(copy, frame, anchor, plan, activeDestination, false, route, 3f);
+		drawSegments(copy, frame, anchor, plan, activeDestination, true, activeRoute, 4f);
 		for (int index = 0; index < plan.getPortOrder().size(); index++)
 		{
 			Port port = plan.getPortOrder().get(index);
 			if (anchor.world.distanceTo2D(port.getMapPoint()) <= DRAW_DISTANCE)
 			{
-				drawStop(copy, frame, anchor, port, index + 1, route);
+				drawStop(copy, frame, anchor, port, index + 1,
+					port == activeDestination ? activeRoute : route);
 			}
 		}
 		copy.dispose();
 		return null;
+	}
+
+	private void drawSegments(Graphics2D graphics, ProjectionFrame frame, Anchor anchor, RoutePlan plan,
+		Port activeDestination, boolean active, Color color, float width)
+	{
+		graphics.setColor(color);
+		graphics.setStroke(new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		List<WorldPoint> points = plan.getSeaPath();
+		for (int index = 0; index < points.size() - 1; index++)
+		{
+			if (plan.isSegmentOnLeg(index, activeDestination) != active)
+			{
+				continue;
+			}
+			WorldPoint first = points.get(index);
+			WorldPoint second = points.get(index + 1);
+			if (Math.min(anchor.world.distanceTo2D(first), anchor.world.distanceTo2D(second)) <= DRAW_DISTANCE)
+			{
+				drawSegment(graphics, frame, anchor, first, second);
+			}
+		}
 	}
 
 	private Anchor navigationAnchor()

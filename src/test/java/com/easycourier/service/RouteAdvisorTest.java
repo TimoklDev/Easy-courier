@@ -111,7 +111,23 @@ public class RouteAdvisorTest
 		TaskDefinition useful = task(6, 62, Port.PORT_ROBERTS, Port.RELLEKKA, 3000);
 		List<BoardOffer> offers = advisor.advise(RoutePreset.RELLEKKA, RoutePhase.COLLECTION, Port.RELLEKKA, 0, 62, 3,
 			active, Collections.singletonList(widget(useful)));
-		assertEquals(OfferStatus.USEFUL, offers.get(0).getStatus());
+		assertEquals(OfferStatus.PRIORITY, offers.get(0).getStatus());
+		assertEquals("Best XP for the available slot", offers.get(0).getReason());
+	}
+
+	@Test
+	public void highestExperienceTaskWinsTheLastUnreservedSlot()
+	{
+		List<ActiveTask> active = Arrays.asList(
+			active(23, Port.RELLEKKA, Port.PORT_ROBERTS),
+			active(24, Port.PORT_ROBERTS, Port.CIVITAS_ILLA_FORTIS),
+			active(25, Port.CIVITAS_ILLA_FORTIS, Port.PORT_PISCARILIUS));
+		TaskDefinition lower = task(26, 62, Port.ALDARIN, Port.PORT_ROBERTS, 3000);
+		TaskDefinition higher = task(27, 62, Port.ALDARIN, Port.PORT_PISCARILIUS, 5000);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.RELLEKKA, RoutePhase.COLLECTION,
+			Port.ALDARIN, 2, 62, 3, active, Arrays.asList(widget(lower), widget(higher)));
+		assertEquals(OfferStatus.PRIORITY, statusFor(offers, higher.getTaskId()));
+		assertEquals(OfferStatus.OFF_ROUTE, statusFor(offers, lower.getTaskId()));
 	}
 
 	@Test
@@ -239,7 +255,7 @@ public class RouteAdvisorTest
 		TaskDefinition candidate = task(16, 70, Port.ALDARIN, Port.PORT_TYRAS, 3793);
 		List<BoardOffer> offers = advisor.advise(RoutePreset.PRIFDDINAS, RoutePhase.COLLECTION,
 			Port.PORT_TYRAS, 1, 70, 3, active, Collections.singletonList(widget(candidate)));
-		assertEquals(OfferStatus.USEFUL, offers.get(0).getStatus());
+		assertEquals(OfferStatus.PRIORITY, offers.get(0).getStatus());
 	}
 
 	@Test
@@ -260,6 +276,15 @@ public class RouteAdvisorTest
 	private RouteAdvisor.WidgetTask widget(TaskDefinition task)
 	{
 		return new RouteAdvisor.WidgetTask(null, task);
+	}
+
+	private OfferStatus statusFor(List<BoardOffer> offers, int taskId)
+	{
+		return offers.stream()
+			.filter(offer -> offer.getTask() != null && offer.getTask().getTaskId() == taskId)
+			.findFirst()
+			.get()
+			.getStatus();
 	}
 
 	private TaskDefinition task(int id, int level, Port pickup, Port delivery, int experience)
