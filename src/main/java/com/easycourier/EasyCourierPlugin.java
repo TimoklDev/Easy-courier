@@ -376,7 +376,7 @@ public class EasyCourierPlugin extends Plugin
 			Port closedBoardPort = openBoardPort == Port.UNKNOWN ? currentPort : openBoardPort;
 			boardWasOpen = false;
 			boardOffers.clear();
-			advanceCollectionAfterBoard();
+			advanceCollectionAfterBoard(closedBoardPort);
 			advanceDeliveryAfterBoard(closedBoardPort);
 			openBoardPort = Port.UNKNOWN;
 			refreshPanel();
@@ -789,15 +789,15 @@ public class EasyCourierPlugin extends Plugin
 		return (Integer) listener[3];
 	}
 
-	private void advanceCollectionAfterBoard()
+	private void advanceCollectionAfterBoard(Port boardPort)
 	{
 		if (phase != RoutePhase.COLLECTION)
 		{
 			return;
 		}
-		if (isCollectionHandoffBoard(openBoardPort))
+		if (isCollectionHandoffBoard(boardPort))
 		{
-			deliveryBoardsChecked.add(openBoardPort);
+			deliveryBoardsChecked.add(boardPort);
 			return;
 		}
 		if (collectionIndex >= selectedRoute.getCollectionStops().size())
@@ -805,7 +805,7 @@ public class EasyCourierPlugin extends Plugin
 			return;
 		}
 		CollectionStop stop = selectedRoute.getCollectionStops().get(collectionIndex);
-		if (currentPort == stop.getPort() || openBoardPort == stop.getPort())
+		if (currentPort == stop.getPort() || boardPort == stop.getPort())
 		{
 			collectionIndex++;
 			skipUnavailableCollectionStops();
@@ -1551,6 +1551,7 @@ public class EasyCourierPlugin extends Plugin
 	{
 		return isCollectionHandoffActive()
 			&& collectionShipwright.getPort().hasNoticeBoard()
+			&& !deliveryBoardsChecked.contains(collectionShipwright.getPort())
 			&& occupiedTaskSlots < TaskStateReader.taskCapacity(sailingLevel);
 	}
 
@@ -1569,7 +1570,7 @@ public class EasyCourierPlugin extends Plugin
 		}
 		if (phase == RoutePhase.COLLECTION)
 		{
-			if (isCollectionHandoffActive() && collectionShipwright.getPort().hasNoticeBoard())
+			if (canCheckCollectionHandoffBoard())
 			{
 				return collectionShipwright.getPort();
 			}
