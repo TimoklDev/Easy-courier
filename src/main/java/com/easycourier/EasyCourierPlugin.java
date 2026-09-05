@@ -558,7 +558,11 @@ public class EasyCourierPlugin extends Plugin
 
 	public void resetRoute()
 	{
-		beginCollection();
+		clientThread.invokeLater(() ->
+		{
+			refreshPlayerRequirements();
+			beginCollection();
+		});
 	}
 
 	private void loadGameData()
@@ -578,9 +582,7 @@ public class EasyCourierPlugin extends Plugin
 		{
 			experienceSession.start(sailingExperience);
 		}
-		sailingLevel = client.getRealSkillLevel(Skill.SAILING);
-		agilityLevel = client.getRealSkillLevel(Skill.AGILITY);
-		fremennikTrialsComplete = Quest.THE_FREMENNIK_TRIALS.getState(client) == QuestState.FINISHED;
+		refreshPlayerRequirements();
 		updateCurrentPort();
 		refreshTasks();
 		if (phase == RoutePhase.IDLE && !activeTasks.isEmpty())
@@ -606,6 +608,13 @@ public class EasyCourierPlugin extends Plugin
 		{
 			beginCollection();
 		}
+	}
+
+	private void refreshPlayerRequirements()
+	{
+		sailingLevel = client.getRealSkillLevel(Skill.SAILING);
+		agilityLevel = client.getRealSkillLevel(Skill.AGILITY);
+		fremennikTrialsComplete = Quest.THE_FREMENNIK_TRIALS.getState(client) == QuestState.FINISHED;
 	}
 
 	private void refreshTasks()
