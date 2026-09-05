@@ -5,6 +5,7 @@ import com.easycourier.data.TaskStateReader;
 import com.easycourier.model.ActiveTask;
 import com.easycourier.model.BoardOffer;
 import com.easycourier.model.CollectionStop;
+import com.easycourier.model.GangplankGuidance;
 import com.easycourier.model.OfferStatus;
 import com.easycourier.model.Port;
 import com.easycourier.model.RoutePhase;
@@ -15,9 +16,9 @@ import com.easycourier.model.Shipwright;
 import com.easycourier.model.StepKind;
 import com.easycourier.model.TaskDefinition;
 import com.easycourier.model.TaskEdge;
-import com.easycourier.overlay.DockOverlay;
 import com.easycourier.overlay.CargoItemOverlay;
 import com.easycourier.overlay.CharterCrewmemberOverlay;
+import com.easycourier.overlay.DockOverlay;
 import com.easycourier.overlay.EtceteriaShortcutOverlay;
 import com.easycourier.overlay.GangplankOverlay;
 import com.easycourier.overlay.InfoPanelOverlay;
@@ -27,12 +28,13 @@ import com.easycourier.overlay.PortalRangeOverlay;
 import com.easycourier.overlay.RouteMapOverlay;
 import com.easycourier.overlay.RouteWorldOverlay;
 import com.easycourier.overlay.ShipwrightOverlay;
+import com.easycourier.service.CargoGuidance;
+import com.easycourier.service.EtceteriaShortcutRoute;
+import com.easycourier.service.ExperienceSession;
+import com.easycourier.service.PortDetector;
 import com.easycourier.service.RouteAdvisor;
 import com.easycourier.service.RoutePlanner;
 import com.easycourier.service.SeaNetwork;
-import com.easycourier.service.PortDetector;
-import com.easycourier.service.ExperienceSession;
-import com.easycourier.service.EtceteriaShortcutRoute;
 import com.easycourier.service.ShipwrightLocator;
 import com.easycourier.ui.EasyCourierPanel;
 import com.google.inject.Provides;
@@ -49,6 +51,7 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.ObjectComposition;
 import net.runelite.api.Player;
 import net.runelite.api.Quest;
@@ -73,6 +76,7 @@ import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.ObjectID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
@@ -914,7 +918,7 @@ public class EasyCourierPlugin extends Plugin
 		return name != null && name.equalsIgnoreCase("Gangplank");
 	}
 
-	public boolean hasBoardOption(TileObject object)
+	public boolean hasGangplankOption(TileObject object, String expectedOption)
 	{
 		ObjectComposition composition = client.getObjectDefinition(object.getId());
 		if (composition == null)
@@ -937,7 +941,7 @@ public class EasyCourierPlugin extends Plugin
 			{
 				action = actions[index];
 			}
-			if (action != null && action.trim().equalsIgnoreCase("Board"))
+			if (action != null && action.trim().equalsIgnoreCase(expectedOption))
 			{
 				return true;
 			}
@@ -1393,11 +1397,69 @@ public class EasyCourierPlugin extends Plugin
 			: "Recover your boat and/or board it.";
 	}
 
-	public boolean shouldHighlightGangplank()
+	public GangplankGuidance getGangplankGuidance()
 	{
-		return !isAboardBoat()
-			&& (phase == RoutePhase.DELIVERY || isCollectionHandoffActive())
-			&& activeTasks.stream().anyMatch(ActiveTask::needsPickup);
+		if (phase != RoutePhase.DELIVERY && !isCollectionHandoffActive())
+		{
+			return GangplankGuidance.NONE;
+		}
+		Port port = currentPort;
+		if (port == Port.UNKNOWN)
+		{
+			return GangplankGuidance.NONE;
+		}
+		boolean pickupNeeded = activeTasks.stream()
+			.anyMatch(task -> task.getDefinition().getPickup() == port && task.needsPickup());
+		boolean deliveryAvailable = activeTasks.stream()
+			.anyMatch(task -> task.getDefinition().getDelivery() == port && task.canDeliver());
+		boolean pickupCargoHeld = hasInventoryCargo(port, true);
+		boolean deliveryCargoHeld = hasInventoryCargo(port, false);
+		boolean handoffBoardingNeeded = isCollectionHandoffActive() && !canCollectFirstCargoAtRecovery();
+		return CargoGuidance.gangplank(isAboardBoat(), handoffBoardingNeeded, pickupNeeded,
+			pickupCargoHeld, deliveryAvailable, deliveryCargoHeld);
+	}
+
+	public boolean shouldHighlightPickupLedger(Port port)
+	{
+		if ((phase != RoutePhase.DELIVERY && !isCollectionHandoffActive()) || port != currentPort)
+		{
+			return false;
+		}
+		boolean pickupNeeded = activeTasks.stream()
+			.anyMatch(task -> task.getDefinition().getPickup() == port && task.needsPickup());
+		return CargoGuidance.pickupLedger(isAboardBoat(), pickupNeeded, hasInventoryCargo(port, true));
+	}
+
+	public boolean shouldHighlightDeliveryLedger(Port port)
+	{
+		if (phase != RoutePhase.DELIVERY || port != currentPort)
+		{
+			return false;
+		}
+		boolean deliveryAvailable = activeTasks.stream()
+			.anyMatch(task -> task.getDefinition().getDelivery() == port && task.canDeliver());
+		return CargoGuidance.deliveryLedger(isAboardBoat(), deliveryAvailable, hasInventoryCargo(port, false));
+	}
+
+	private boolean hasInventoryCargo(Port port, boolean pickup)
+	{
+		ItemContainer inventory = client.getItemContainer(InventoryID.INV);
+		if (inventory == null)
+		{
+			return false;
+		}
+		for (ActiveTask task : activeTasks)
+		{
+			boolean relevant = pickup
+				? task.getDefinition().getPickup() == port
+				: task.getDefinition().getDelivery() == port;
+			int cargoItemId = task.getDefinition().getCargoItemId();
+			if (relevant && task.needsDelivery() && cargoItemId > 0 && inventory.contains(cargoItemId))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public String getCollectionHandoffDetail()

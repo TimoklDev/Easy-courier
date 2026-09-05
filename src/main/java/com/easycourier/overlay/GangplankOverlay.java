@@ -1,6 +1,7 @@
 package com.easycourier.overlay;
 
 import com.easycourier.EasyCourierPlugin;
+import com.easycourier.model.GangplankGuidance;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -30,14 +31,15 @@ public final class GangplankOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.shouldHighlightGangplank())
+		GangplankGuidance guidance = plugin.getGangplankGuidance();
+		if (guidance == GangplankGuidance.NONE)
 		{
 			return null;
 		}
 		Color color = plugin.getConfig().routeColor();
 		for (TileObject gangplank : plugin.getGangplanks())
 		{
-			if (!plugin.hasBoardOption(gangplank))
+			if (!plugin.hasGangplankOption(gangplank, guidance.getMenuOption()))
 			{
 				continue;
 			}
@@ -50,7 +52,7 @@ public final class GangplankOverlay extends Overlay
 				graphics.setColor(color);
 				graphics.draw(hull);
 			}
-			String text = "Board your boat";
+			String text = guidance.getLabel();
 			Point point = gangplank.getCanvasTextLocation(graphics, text, 0);
 			if (point != null)
 			{
