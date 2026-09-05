@@ -226,6 +226,7 @@ public final class RoutePlanner
 		List<RouteStep> steps = new ArrayList<>();
 		Set<Integer> picked = new LinkedHashSet<>();
 		Set<Integer> delivered = new LinkedHashSet<>();
+		int currentOccupiedSlots = occupiedSlots;
 		for (ActiveTask task : tasks)
 		{
 			if (!task.needsPickup())
@@ -262,10 +263,11 @@ public final class RoutePlanner
 						"At " + port + ", use the highlighted cargo ledger to deposit the remaining crates.",
 						task.getDefinition().getExperience()));
 					delivered.add(task.getSlot());
+					currentOccupiedSlots = Math.max(0, currentOccupiedSlots - 1);
 				}
 			}
 			if (port.hasNoticeBoard() && port != preset.getDeliveryStart() && port != preset.getFinish()
-				&& occupiedSlots < taskCapacity
+				&& currentOccupiedSlots < taskCapacity
 				&& !checkedBoards.contains(port))
 			{
 				steps.add(new RouteStep(StepKind.NOTICE_BOARD, port, "Check the notice board",

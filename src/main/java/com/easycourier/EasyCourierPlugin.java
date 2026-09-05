@@ -1417,7 +1417,7 @@ public class EasyCourierPlugin extends Plugin
 		{
 			return GangplankGuidance.NONE;
 		}
-		Port port = currentPort;
+		Port port = getCargoInteractionPort();
 		if (port == Port.UNKNOWN)
 		{
 			return GangplankGuidance.NONE;
@@ -1439,7 +1439,7 @@ public class EasyCourierPlugin extends Plugin
 
 	public boolean shouldHighlightPickupLedger(Port port)
 	{
-		if ((phase != RoutePhase.DELIVERY && !isCollectionHandoffActive()) || port != currentPort)
+		if ((phase != RoutePhase.DELIVERY && !isCollectionHandoffActive()) || port != getCargoInteractionPort())
 		{
 			return false;
 		}
@@ -1450,7 +1450,7 @@ public class EasyCourierPlugin extends Plugin
 
 	public boolean shouldHighlightDeliveryLedger(Port port)
 	{
-		if (phase != RoutePhase.DELIVERY || port != currentPort)
+		if (phase != RoutePhase.DELIVERY || port != getCargoInteractionPort())
 		{
 			return false;
 		}
@@ -1478,6 +1478,35 @@ public class EasyCourierPlugin extends Plugin
 			}
 		}
 		return false;
+	}
+
+	private Port getCargoInteractionPort()
+	{
+		if (currentPort != Port.UNKNOWN)
+		{
+			return currentPort;
+		}
+		Port expectedPort = Port.UNKNOWN;
+		if (isCollectionHandoffActive())
+		{
+			expectedPort = collectionShipwright.getPort();
+		}
+		else if (phase == RoutePhase.DELIVERY)
+		{
+			RouteStep step = getCurrentDeliveryStep();
+			expectedPort = step == null ? Port.UNKNOWN : step.getPort();
+		}
+		return isPortVisible(expectedPort) ? expectedPort : Port.UNKNOWN;
+	}
+
+	private boolean isPortVisible(Port port)
+	{
+		if (port == Port.UNKNOWN)
+		{
+			return false;
+		}
+		return ledgers.stream().anyMatch(ledger -> Port.fromLedgerObjectId(ledger.getId()) == port)
+			|| noticeBoards.stream().anyMatch(board -> Port.fromNoticeBoardObjectId(board.getId()) == port);
 	}
 
 	public String getCollectionHandoffDetail()
@@ -1587,7 +1616,7 @@ public class EasyCourierPlugin extends Plugin
 	public boolean isDeliveryCargoAtCurrentPort(int itemId)
 	{
 		return phase == RoutePhase.DELIVERY
-			&& CargoGuidance.isDeliveryCargoAtPort(itemId, currentPort, activeTasks);
+			&& CargoGuidance.isDeliveryCargoAtPort(itemId, getCargoInteractionPort(), activeTasks);
 	}
 
 	public EasyCourierConfig getConfig()

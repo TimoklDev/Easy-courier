@@ -189,6 +189,33 @@ public class RouteAdvisorTest
 	}
 
 	@Test
+	public void rellekkaAldarinStopAcceptsCoastalTasks()
+	{
+		List<Port> destinations = Arrays.asList(
+			Port.PORT_ROBERTS,
+			Port.CIVITAS_ILLA_FORTIS,
+			Port.PORT_PISCARILIUS);
+		int taskId = 40;
+		for (Port destination : destinations)
+		{
+			TaskDefinition task = task(taskId++, 62, Port.ALDARIN, destination, 3000);
+			List<BoardOffer> offers = advisor.advise(RoutePreset.RELLEKKA, RoutePhase.COLLECTION,
+				Port.ALDARIN, 2, 99, 0, Collections.emptyList(), Collections.singletonList(widget(task)));
+			assertEquals(OfferStatus.USEFUL, offers.get(0).getStatus());
+		}
+	}
+
+	@Test
+	public void rellekkaCoastalBoardAcceptsAForwardTask()
+	{
+		TaskDefinition task = task(43, 62, Port.CIVITAS_ILLA_FORTIS, Port.PORT_PISCARILIUS, 3000);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.RELLEKKA, RoutePhase.DELIVERY,
+			Port.CIVITAS_ILLA_FORTIS, 0, 99, 1, Collections.emptyList(),
+			Collections.singletonList(widget(task)));
+		assertEquals(OfferStatus.USEFUL, offers.get(0).getStatus());
+	}
+
+	@Test
 	public void reservesTheGuaranteedPrifTaskAtIntermediateBoards()
 	{
 		List<ActiveTask> active = Arrays.asList(

@@ -66,7 +66,9 @@ public enum RoutePreset
 			stop(Port.ALDARIN, "Travel to Aldarin and open its notice board.", 62, null,
 				edges(
 					edge(Port.ALDARIN, Port.RELLEKKA),
-					edge(Port.ALDARIN, Port.PORT_ROBERTS)),
+					edge(Port.ALDARIN, Port.PORT_ROBERTS),
+					edge(Port.ALDARIN, Port.CIVITAS_ILLA_FORTIS),
+					edge(Port.ALDARIN, Port.PORT_PISCARILIUS)),
 				edges(edge(Port.ALDARIN, Port.RELLEKKA)))),
 		order(
 			Port.ALDARIN, 0,

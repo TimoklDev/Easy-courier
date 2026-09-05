@@ -160,6 +160,19 @@ public class RoutePlannerTest
 	}
 
 	@Test
+	public void addsCoastalBoardAfterDeliveryFreesASlot()
+	{
+		List<ActiveTask> tasks = Arrays.asList(
+			active(7, Port.ALDARIN, Port.CIVITAS_ILLA_FORTIS, 4, 3000),
+			active(8, Port.ALDARIN, Port.RELLEKKA, 4, 5000));
+		RoutePlan plan = planner.plan(RoutePreset.RELLEKKA, Port.ALDARIN,
+			tasks, 2, Collections.emptySet());
+		assertTrue(plan.getSteps().stream()
+			.anyMatch(step -> step.getKind() == StepKind.NOTICE_BOARD
+				&& step.getPort() == Port.CIVITAS_ILLA_FORTIS));
+	}
+
+	@Test
 	public void emptyManifestStillReturnsToFinish()
 	{
 		RoutePlan plan = planner.plan(RoutePreset.LUNAR_ISLE, Port.PRIFDDINAS, Collections.emptyList());
