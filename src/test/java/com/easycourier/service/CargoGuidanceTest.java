@@ -1,6 +1,10 @@
 package com.easycourier.service;
 
+import com.easycourier.model.ActiveTask;
 import com.easycourier.model.GangplankGuidance;
+import com.easycourier.model.Port;
+import com.easycourier.model.TaskDefinition;
+import java.util.Collections;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -67,5 +71,32 @@ public class CargoGuidanceTest
 	{
 		assertEquals(GangplankGuidance.BOARD_BOAT,
 			CargoGuidance.gangplank(false, true, false, false, false, false));
+	}
+
+	@Test
+	public void identifiesOnlyDeliverableCargoForTheCurrentPort()
+	{
+		ActiveTask task = active(4100, Port.ETCETERIA, 3, 0);
+		assertTrue(CargoGuidance.isDeliveryCargoAtPort(4100, Port.ETCETERIA,
+			Collections.singletonList(task)));
+		assertFalse(CargoGuidance.isDeliveryCargoAtPort(4101, Port.ETCETERIA,
+			Collections.singletonList(task)));
+		assertFalse(CargoGuidance.isDeliveryCargoAtPort(4100, Port.RELLEKKA,
+			Collections.singletonList(task)));
+	}
+
+	@Test
+	public void ignoresCargoThatHasNotBeenCollected()
+	{
+		ActiveTask task = active(4200, Port.ETCETERIA, 0, 0);
+		assertFalse(CargoGuidance.isDeliveryCargoAtPort(4200, Port.ETCETERIA,
+			Collections.singletonList(task)));
+	}
+
+	private ActiveTask active(int cargoItemId, Port delivery, int taken, int delivered)
+	{
+		TaskDefinition definition = new TaskDefinition(1, 1, 1, Port.PORT_ROBERTS,
+			Port.PORT_ROBERTS, delivery, "Cargo", cargoItemId, 5, 1000);
+		return new ActiveTask(definition, 0, taken, delivered);
 	}
 }

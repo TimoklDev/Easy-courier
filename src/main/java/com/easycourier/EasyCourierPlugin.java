@@ -16,6 +16,7 @@ import com.easycourier.model.Shipwright;
 import com.easycourier.model.StepKind;
 import com.easycourier.model.TaskDefinition;
 import com.easycourier.model.TaskEdge;
+import com.easycourier.overlay.CargoHoldOverlay;
 import com.easycourier.overlay.CargoItemOverlay;
 import com.easycourier.overlay.CharterCrewmemberOverlay;
 import com.easycourier.overlay.DockOverlay;
@@ -147,6 +148,8 @@ public class EasyCourierPlugin extends Plugin
 	@Inject
 	private DockOverlay dockOverlay;
 	@Inject
+	private CargoHoldOverlay cargoHoldOverlay;
+	@Inject
 	private CargoItemOverlay cargoItemOverlay;
 	@Inject
 	private CharterCrewmemberOverlay charterCrewmemberOverlay;
@@ -224,6 +227,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.add(noticeBoardOverlay);
 		overlayManager.add(noticeBoardWorldOverlay);
 		overlayManager.add(dockOverlay);
+		overlayManager.add(cargoHoldOverlay);
 		overlayManager.add(cargoItemOverlay);
 		overlayManager.add(charterCrewmemberOverlay);
 		overlayManager.add(etceteriaShortcutOverlay);
@@ -244,6 +248,7 @@ public class EasyCourierPlugin extends Plugin
 		overlayManager.remove(noticeBoardOverlay);
 		overlayManager.remove(noticeBoardWorldOverlay);
 		overlayManager.remove(dockOverlay);
+		overlayManager.remove(cargoHoldOverlay);
 		overlayManager.remove(cargoItemOverlay);
 		overlayManager.remove(charterCrewmemberOverlay);
 		overlayManager.remove(etceteriaShortcutOverlay);
@@ -1568,6 +1573,12 @@ public class EasyCourierPlugin extends Plugin
 			}
 		}
 		return result;
+	}
+
+	public boolean isDeliveryCargoAtCurrentPort(int itemId)
+	{
+		return phase == RoutePhase.DELIVERY
+			&& CargoGuidance.isDeliveryCargoAtPort(itemId, currentPort, activeTasks);
 	}
 
 	public EasyCourierConfig getConfig()

@@ -1,6 +1,9 @@
 package com.easycourier.service;
 
+import com.easycourier.model.ActiveTask;
 import com.easycourier.model.GangplankGuidance;
+import com.easycourier.model.Port;
+import java.util.List;
 
 public final class CargoGuidance
 {
@@ -50,5 +53,15 @@ public final class CargoGuidance
 	public static boolean deliveryLedger(boolean aboard, boolean deliveryAvailable, boolean deliveryCargoHeld)
 	{
 		return !aboard && deliveryAvailable && deliveryCargoHeld;
+	}
+
+	public static boolean isDeliveryCargoAtPort(int itemId, Port port, List<ActiveTask> tasks)
+	{
+		if (itemId <= 0 || port == Port.UNKNOWN)
+		{
+			return false;
+		}
+		return tasks.stream().anyMatch(task -> task.getDefinition().getCargoItemId() == itemId
+			&& task.getDefinition().getDelivery() == port && task.canDeliver());
 	}
 }

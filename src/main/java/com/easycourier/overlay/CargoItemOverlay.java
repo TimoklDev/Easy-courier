@@ -7,7 +7,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
-import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.WidgetItemOverlay;
@@ -22,7 +21,6 @@ public final class CargoItemOverlay extends WidgetItemOverlay
 	{
 		this.plugin = plugin;
 		this.itemManager = itemManager;
-		showOnInterfaces(InterfaceID.SAILING_BOAT_CARGOHOLD);
 		showOnInventory();
 	}
 
