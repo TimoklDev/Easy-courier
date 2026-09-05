@@ -1408,6 +1408,10 @@ public class EasyCourierPlugin extends Plugin
 		{
 			return GangplankGuidance.NONE;
 		}
+		if (isCollectionHandoffActive() && port != collectionShipwright.getPort())
+		{
+			return GangplankGuidance.NONE;
+		}
 		boolean pickupNeeded = activeTasks.stream()
 			.anyMatch(task -> task.getDefinition().getPickup() == port && task.needsPickup());
 		boolean deliveryAvailable = activeTasks.stream()
