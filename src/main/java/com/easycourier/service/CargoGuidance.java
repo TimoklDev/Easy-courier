@@ -45,9 +45,10 @@ public final class CargoGuidance
 		return handoffBoardingNeeded ? GangplankGuidance.BOARD_BOAT : GangplankGuidance.NONE;
 	}
 
-	public static boolean pickupLedger(boolean aboard, boolean pickupNeeded, boolean pickupCargoHeld)
+	public static boolean pickupLedger(boolean aboard, boolean pickupNeeded, boolean pickupCargoHeld,
+		boolean deliveryCargoHeld)
 	{
-		return !aboard && pickupNeeded && !pickupCargoHeld;
+		return !aboard && pickupNeeded && !pickupCargoHeld && !deliveryCargoHeld;
 	}
 
 	public static boolean deliveryLedger(boolean aboard, boolean deliveryAvailable, boolean deliveryCargoHeld)

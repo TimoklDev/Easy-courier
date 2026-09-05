@@ -1430,8 +1430,8 @@ public class EasyCourierPlugin extends Plugin
 			.anyMatch(task -> task.getDefinition().getPickup() == port && task.needsPickup());
 		boolean deliveryAvailable = activeTasks.stream()
 			.anyMatch(task -> task.getDefinition().getDelivery() == port && task.canDeliver());
-		boolean pickupCargoHeld = hasInventoryCargo(port, true);
-		boolean deliveryCargoHeld = hasInventoryCargo(port, false);
+		boolean pickupCargoHeld = hasCarriedCargo(port, true);
+		boolean deliveryCargoHeld = hasCarriedCargo(port, false);
 		boolean handoffBoardingNeeded = isCollectionHandoffActive() && !canCollectFirstCargoAtRecovery();
 		return CargoGuidance.gangplank(isAboardBoat(), handoffBoardingNeeded, pickupNeeded,
 			pickupCargoHeld, deliveryAvailable, deliveryCargoHeld);
@@ -1445,7 +1445,8 @@ public class EasyCourierPlugin extends Plugin
 		}
 		boolean pickupNeeded = activeTasks.stream()
 			.anyMatch(task -> task.getDefinition().getPickup() == port && task.needsPickup());
-		return CargoGuidance.pickupLedger(isAboardBoat(), pickupNeeded, hasInventoryCargo(port, true));
+		return CargoGuidance.pickupLedger(isAboardBoat(), pickupNeeded, hasCarriedCargo(port, true),
+			hasCarriedCargo(port, false));
 	}
 
 	public boolean shouldHighlightDeliveryLedger(Port port)
@@ -1456,28 +1457,33 @@ public class EasyCourierPlugin extends Plugin
 		}
 		boolean deliveryAvailable = activeTasks.stream()
 			.anyMatch(task -> task.getDefinition().getDelivery() == port && task.canDeliver());
-		return CargoGuidance.deliveryLedger(isAboardBoat(), deliveryAvailable, hasInventoryCargo(port, false));
+		return CargoGuidance.deliveryLedger(isAboardBoat(), deliveryAvailable, hasCarriedCargo(port, false));
 	}
 
-	private boolean hasInventoryCargo(Port port, boolean pickup)
+	private boolean hasCarriedCargo(Port port, boolean pickup)
 	{
 		ItemContainer inventory = client.getItemContainer(InventoryID.INV);
-		if (inventory == null)
-		{
-			return false;
-		}
+		ItemContainer worn = client.getItemContainer(InventoryID.WORN);
+		ItemContainer held = client.getItemContainer(InventoryID.SKILLING_MODE_HOLDING_INV);
 		for (ActiveTask task : activeTasks)
 		{
 			boolean relevant = pickup
 				? task.getDefinition().getPickup() == port
 				: task.getDefinition().getDelivery() == port;
 			int cargoItemId = task.getDefinition().getCargoItemId();
-			if (relevant && task.needsDelivery() && cargoItemId > 0 && inventory.contains(cargoItemId))
+			if (relevant && task.needsDelivery() && cargoItemId > 0
+				&& (containsCargo(inventory, cargoItemId) || containsCargo(worn, cargoItemId)
+					|| containsCargo(held, cargoItemId)))
 			{
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private boolean containsCargo(ItemContainer container, int itemId)
+	{
+		return container != null && container.contains(itemId);
 	}
 
 	private Port getCargoInteractionPort()

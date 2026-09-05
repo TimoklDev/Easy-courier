@@ -18,7 +18,7 @@ public class CargoGuidanceTest
 	{
 		assertEquals(GangplankGuidance.NONE,
 			CargoGuidance.gangplank(false, false, true, false, false, false));
-		assertTrue(CargoGuidance.pickupLedger(false, true, false));
+		assertTrue(CargoGuidance.pickupLedger(false, true, false, false));
 	}
 
 	@Test
@@ -26,7 +26,16 @@ public class CargoGuidanceTest
 	{
 		assertEquals(GangplankGuidance.BOARD_WITH_CARGO,
 			CargoGuidance.gangplank(false, false, true, true, false, false));
-		assertFalse(CargoGuidance.pickupLedger(false, true, true));
+		assertFalse(CargoGuidance.pickupLedger(false, true, true, false));
+	}
+
+	@Test
+	public void heldDeliveryCargoTakesPriorityOverCollectingMoreCargo()
+	{
+		assertEquals(GangplankGuidance.NONE,
+			CargoGuidance.gangplank(false, false, true, false, true, true));
+		assertFalse(CargoGuidance.pickupLedger(false, true, false, true));
+		assertTrue(CargoGuidance.deliveryLedger(false, true, true));
 	}
 
 	@Test
