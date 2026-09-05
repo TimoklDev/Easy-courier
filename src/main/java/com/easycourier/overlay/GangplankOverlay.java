@@ -37,6 +37,10 @@ public final class GangplankOverlay extends Overlay
 		Color color = plugin.getConfig().routeColor();
 		for (TileObject gangplank : plugin.getGangplanks())
 		{
+			if (!plugin.hasBoardOption(gangplank))
+			{
+				continue;
+			}
 			Shape hull = gangplank.getClickbox();
 			if (hull != null)
 			{

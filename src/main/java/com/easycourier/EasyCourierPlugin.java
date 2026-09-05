@@ -892,10 +892,45 @@ public class EasyCourierPlugin extends Plugin
 		}
 		if (composition.getImpostorIds() != null)
 		{
-			composition = composition.getImpostor();
+			ObjectComposition impostor = composition.getImpostor();
+			if (impostor != null)
+			{
+				composition = impostor;
+			}
 		}
-		String name = composition == null ? null : composition.getName();
+		String name = composition.getName();
 		return name != null && name.equalsIgnoreCase("Gangplank");
+	}
+
+	public boolean hasBoardOption(TileObject object)
+	{
+		ObjectComposition composition = client.getObjectDefinition(object.getId());
+		if (composition == null)
+		{
+			return false;
+		}
+		if (composition.getImpostorIds() != null)
+		{
+			ObjectComposition impostor = composition.getImpostor();
+			if (impostor != null)
+			{
+				composition = impostor;
+			}
+		}
+		String[] actions = composition.getActions();
+		for (int index = 0; index < 5; index++)
+		{
+			String action = object.getOpOverride(index);
+			if (action == null && actions != null && index < actions.length)
+			{
+				action = actions[index];
+			}
+			if (action != null && action.trim().equalsIgnoreCase("Board"))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void advanceDeliveryAfterBoard(Port port)
