@@ -1,9 +1,11 @@
 package com.easycourier.service;
 
 import com.easycourier.model.ActiveTask;
+import com.easycourier.model.CargoHoldGuidance;
 import com.easycourier.model.GangplankGuidance;
 import com.easycourier.model.Port;
 import java.util.List;
+import java.util.Locale;
 
 public final class CargoGuidance
 {
@@ -19,6 +21,10 @@ public final class CargoGuidance
 			if (deliveryCargoHeld)
 			{
 				return GangplankGuidance.DISEMBARK_TO_DELIVER;
+			}
+			if (deliveryAvailable)
+			{
+				return GangplankGuidance.NONE;
 			}
 			if (pickupNeeded && !pickupCargoHeld)
 			{
@@ -54,6 +60,25 @@ public final class CargoGuidance
 	public static boolean deliveryLedger(boolean aboard, boolean deliveryAvailable, boolean deliveryCargoHeld)
 	{
 		return !aboard && deliveryAvailable && deliveryCargoHeld;
+	}
+
+	public static CargoHoldGuidance cargoHold(boolean aboard, boolean pickupCargoHeld,
+		boolean deliveryAvailable, boolean deliveryCargoHeld)
+	{
+		if (!aboard || deliveryCargoHeld)
+		{
+			return CargoHoldGuidance.NONE;
+		}
+		if (pickupCargoHeld)
+		{
+			return CargoHoldGuidance.DEPOSIT;
+		}
+		return deliveryAvailable ? CargoHoldGuidance.WITHDRAW : CargoHoldGuidance.NONE;
+	}
+
+	public static boolean isCargoHoldName(String name)
+	{
+		return name != null && name.toLowerCase(Locale.ROOT).contains("cargo hold");
 	}
 
 	public static boolean isDeliveryCargoAtPort(int itemId, Port port, List<ActiveTask> tasks)

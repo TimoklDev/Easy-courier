@@ -232,6 +232,32 @@ public class RouteAdvisorTest
 	}
 
 	@Test
+	public void finalNorthernBoardAcceptsLevelSixtyEightIslandTasks()
+	{
+		TaskDefinition jatizso = task(44, 68, Port.PORT_PISCARILIUS, Port.JATIZSO, 1107);
+		TaskDefinition neitiznot = task(45, 68, Port.PORT_PISCARILIUS, Port.NEITIZNOT, 1265);
+		List<BoardOffer> offers = advisor.advise(RoutePreset.RELLEKKA, RoutePhase.DELIVERY,
+			Port.PORT_PISCARILIUS, 0, 68, 0, Collections.emptyList(),
+			Arrays.asList(widget(jatizso), widget(neitiznot)), true);
+		assertEquals(OfferStatus.USEFUL, statusFor(offers, jatizso.getTaskId()));
+		assertEquals(OfferStatus.USEFUL, statusFor(offers, neitiznot.getTaskId()));
+	}
+
+	@Test
+	public void northernIslandTasksRequireTheFinalBoardAndLevel()
+	{
+		TaskDefinition task = task(46, 68, Port.PORT_PISCARILIUS, Port.JATIZSO, 1107);
+		List<BoardOffer> early = advisor.advise(RoutePreset.RELLEKKA, RoutePhase.DELIVERY,
+			Port.PORT_PISCARILIUS, 0, 68, 0, Collections.emptyList(),
+			Collections.singletonList(widget(task)), false);
+		List<BoardOffer> underLevel = advisor.advise(RoutePreset.RELLEKKA, RoutePhase.DELIVERY,
+			Port.PORT_PISCARILIUS, 0, 67, 0, Collections.emptyList(),
+			Collections.singletonList(widget(task)), true);
+		assertEquals(OfferStatus.OFF_ROUTE, early.get(0).getStatus());
+		assertEquals(OfferStatus.INELIGIBLE, underLevel.get(0).getStatus());
+	}
+
+	@Test
 	public void reservesTheGuaranteedPrifTaskAtIntermediateBoards()
 	{
 		List<ActiveTask> active = Arrays.asList(

@@ -3,6 +3,8 @@
   "schemaVersion": 1,
   "generatedAt": "2026-09-04T11:59:49.165Z",
   "ports": {
+    "JATIZSO": -20,
+    "NEITIZNOT": -19,
     "ETCETERIA": -18,
     "RELLEKKA": -17,
     "LUNAR_ISLE": -16,
@@ -23,6 +25,28 @@
     "MUSA_POINT": -1
   },
   "nodes": [
+    {
+      "id": -20,
+      "type": "PORT",
+      "port": "JATIZSO",
+      "x": 2412,
+      "y": 3780,
+      "plane": 0,
+      "connections": [
+        213
+      ]
+    },
+    {
+      "id": -19,
+      "type": "PORT",
+      "port": "NEITIZNOT",
+      "x": 2309,
+      "y": 3782,
+      "plane": 0,
+      "connections": [
+        199
+      ]
+    },
     {
       "id": -18,
       "type": "PORT",
@@ -2864,6 +2888,7 @@
       "y": 3770,
       "plane": 0,
       "connections": [
+        -19,
         200,
         215,
         216,
@@ -3040,6 +3065,7 @@
       "y": 3753,
       "plane": 0,
       "connections": [
+        -20,
         212,
         214,
         384,

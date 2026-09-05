@@ -40,6 +40,22 @@ public class PortDetectorTest
 	}
 
 	@Test
+	public void usesDockInteractionToDetectThePortRange()
+	{
+		assertEquals(Port.UNKNOWN,
+			detector.detect(Port.RELLEKKA.getMapPoint().dx(40), null, true, false));
+		assertEquals(Port.RELLEKKA,
+			detector.detect(Port.RELLEKKA.getMapPoint().dx(40), null, true, true));
+	}
+
+	@Test
+	public void dockedBoatDoesNotCompleteAVisitToANearbyDifferentPort()
+	{
+		RouteStep step = new RouteStep(StepKind.TRAVEL, Port.NEITIZNOT, "Sail", "Sail", 0);
+		assertEquals(Port.UNKNOWN, detector.detect(Port.JATIZSO.getMapPoint(), step, true, true));
+	}
+
+	@Test
 	public void waitsUntilTheEndOfTheEtceteriaShortcutRoute()
 	{
 		RouteStep step = EtceteriaShortcutRoute.getTravelStep();

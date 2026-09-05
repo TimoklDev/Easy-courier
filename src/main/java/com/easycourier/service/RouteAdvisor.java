@@ -22,6 +22,13 @@ public final class RouteAdvisor
 	public List<BoardOffer> advise(RoutePreset preset, RoutePhase phase, Port boardPort, int collectionIndex, int sailingLevel,
 		int occupiedSlots, List<ActiveTask> activeTasks, List<WidgetTask> widgetTasks)
 	{
+		return advise(preset, phase, boardPort, collectionIndex, sailingLevel, occupiedSlots, activeTasks,
+			widgetTasks, false);
+	}
+
+	public List<BoardOffer> advise(RoutePreset preset, RoutePhase phase, Port boardPort, int collectionIndex, int sailingLevel,
+		int occupiedSlots, List<ActiveTask> activeTasks, List<WidgetTask> widgetTasks, boolean finalNorthernBoard)
+	{
 		List<BoardOffer> decisions = new ArrayList<>();
 		CollectionStop stop = phase == RoutePhase.COLLECTION && collectionIndex < preset.getCollectionStops().size()
 			? preset.getCollectionStops().get(collectionIndex) : null;
@@ -52,8 +59,11 @@ public final class RouteAdvisor
 				continue;
 			}
 			boolean startsHere = task.getPickup() == boardPort;
+			boolean northernIslandTask = finalNorthernBoard && preset == RoutePreset.RELLEKKA
+				&& sailingLevel >= 68 && isNorthernIsland(task.getDelivery());
 			boolean accepted = phase == RoutePhase.DELIVERY
-				? startsHere && preset.movesForward(task)
+				? startsHere && (northernIslandTask
+					|| (!isNorthernIsland(task.getDelivery()) && preset.movesForward(task)))
 				: stop != null && stop.accepts(task);
 			if (!accepted)
 			{
@@ -78,6 +88,11 @@ public final class RouteAdvisor
 		limitHighlights(decisions, stop, persistentReservation, sailingLevel, occupiedSlots, activeTasks);
 		decisions.sort(Comparator.comparingInt(BoardOffer::getScore).reversed());
 		return decisions;
+	}
+
+	private boolean isNorthernIsland(Port port)
+	{
+		return port == Port.NEITIZNOT || port == Port.JATIZSO;
 	}
 
 	private boolean shouldDefer(RoutePreset preset, RoutePhase phase, CollectionStop stop, int collectionIndex,

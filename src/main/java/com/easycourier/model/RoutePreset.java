@@ -78,6 +78,8 @@ public enum RoutePreset
 			Port.HOSIDIUS, 4,
 			Port.PORT_PISCARILIUS, 5,
 			Port.ETCETERIA, 6,
+			Port.NEITIZNOT, 6,
+			Port.JATIZSO, 6,
 			Port.RELLEKKA, 7)),
 	PRIFDDINAS(
 		"Prifddinas",

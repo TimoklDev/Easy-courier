@@ -1,6 +1,7 @@
 package com.easycourier.service;
 
 import com.easycourier.model.ActiveTask;
+import com.easycourier.model.CargoHoldGuidance;
 import com.easycourier.model.GangplankGuidance;
 import com.easycourier.model.Port;
 import com.easycourier.model.TaskDefinition;
@@ -59,6 +60,34 @@ public class CargoGuidanceTest
 			CargoGuidance.gangplank(true, false, false, false, true, false));
 		assertEquals(GangplankGuidance.DISEMBARK_TO_DELIVER,
 			CargoGuidance.gangplank(true, false, false, false, true, true));
+	}
+
+	@Test
+	public void shipWithdrawsDeliveryCargoBeforeDisembarking()
+	{
+		assertEquals(CargoHoldGuidance.WITHDRAW,
+			CargoGuidance.cargoHold(true, false, true, false));
+		assertEquals(GangplankGuidance.NONE,
+			CargoGuidance.gangplank(true, false, true, false, true, false));
+		assertEquals(CargoHoldGuidance.NONE,
+			CargoGuidance.cargoHold(true, false, true, true));
+	}
+
+	@Test
+	public void shipDepositsNewPickupCargoBeforeReturningToTheDock()
+	{
+		assertEquals(CargoHoldGuidance.DEPOSIT,
+			CargoGuidance.cargoHold(true, true, false, false));
+		assertEquals(CargoHoldGuidance.NONE,
+			CargoGuidance.cargoHold(false, true, false, false));
+	}
+
+	@Test
+	public void recognizesEveryNamedCargoHoldVariant()
+	{
+		assertTrue(CargoGuidance.isCargoHoldName("Teak cargo hold"));
+		assertTrue(CargoGuidance.isCargoHoldName("Camphor Cargo Hold"));
+		assertFalse(CargoGuidance.isCargoHoldName("Cargo rack"));
 	}
 
 	@Test

@@ -35,7 +35,7 @@ public final class DockOverlay extends Overlay
 	{
 		for (GameObject ledger : plugin.getLedgers())
 		{
-			Port port = Port.fromLedgerObjectId(ledger.getId());
+			Port port = plugin.getLedgerPort(ledger);
 			List<ActiveTask> pickups = plugin.tasksAtPickup(port);
 			List<ActiveTask> deliveries = plugin.tasksAtDelivery(port);
 			if (!plugin.shouldHighlightPickupLedger(port))

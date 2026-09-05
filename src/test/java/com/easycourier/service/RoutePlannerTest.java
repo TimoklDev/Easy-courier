@@ -173,6 +173,17 @@ public class RoutePlannerTest
 	}
 
 	@Test
+	public void routesNorthernIslandTaskBeforeFinishingAtRellekka()
+	{
+		ActiveTask task = active(9, Port.PORT_PISCARILIUS, Port.JATIZSO, 5, 1107);
+		RoutePlan plan = planner.plan(RoutePreset.RELLEKKA, Port.PORT_PISCARILIUS,
+			Collections.singletonList(task));
+		assertEquals(Port.PORT_PISCARILIUS, plan.getPortOrder().get(0));
+		assertTrue(plan.getPortOrder().contains(Port.JATIZSO));
+		assertEquals(Port.RELLEKKA, plan.getPortOrder().get(plan.getPortOrder().size() - 1));
+	}
+
+	@Test
 	public void emptyManifestStillReturnsToFinish()
 	{
 		RoutePlan plan = planner.plan(RoutePreset.LUNAR_ISLE, Port.PRIFDDINAS, Collections.emptyList());
