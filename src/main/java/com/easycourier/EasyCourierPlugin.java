@@ -103,7 +103,7 @@ public class EasyCourierPlugin extends Plugin
 {
 	private static final Color CHAT_LABEL_COLOR = new Color(0, 55, 130);
 	private static final Color CHAT_MESSAGE_COLOR = new Color(0, 82, 180);
-	private static final Color CHAT_CARGO_READY_COLOR = new Color(0, 200, 83);
+	private static final Color CHAT_CARGO_READY_COLOR = new Color(0, 160, 70);
 	private static final Set<Integer> TASK_VARBITS = new HashSet<>();
 
 	static
