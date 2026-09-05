@@ -99,6 +99,7 @@ public class EasyCourierPlugin extends Plugin
 {
 	private static final Color CHAT_LABEL_COLOR = new Color(0, 55, 130);
 	private static final Color CHAT_MESSAGE_COLOR = new Color(0, 82, 180);
+	private static final Color CHAT_CARGO_READY_COLOR = new Color(0, 200, 83);
 	private static final Set<Integer> TASK_VARBITS = new HashSet<>();
 
 	static
@@ -651,7 +652,7 @@ public class EasyCourierPlugin extends Plugin
 			}
 			else if (pickupAnnouncements.add(port) && wasIncompletePickup(previous, port))
 			{
-				sendMessage("You now have all the cargo");
+				sendMessage("You now have all the cargo", CHAT_CARGO_READY_COLOR);
 			}
 			List<ActiveTask> deliveryTasks = new ArrayList<>();
 			for (ActiveTask task : activeTasks)
@@ -1197,6 +1198,11 @@ public class EasyCourierPlugin extends Plugin
 
 	private void sendMessage(String message)
 	{
+		sendMessage(message, CHAT_MESSAGE_COLOR);
+	}
+
+	private void sendMessage(String message, Color messageColor)
+	{
 		if (!config.chatUpdates())
 		{
 			return;
@@ -1205,7 +1211,7 @@ public class EasyCourierPlugin extends Plugin
 			.type(ChatMessageType.GAMEMESSAGE)
 			.runeLiteFormattedMessage(new ChatMessageBuilder()
 				.append(CHAT_LABEL_COLOR, "Easy Courier: ")
-				.append(CHAT_MESSAGE_COLOR, message)
+				.append(messageColor, message)
 				.build())
 			.build());
 	}
@@ -1349,7 +1355,9 @@ public class EasyCourierPlugin extends Plugin
 
 	public boolean shouldHighlightGangplank()
 	{
-		return isCollectionHandoffActive() && !canCollectFirstCargoAtRecovery();
+		return !isAboardBoat()
+			&& (phase == RoutePhase.DELIVERY || isCollectionHandoffActive())
+			&& activeTasks.stream().anyMatch(ActiveTask::needsPickup);
 	}
 
 	public String getCollectionHandoffDetail()

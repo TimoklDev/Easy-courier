@@ -62,6 +62,7 @@ If the plugin starts while courier tasks are already active, it detects the best
 - Gold notice-board highlight: check this board while a task slot is free
 - Teal Trader Crewmember highlight: use the charter required by the current collection step
 - Teal shipwright highlight: recover the boat for the delivery route
+- Teal gangplank highlight: board while active tasks still need cargo collected
 - Red 17 by 17 DODGE square: keep clear of a Sailing portal's danger range
 
 The portal warning can be disabled with **Paint portal range for dodging**. It is enabled by default.
@@ -70,7 +71,7 @@ The portal warning can be disabled with **Paint portal range for dodging**. It i
 
 The plugin sends these game messages with a strong blue **Easy Courier:** label after the matching state change:
 
-- `You now have all the cargo`
+- `You now have all the cargo` in bright green
 - `You delivered all cargo for this dock`
 
 Several tasks for the same dock are counted together before the message is sent.
